@@ -2,9 +2,8 @@
 
   <div class="sidebar-header">
     <div class="sidebar-logo">
-      <span class="sidebar-logo-mark">D</span>
+      <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK" class="sidebar-logo-img" />
       <div class="sidebar-logo-text">
-        <strong>DOORS</strong>
         <span>Admin Console</span>
       </div>
     </div>

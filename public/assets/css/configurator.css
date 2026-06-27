@@ -53,6 +53,8 @@
   font-family: var(--serif); font-size: 1.35rem;
   letter-spacing: .22em; color: var(--cfg-text);
 }
+/* ADK logo — light theme, so the dark artwork shows as-is. */
+.cfg-logo-img { height: 42px; width: auto; display: block; }
 .cfg-logo-sub {
   font-size: .48rem; letter-spacing: .3em; text-transform: uppercase;
   color: var(--cfg-muted); margin-top: .3rem;
@@ -1046,13 +1048,14 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   color: var(--cfg-text);
 }
 .cfg-confirm-head {
-  display: flex; align-items: baseline; gap: .8rem;
+  display: flex; align-items: center; gap: .8rem;
   border-bottom: 1px solid var(--cfg-border);
   padding-bottom: 1rem; margin-bottom: 1.75rem;
 }
 .cfg-confirm-mark {
   font-family: var(--serif); font-size: 1.35rem; letter-spacing: .22em; color: var(--cfg-text);
 }
+.cfg-confirm-logo { height: 40px; width: auto; display: block; }
 .cfg-confirm-sub {
   font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cfg-muted);
 }

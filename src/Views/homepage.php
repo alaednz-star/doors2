@@ -9,36 +9,40 @@ $e   = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 $img = static fn ($f) => '/door-showroom/assets/images/' . $f;
 $wa  = 'https://wa.me/213512345678';
 $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
+$L   = \App\Core\I18n::lang();
+$DIR = \App\Core\I18n::dir();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= $e($L) ?>" dir="<?= $e($DIR) ?>">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Luxury architectural doors, made to measure. Discover collections, explore finishes, configure your door and request a quote — PORTES, Algiers." />
+  <meta name="description" content="<?= $e(t('hero.sub')) ?>" />
   <title>PORTES — Luxury Architectural Doors</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/door-showroom/assets/css/home.css?v=<?= $ver('/assets/css/home.css') ?>" />
+  <link rel="stylesheet" href="/door-showroom/assets/css/i18n.css?v=<?= $ver('/assets/css/i18n.css') ?>" />
 </head>
 <body>
 
 <!-- ░ NAV ░ -->
 <header class="nav" id="nav">
   <a href="/door-showroom" class="nav-logo">
-    <span class="nav-logo-mark">PORTES</span>
-    <span class="nav-logo-sub">Architectural Doors</span>
+    <img src="<?= $img('logo-adk.png') ?>" alt="ADK — Algerian Doors &amp; Kitchens" class="nav-logo-img" />
   </a>
   <nav class="nav-links" id="navLinks" aria-label="Primary">
-    <a href="#collections">Collections</a>
-    <a href="#process">Configurator</a>
-    <a href="#featured">Doors</a>
-    <a href="#inspiration">Inspiration</a>
-    <a href="#why">About</a>
+    <a href="#collections"><?= $e(t('nav.collections')) ?></a>
+    <a href="#process"><?= $e(t('nav.configurator')) ?></a>
+    <a href="#featured"><?= $e(t('nav.doors')) ?></a>
+    <a href="#inspiration"><?= $e(t('nav.inspiration')) ?></a>
+    <a href="#why"><?= $e(t('nav.about')) ?></a>
+    <?php $variant = 'mobile'; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>
   </nav>
-  <a href="#quote" class="nav-cta">Request Quote</a>
-  <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+  <?php $variant = ''; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>
+  <a href="#quote" class="nav-cta"><?= $e(t('nav.request_quote')) ?></a>
+  <button class="nav-burger" id="navBurger" aria-label="<?= $e(t('nav.menu_open')) ?>" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </header>
@@ -50,45 +54,45 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
     <div class="hero-overlay"></div>
   </div>
   <div class="hero-inner">
-    <p class="hero-eyebrow">Luxury Architectural Doors</p>
-    <h1 class="hero-title">Designed by you.<br /><em>Engineered to last.</em></h1>
-    <p class="hero-sub">Made-to-measure doors for spaces that demand permanence — configured by you, crafted by us.</p>
+    <p class="hero-eyebrow"><?= $e(t('hero.eyebrow')) ?></p>
+    <h1 class="hero-title"><?= $e(t('hero.title_1')) ?><br /><em><?= $e(t('hero.title_2')) ?></em></h1>
+    <p class="hero-sub"><?= $e(t('hero.sub')) ?></p>
     <div class="hero-actions">
-      <a href="/door-showroom/configure" class="btn btn--gold btn--lg">Configure Your Door
+      <a href="/door-showroom/configure" class="btn btn--gold btn--lg"><?= $e(t('hero.cta_config')) ?>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
-      <a href="#collections" class="btn btn--outline btn--lg">View Collections</a>
+      <a href="#collections" class="btn btn--outline btn--lg"><?= $e(t('hero.cta_coll')) ?></a>
     </div>
   </div>
   <div class="hero-strip">
-    <span>Made to Measure</span>
-    <span>Premium Materials</span>
-    <span>Expert Installation</span>
-    <span>Durable &amp; Reliable</span>
+    <span><?= $e(t('strip.made')) ?></span>
+    <span><?= $e(t('strip.premium')) ?></span>
+    <span><?= $e(t('strip.install')) ?></span>
+    <span><?= $e(t('strip.durable')) ?></span>
   </div>
-  <a href="#collections" class="hero-scroll" aria-label="Scroll down">
+  <a href="#collections" class="hero-scroll" aria-label="<?= $e(t('hero.scroll')) ?>">
     <span class="hero-scroll-line"></span>
   </a>
 </section>
 
 <!-- ░ 1b · VALUE STRIP ░ -->
-<section class="values" aria-label="Why choose PORTES">
+<section class="values" aria-label="<?= $e(t('values.aria')) ?>">
   <div class="values-inner">
     <div class="value reveal">
       <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l5.6 11.3 12.4 1.8-9 8.8 2.1 12.4L24 35.4 12.9 39.3 15 26.9l-9-8.8 12.4-1.8z"/></svg></span>
-      <div class="value-text"><h3>Premium Quality</h3><p>Hand-selected materials</p></div>
+      <div class="value-text"><h3><?= $e(t('values.quality')) ?></h3><p><?= $e(t('values.quality_sub')) ?></p></div>
     </div>
     <div class="value reveal reveal-d1">
       <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40L40 8M14 8h-6v6M40 34v6h-6"/><path d="M30 8h10v10"/></svg></span>
-      <div class="value-text"><h3>Made to Measure</h3><p>Built to your dimensions</p></div>
+      <div class="value-text"><h3><?= $e(t('values.measure')) ?></h3><p><?= $e(t('values.measure_sub')) ?></p></div>
     </div>
     <div class="value reveal reveal-d2">
       <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l16 6v11c0 11-7 17-16 21-9-4-16-10-16-21V11z"/><path d="M17 24l5 5 9-11"/></svg></span>
-      <div class="value-text"><h3>Built to Last</h3><p>Engineered for permanence</p></div>
+      <div class="value-text"><h3><?= $e(t('values.last')) ?></h3><p><?= $e(t('values.last_sub')) ?></p></div>
     </div>
     <div class="value reveal reveal-d3">
       <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="16" r="8"/><path d="M8 42c0-8 7-13 16-13s16 5 16 13"/></svg></span>
-      <div class="value-text"><h3>Full Support</h3><p>With you at every step</p></div>
+      <div class="value-text"><h3><?= $e(t('values.support')) ?></h3><p><?= $e(t('values.support_sub')) ?></p></div>
     </div>
   </div>
 </section>
@@ -96,8 +100,8 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 <!-- ░ 2 · COLLECTIONS ░ -->
 <section class="collections" id="collections">
   <div class="sec-intro sec-intro--center reveal">
-    <p class="eyebrow">The Collections</p>
-    <h2 class="sec-title">Three worlds,<br /><em>one standard.</em></h2>
+    <p class="eyebrow"><?= $e(t('collections.eyebrow')) ?></p>
+    <h2 class="sec-title"><?= $e(t('collections.title_1')) ?><br /><em><?= $e(t('collections.title_2')) ?></em></h2>
   </div>
 
   <div class="coll-grid reveal">
@@ -105,16 +109,16 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
       <a class="coll-card" href="/door-showroom/collections" aria-label="<?= $e($c['name']) ?>">
         <span class="coll-card-img" style="background-image:url('<?= $img($c['file']) ?>')"></span>
         <span class="coll-card-shade"></span>
-        <span class="coll-card-num">Collection <?= $e($c['num']) ?></span>
+        <span class="coll-card-num"><?= $e(t('cfg.collection')) ?> <?= $e($c['num']) ?></span>
         <span class="coll-card-body">
           <span class="coll-card-name"><?= $e($c['name']) ?></span>
-          <span class="coll-card-line"><?= $e($c['line']) ?></span>
+          <span class="coll-card-line"><?= $e(t('collections.line.' . $c['name'])) ?></span>
           <span class="coll-card-specs">
-            <span>Made to measure</span>
-            <span>Exclusive finishes</span>
-            <span>Crafted locally</span>
+            <span><?= $e(t('collections.spec_measure')) ?></span>
+            <span><?= $e(t('collections.spec_finish')) ?></span>
+            <span><?= $e(t('collections.spec_local')) ?></span>
           </span>
-          <span class="coll-card-cta">Explore
+          <span class="coll-card-cta"><?= $e(t('collections.explore')) ?>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </span>
         </span>
@@ -281,7 +285,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 <footer class="footer" id="contact">
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="footer-logo">PORTES</div>
+      <div class="footer-logo"><img src="<?= $img('logo-adk.png') ?>" alt="ADK — Algerian Doors &amp; Kitchens" class="footer-logo-img" /></div>
       <p class="footer-tag">Luxury architectural doors,<br />designed by you. Engineered to last.</p>
       <div class="footer-social">
         <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v7h3v-7H16l.5-3h-3V9.5c0-.3.2-.5.5-.5z"/></svg></a>

@@ -1,0 +1,125 @@
+/* ============================================================
+   i18n — language switcher + RTL support
+   Additive only. Uses existing design tokens (--gold, --cream,
+   --mid, --dim, --line, --serif, --sans). No LTR design changes.
+   ============================================================ */
+
+/* ─── Language switcher (premium, minimal: FR · EN · AR) ─── */
+.lang-switch {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-family: var(--sans, 'Inter', sans-serif);
+  font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.lang-switch__item {
+  color: var(--dim, rgba(245,238,228,.42));
+  transition: color .2s ease;
+  padding: .15rem 0; line-height: 1;
+}
+.lang-switch__item:hover { color: var(--cream, #f5eee4); }
+.lang-switch__item.is-active { color: var(--gold, #c4a878); }
+.lang-switch__sep {
+  width: 1px; height: .8em; background: var(--line, rgba(196,168,120,.28));
+  display: inline-block;
+}
+
+/* Sits in the desktop nav, just before the CTA. Hidden until desktop,
+   shown together with the rest of the desktop nav controls. */
+.nav .lang-switch { display: none; margin-left: .25rem; }
+@media (min-width: 980px) { .nav .lang-switch { display: inline-flex; } }
+
+/* Configurator header variant — light theme tokens */
+.cfg-top .lang-switch { margin-inline-start: auto; margin-inline-end: 1rem; }
+.cfg-top .lang-switch__item { color: var(--cfg-muted, #7a7570); }
+.cfg-top .lang-switch__item:hover { color: var(--cfg-text, #1c1a17); }
+.cfg-top .lang-switch__item.is-active { color: var(--cfg-gold, #c4a060); }
+.cfg-top .lang-switch__sep { background: var(--cfg-border, #e8e2d9); }
+
+/* Mobile menu variant — larger, centered, inside the open nav drawer */
+.lang-switch--mobile { display: none; }
+.nav-links.is-open .lang-switch--mobile {
+  display: inline-flex; gap: 1rem; font-size: .9rem; margin-top: 1.5rem;
+}
+@media (min-width: 980px) { .lang-switch--mobile { display: none !important; } }
+
+/* ============================================================
+   RTL — applied only when <html dir="rtl">
+   ============================================================ */
+[dir="rtl"] body { direction: rtl; }
+
+/* Flip the horizontal arrow icons inside buttons/links so they point
+   toward reading direction. */
+[dir="rtl"] .btn svg,
+[dir="rtl"] .coll-card-cta svg,
+[dir="rtl"] .colours-link svg { transform: scaleX(-1); }
+[dir="rtl"] .btn:hover svg { transform: scaleX(-1) translateX(4px); }
+
+/* Nav: logo should hug the start (right), CTA the end (left). margin-right:auto
+   in the base pushes things LTR-wards; reset to logical margin. */
+[dir="rtl"] .nav-logo { margin-right: 0; margin-inline-end: auto; }
+
+/* Hero gradient overlay reads from the start side — mirror it in RTL so the
+   dark side stays behind the text. */
+[dir="rtl"] .hero-overlay {
+  background: linear-gradient(255deg, rgba(11,10,9,.85) 0%, rgba(11,10,9,.5) 45%, rgba(11,10,9,.2) 75%, transparent 100%);
+}
+[dir="rtl"] .hero-inner,
+[dir="rtl"] .hero-strip span { text-align: right; }
+[dir="rtl"] .hero-strip span { padding-left: 0; padding-right: 1.4rem; }
+[dir="rtl"] .hero-strip span::before { left: auto; right: 0; }
+
+/* Process section: image anchored right in LTR → anchor left in RTL, and
+   mirror the dark overlay so copy stays readable. */
+[dir="rtl"] .process-bg img { object-position: center left; }
+[dir="rtl"] .process-overlay {
+  background: linear-gradient(260deg, rgba(11,10,9,.96) 0%, rgba(11,10,9,.88) 34%, rgba(11,10,9,.5) 60%, rgba(11,10,9,.2) 100%);
+}
+
+/* Collection card: number top-start, content reads right. */
+[dir="rtl"] .coll-card-num { left: auto; right: 1.6rem; }
+[dir="rtl"] .coll-card-body { text-align: right; align-items: flex-end; }
+[dir="rtl"] .coll-card-specs span { padding-left: 0; padding-right: .85rem; }
+[dir="rtl"] .coll-card-specs span::before { left: auto; right: 0; }
+
+/* Inspiration captions + colour-chip labels: right aligned. */
+[dir="rtl"] .inspo-card figcaption { left: auto; right: 1rem; }
+
+/* Quote overlay mirror. */
+[dir="rtl"] .quote-overlay {
+  background: linear-gradient(260deg, rgba(11,10,9,.92) 0%, rgba(58,36,23,.6) 55%, rgba(11,10,9,.35) 100%);
+}
+[dir="rtl"] .quote-inner { text-align: right; }
+
+/* WhatsApp float: keep it on the start side (left in RTL is natural). */
+[dir="rtl"] .wa-float { right: auto; left: 1.25rem; }
+@media (min-width: 980px) { [dir="rtl"] .wa-float { left: 2rem; right: auto; } }
+
+/* Process steps numbers: keep numerals LTR but align block to the right. */
+[dir="rtl"] .process-step { text-align: right; }
+
+/* Footer: align columns to the right. */
+[dir="rtl"] .footer-bottom { direction: rtl; }
+
+/* ── Configurator RTL ── */
+[dir="rtl"] .cfg-body { direction: rtl; }
+[dir="rtl"] .cfg-close { /* the × stays symmetric; nothing to flip */ }
+[dir="rtl"] .cfg-step-eyebrow,
+[dir="rtl"] .cfg-step-title,
+[dir="rtl"] .cfg-step-lead { text-align: right; }
+/* Keep numeric inputs and dimension readouts LTR for correct digit order. */
+[dir="rtl"] .cfg-stepper input,
+[dir="rtl"] #cfgDimSummary,
+[dir="rtl"] .cfg-dim2-summary-value { direction: ltr; }
+/* Field labels and form text align to the start (right). */
+[dir="rtl"] .cfg-field label,
+[dir="rtl"] .cfg-field input,
+[dir="rtl"] .cfg-field textarea { text-align: right; }
+[dir="rtl"] .cfg-field input,
+[dir="rtl"] .cfg-field textarea { direction: rtl; }
+/* Email/phone fields stay LTR (latin + numbers). */
+[dir="rtl"] #qEmail, [dir="rtl"] #qPhone { direction: ltr; text-align: left; }
+/* Summary list dt/dd: dt at start, dd at end — grid already; just align. */
+[dir="rtl"] .cfg-summary-list dt,
+[dir="rtl"] .cfg-review dt { text-align: right; }
+[dir="rtl"] .cfg-summary-list dd,
+[dir="rtl"] .cfg-review dd { text-align: left; }

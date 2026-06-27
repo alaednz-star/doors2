@@ -43,7 +43,7 @@ $cfgData = [
 
 <header class="cfg-top">
   <a href="/door-showroom" class="cfg-logo">
-    <span class="cfg-logo-mark">PORTES</span>
+    <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="cfg-logo-img" />
     <span class="cfg-logo-sub">Configurateur</span>
   </a>
   <nav class="cfg-progress" id="cfgProgress" aria-label="Étapes">
@@ -365,7 +365,7 @@ $cfgData = [
 <div class="cfg-confirm" id="cfgConfirm" hidden>
   <div class="cfg-confirm-card" id="cfgConfirmCard">
     <div class="cfg-confirm-head">
-      <span class="cfg-confirm-mark">PORTES</span>
+      <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="cfg-confirm-logo" />
       <span class="cfg-confirm-sub">Demande de Devis</span>
     </div>
     <div class="cfg-confirm-check" aria-hidden="true">

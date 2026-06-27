@@ -106,6 +106,12 @@ html, body {
   flex-shrink: 0;
 }
 
+/* ADK logo on the dark sidebar — light plate so the dark art reads. */
+.sidebar-logo-img {
+  height: 38px; width: auto; display: block;
+  background: #fff; padding: 5px 9px; border-radius: 8px; flex-shrink: 0;
+}
+
 .sidebar-logo-text {
   display: flex;
   flex-direction: column;

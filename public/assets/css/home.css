@@ -71,9 +71,18 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid transparent;
 }
 .nav.is-scrolled { background: rgba(11,10,9,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-bottom-color: var(--line); height: 68px; }
-.nav-logo { display: flex; flex-direction: column; line-height: 1; margin-right: auto; }
+.nav-logo { display: flex; align-items: center; line-height: 1; margin-right: auto; }
 .nav-logo-mark { font-family: var(--serif); font-size: 1.55rem; letter-spacing: .22em; }
 .nav-logo-sub { font-size: .52rem; letter-spacing: .34em; text-transform: uppercase; color: var(--dim); margin-top: .35rem; }
+/* ADK logo image — dark artwork, so sit it on a light rounded plate to read
+   on the dark nav; height tracks the nav and shrinks when scrolled. */
+.nav-logo-img {
+  height: 48px; width: auto; display: block;
+  background: #fff; padding: 6px 12px; border-radius: 8px;
+  transition: height .4s var(--ease);
+}
+.nav.is-scrolled .nav-logo-img { height: 40px; }
+@media (max-width: 600px) { .nav-logo-img { height: 38px; padding: 5px 9px; } }
 .nav-links { display: none; gap: 2.4rem; }
 .nav-links a { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); transition: color .2s; }
 .nav-links a:hover { color: var(--cream); }
@@ -392,6 +401,10 @@ button { font-family: inherit; cursor: pointer; }
 .footer { background: var(--black); border-top: 1px solid var(--line); }
 .footer-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; padding: clamp(3.5rem, 7vw, 5.5rem) var(--pad); }
 .footer-logo { font-family: var(--serif); font-size: 1.5rem; letter-spacing: .25em; margin-bottom: 1.1rem; }
+.footer-logo-img {
+  height: 56px; width: auto; display: block;
+  background: #fff; padding: 8px 14px; border-radius: 10px;
+}
 .footer-tag { font-size: .82rem; color: var(--dim); line-height: 1.75; margin-bottom: 1.75rem; }
 .footer-social { display: flex; gap: .85rem; }
 .footer-social a { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--dim); transition: color .2s, border-color .2s; }

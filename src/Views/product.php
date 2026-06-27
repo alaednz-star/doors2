@@ -54,8 +54,7 @@ if (!empty($product['width_mm']) && !empty($product['height_mm'])) {
 <!-- ░ NAV ░ -->
 <header class="nav is-scrolled" id="nav">
   <a href="/door-showroom" class="nav-logo">
-    <span class="nav-logo-mark">PORTES</span>
-    <span class="nav-logo-sub">Architectural Doors</span>
+    <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="nav-logo-img" />
   </a>
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="/door-showroom/collections">Collections</a>
@@ -241,7 +240,7 @@ if (!empty($product['width_mm']) && !empty($product['height_mm'])) {
 <footer class="footer" id="contact">
   <div class="footer-grid">
     <div class="footer-brand">
-      <div class="footer-logo">PORTES</div>
+      <div class="footer-logo"><img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="footer-logo-img" /></div>
       <p class="footer-tag">Luxury architectural doors,<br />designed by you. Engineered to last.</p>
       <div class="footer-social">
         <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v7h3v-7H16l.5-3h-3V9.5c0-.3.2-.5.5-.5z"/></svg></a>

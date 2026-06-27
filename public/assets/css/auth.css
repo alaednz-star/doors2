@@ -90,6 +90,12 @@ html, body {
   text-transform: uppercase;
   margin-bottom: 20px;
 }
+/* ADK logo on the dark visual panel — light plate so it reads. */
+.visual-brand-img {
+  height: 64px; width: auto; display: block;
+  background: #fff; padding: 10px 16px; border-radius: 12px;
+  margin-bottom: 24px;
+}
 
 .visual-tagline {
   font-size: 34px;
@@ -138,6 +144,8 @@ html, body {
   gap: 11px;
   margin-bottom: 24px;
 }
+/* ADK logo on the light form card — shown as-is. */
+.card-logo-img { height: 40px; width: auto; display: block; }
 
 .logo-icon {
   width: 38px;

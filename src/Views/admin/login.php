@@ -16,8 +16,8 @@
   <div class="auth-visual" aria-hidden="true">
     <div class="visual-gradient"></div>
     <div class="visual-content">
-      <div class="visual-brand">DOORS</div>
-      <p class="visual-tagline">Architectural doors crafted<br>for exceptional spaces.</p>
+      <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="visual-brand-img" />
+      <p class="visual-tagline">Architectural doors &amp; kitchens crafted<br>for exceptional spaces.</p>
     </div>
   </div>
 
@@ -26,9 +26,8 @@
 
       <div class="card-header">
         <div class="card-logo">
-          <span class="logo-icon">D</span>
+          <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK" class="card-logo-img" />
           <div>
-            <strong>DOORS</strong>
             <span>Admin Console</span>
           </div>
         </div>

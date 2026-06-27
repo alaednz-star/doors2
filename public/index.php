@@ -13,6 +13,11 @@ spl_autoload_register(function (string $class): void {
     }
 });
 
+require_once APP_ROOT . '/src/helpers.php';
+
+// Resolve & persist the public-site language for this request.
+\App\Core\I18n::boot();
+
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $uri    = rtrim($uri, '/');
 $method = $_SERVER['REQUEST_METHOD'];
@@ -37,6 +42,21 @@ $routes = [
 // The old /configurator page was a duplicate — send it to the single configurator.
 if ($method === 'GET' && $uri === '/door-showroom/configurator') {
     header('Location: /door-showroom/configure', true, 301);
+    exit;
+}
+
+// Language switch: persist choice (cookie) and return to the page the user was on.
+if ($method === 'GET' && $uri === '/door-showroom/lang') {
+    $to = isset($_GET['set']) ? strtolower((string)$_GET['set']) : '';
+    if (isset(\App\Core\I18n::LANGS[$to])) {
+        \App\Core\I18n::persist($to);
+    }
+    $back = $_GET['return'] ?? ($_SERVER['HTTP_REFERER'] ?? '/door-showroom');
+    // Only allow same-app relative returns to avoid open-redirects.
+    if (!is_string($back) || !preg_match('#^/door-showroom#', (string)parse_url($back, PHP_URL_PATH) ?: '')) {
+        $back = '/door-showroom';
+    }
+    header('Location: ' . $back, true, 302);
     exit;
 }
 

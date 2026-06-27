@@ -24,19 +24,28 @@ class ConfiguratorController
 
         $webBase = '/door-showroom/uploads';
 
-        // Fallback door image per colour name (project assets), used when no
-        // product image is uploaded yet. Editable by uploading real images.
+        // Per-colour door PHOTO (project assets) shown in the live preview.
+        // Keyed by colour name; falls back to a default door so the preview is
+        // always a door shape, never a flat texture.
         $assetDir   = '/door-showroom/assets/images/';
         $colorAsset = [
             'Chêne'  => 'chene.jpg',     'Gris'   => 'gris.jpg',
-            'Marron' => 'marron-prestige.jpg',
+            'Marron' => 'marron-prestige.jpg', 'Marron Prestige' => 'marron-prestige.jpg',
+            'Gris Prestige' => 'gris-prestige.jpg',
             'Scuro'  => 'porte-scuro.jpg', 'Simza' => 'portes-cinza.jpg',
             'Madera' => 'portes-madera.jpg', 'Wengue' => 'portes-madera.jpg',
             'Serya'  => 'portes-seery.jpg',
         ];
-        $colorImg = function (array $c) use ($webBase, $assetDir, $colorAsset): string {
+
+        // The SWATCH is the flat colour texture for the colour-grid tiles
+        // (uploaded image_filename / texture_filename, else the hex shows).
+        $colorSwatch = function (array $c) use ($webBase): ?string {
             if (!empty($c['image_filename']))   return $webBase . '/colors/' . $c['image_filename'];
             if (!empty($c['texture_filename'])) return $webBase . '/colors/' . $c['texture_filename'];
+            return null;
+        };
+        // The DOOR is the photo used in the preview: a real door shape.
+        $colorDoor = function (array $c) use ($assetDir, $colorAsset): string {
             return $assetDir . ($colorAsset[$c['name']] ?? 'chene.jpg');
         };
 
@@ -78,14 +87,16 @@ class ConfiguratorController
              FROM price_rules WHERE is_active = 1'
         )->fetchAll();
 
-        // Colours for the view (carry their door image + collection).
-        $colorsData = array_map(function ($c) use ($colorImg) {
+        // Colours for the view: `img` = flat swatch for the grid tile;
+        // `door` = door photo for the live preview; `hex` = fallback.
+        $colorsData = array_map(function ($c) use ($colorSwatch, $colorDoor) {
             return [
                 'id'            => (int)$c['id'],
                 'name'          => $c['name'],
                 'hex'           => $c['hex'],
                 'collection_id' => $c['collection_id'] !== null ? (int)$c['collection_id'] : null,
-                'img'           => $colorImg($c),
+                'img'           => $colorSwatch($c),
+                'door'          => $colorDoor($c),
             ];
         }, $colorsRaw);
 

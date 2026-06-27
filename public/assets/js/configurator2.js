@@ -14,7 +14,7 @@
   function freshState() {
     return {
       collection_id: null, collection_name: '',
-      color_id: null, color_name: '', color_hex: '', color_img: '',
+      color_id: null, color_name: '', color_hex: '', color_img: '', color_door: '',
       usage_id: null, usage_name: '',
       construction_id: null, construction_name: '',
       product_id: null, product_name: '', product_img: '',
@@ -198,7 +198,7 @@
   function selectCollection(col, btn, wrap) {
     activate(wrap, btn);
     if (state.collection_id !== col.id) {
-      state.color_id = null; state.color_name = ''; state.color_hex = ''; state.color_img = '';
+      state.color_id = null; state.color_name = ''; state.color_hex = ''; state.color_img = ''; state.color_door = '';
       clearUsage(); clearConstruction(); clearProduct();
     }
     state.collection_id = col.id; state.collection_name = col.name;
@@ -207,7 +207,9 @@
   }
   function selectColor(c, btn, wrap) {
     activate(wrap, btn);
-    state.color_id = c.id; state.color_name = c.name; state.color_hex = c.hex || ''; state.color_img = c.img || '';
+    state.color_id = c.id; state.color_name = c.name; state.color_hex = c.hex || '';
+    state.color_img = c.img || '';      // flat swatch (for the chip)
+    state.color_door = c.door || '';    // door photo (for the preview)
     clearProduct();
     setRender(); setSummary(); requestPrice();
     pulsePreview();
@@ -238,10 +240,10 @@
     clearProduct(); setRender(); setSummary(); requestPrice();
   });
 
-  /* ── preview: product image > colour image, tinted ── */
+  /* ── preview: product image > colour door photo (door-shaped), tinted ── */
   function setRender() {
     if (!$render || !$renderDoor) return;
-    var url = state.product_img || state.color_img || '';
+    var url = state.product_img || state.color_door || '';
     if (url) {
       $renderDoor.style.backgroundImage = "url('" + url + "')";
       $renderDoor.style.filter = 'drop-shadow(0 30px 56px rgba(0,0,0,.55))';

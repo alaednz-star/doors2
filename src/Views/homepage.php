@@ -1,7 +1,10 @@
 <?php
 /** @var array $colors */
+/** @var array $colorGroups */
 /** @var array $collections */
 /** @var array $featured */
+/** @var array $process */
+/** @var array $inspiration */
 $e   = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 $img = static fn ($f) => '/door-showroom/assets/images/' . $f;
 $wa  = 'https://wa.me/213512345678';
@@ -29,8 +32,9 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
   </a>
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#collections">Collections</a>
-    <a href="/door-showroom/configure">Configurator</a>
+    <a href="#process">Configurator</a>
     <a href="#featured">Doors</a>
+    <a href="#inspiration">Inspiration</a>
     <a href="#why">About</a>
   </nav>
   <a href="#quote" class="nav-cta">Request Quote</a>
@@ -42,7 +46,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 <!-- ░ 1 · HERO ░ -->
 <section class="hero" id="top">
   <div class="hero-bg">
-    <img src="<?= $img('bghero.png') ?>" alt="" role="presentation" class="hero-img" />
+    <img src="<?= $img('interior-hero-black.png') ?>" alt="" role="presentation" class="hero-img" />
     <div class="hero-overlay"></div>
   </div>
   <div class="hero-inner">
@@ -65,6 +69,28 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
   <a href="#collections" class="hero-scroll" aria-label="Scroll down">
     <span class="hero-scroll-line"></span>
   </a>
+</section>
+
+<!-- ░ 1b · VALUE STRIP ░ -->
+<section class="values" aria-label="Why choose PORTES">
+  <div class="values-inner">
+    <div class="value reveal">
+      <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l5.6 11.3 12.4 1.8-9 8.8 2.1 12.4L24 35.4 12.9 39.3 15 26.9l-9-8.8 12.4-1.8z"/></svg></span>
+      <div class="value-text"><h3>Premium Quality</h3><p>Hand-selected materials</p></div>
+    </div>
+    <div class="value reveal reveal-d1">
+      <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 40L40 8M14 8h-6v6M40 34v6h-6"/><path d="M30 8h10v10"/></svg></span>
+      <div class="value-text"><h3>Made to Measure</h3><p>Built to your dimensions</p></div>
+    </div>
+    <div class="value reveal reveal-d2">
+      <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5l16 6v11c0 11-7 17-16 21-9-4-16-10-16-21V11z"/><path d="M17 24l5 5 9-11"/></svg></span>
+      <div class="value-text"><h3>Built to Last</h3><p>Engineered for permanence</p></div>
+    </div>
+    <div class="value reveal reveal-d3">
+      <span class="value-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="16" r="8"/><path d="M8 42c0-8 7-13 16-13s16 5 16 13"/></svg></span>
+      <div class="value-text"><h3>Full Support</h3><p>With you at every step</p></div>
+    </div>
+  </div>
 </section>
 
 <!-- ░ 2 · COLLECTIONS ░ -->
@@ -97,6 +123,34 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
   </div>
 </section>
 
+<!-- ░ 2b · PROCESS / CONFIGURE IN 7 STEPS ░ -->
+<section class="process" id="process">
+  <div class="process-inner">
+    <div class="process-copy reveal">
+      <p class="eyebrow">Configure in 7 steps</p>
+      <h2 class="sec-title">Your ideal door,<br /><em>built your way.</em></h2>
+      <p class="process-lead">From collection to colour, usage to dimensions — our configurator walks you through every choice and gives you a price as you go. No showroom visit required.</p>
+      <ol class="process-steps">
+        <?php foreach ($process as $i => $s): ?>
+          <li class="process-step reveal<?= $i ? ' reveal-d' . min($i, 3) : '' ?>">
+            <span class="process-step-num"><?= $e($s['num']) ?></span>
+            <span class="process-step-body">
+              <strong><?= $e($s['name']) ?></strong>
+              <em><?= $e($s['desc']) ?></em>
+            </span>
+          </li>
+        <?php endforeach; ?>
+      </ol>
+      <a href="/door-showroom/configure" class="btn btn--gold btn--lg">Start Configuring
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="process-visual reveal reveal-d1">
+      <img src="<?= $img('configurator-tablet.png') ?>" alt="PORTES configurator on a tablet" loading="lazy" />
+    </div>
+  </div>
+</section>
+
 <!-- ░ 3 · FEATURED DOORS ░ -->
 <section class="featured" id="featured">
   <div class="sec-intro reveal">
@@ -121,6 +175,43 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
     <?php endforeach; ?>
   </div>
 </section>
+
+<!-- ░ 5 · INSPIRATION GALLERY ░ -->
+<section class="inspo" id="inspiration">
+  <div class="sec-intro reveal">
+    <p class="eyebrow">Inspiration</p>
+    <h2 class="sec-title">Doors in their<br /><em>natural habitat.</em></h2>
+  </div>
+  <div class="inspo-grid reveal">
+    <?php foreach ($inspiration as $i => $p): ?>
+      <figure class="inspo-card<?= $p['span'] ? ' inspo-card--' . $e($p['span']) : '' ?>">
+        <img src="<?= $img($p['file']) ?>" alt="<?= $e($p['caption']) ?>" loading="lazy" />
+        <figcaption><?= $e($p['caption']) ?></figcaption>
+      </figure>
+    <?php endforeach; ?>
+  </div>
+</section>
+
+<!-- ░ 5b · SIGNATURE COLOURS ░ -->
+<?php if (!empty($colors)): ?>
+<section class="colours" id="colours">
+  <div class="colours-inner reveal">
+    <div class="colours-head">
+      <p class="eyebrow">Signature Finishes</p>
+      <h2 class="sec-title">A palette<br /><em>worth its name.</em></h2>
+    </div>
+    <div class="colours-row">
+      <?php foreach (array_slice($colors, 0, 9) as $c): ?>
+        <span class="colour-chip" title="<?= $e($c['name'] . ($c['collection'] ? ' · ' . $c['collection'] : '')) ?>"
+              style="<?= $c['tex'] ? "background-image:url('" . $e($c['tex']) . "');" : '' ?>background-color:<?= $e($c['hex']) ?>;"></span>
+      <?php endforeach; ?>
+    </div>
+    <a href="/door-showroom/configure" class="colours-link">Configure with your colour
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+<?php endif; ?>
 
 <!-- ░ 6 · WHY ░ -->
 <section class="why" id="why">
@@ -154,7 +245,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
 <!-- ░ 7 · QUOTE CTA ░ -->
 <section class="quote" id="quote">
-  <div class="quote-bg"><img src="<?= $img('portes-madera.jpg') ?>" alt="" role="presentation" loading="lazy" /><div class="quote-overlay"></div></div>
+  <div class="quote-bg"><img src="<?= $img('interior-entry-hall.png') ?>" alt="" role="presentation" loading="lazy" /><div class="quote-overlay"></div></div>
   <div class="quote-inner reveal">
     <h2 class="quote-title">Ready to bring your<br /><em>vision to life?</em></h2>
     <p class="quote-sub">Configure your door and request a personal quote in under five minutes. No obligation.</p>

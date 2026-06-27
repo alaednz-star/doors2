@@ -38,6 +38,22 @@ class HomepageController
         ['name' => 'Simza',         'collection' => 'Moderne',  'file' => 'portes-cinza.jpg'],
     ];
 
+    private const PROCESS = [
+        ['num' => '01', 'name' => 'Collection',   'desc' => 'Choose the world that fits your home.'],
+        ['num' => '02', 'name' => 'Colour',       'desc' => 'Pick from our signature finishes.'],
+        ['num' => '03', 'name' => 'Usage',        'desc' => 'Bedroom, living room, entrance, bathroom.'],
+        ['num' => '04', 'name' => 'Construction', 'desc' => 'Select the build that suits the opening.'],
+        ['num' => '05', 'name' => 'Design',       'desc' => 'Refine the panel and detailing.'],
+        ['num' => '06', 'name' => 'Dimensions',   'desc' => 'Engineered to your exact opening.'],
+        ['num' => '07', 'name' => 'Review & Quote','desc' => 'Confirm and request your quote.'],
+    ];
+
+    private const INSPIRATION = [
+        ['file' => 'interior-grey-kitchen.png', 'caption' => 'Moderne · Gris',  'span' => 'tall'],
+        ['file' => 'interior-bedroom-black.png','caption' => 'Prestige · Noir', 'span' => 'wide'],
+        ['file' => 'interior-entry-hall.png',   'caption' => 'Heritage · Entrée','span' => ''],
+    ];
+
     public function show(): void
     {
         Session::start();
@@ -47,6 +63,8 @@ class HomepageController
         $colorGroups   = $this->groupColorsByCollection($colors);
         $collections   = self::COLLECTIONS;
         $featured      = self::FEATURED;
+        $process       = self::PROCESS;
+        $inspiration   = self::INSPIRATION;
 
         require APP_ROOT . '/src/Views/homepage.php';
     }

@@ -1,0 +1,17 @@
+# Project-root .htaccess for shared hosting (e.g. InfinityFree), where this
+# folder is uploaded as /door-showroom/ under the web root. The real front
+# controllers live in public/; route requests there while keeping the full
+# request URI intact (the app matches /door-showroom/... paths literally).
+
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# Static assets and uploads are referenced as /door-showroom/assets/...
+# and /door-showroom/uploads/... but live inside public/ — map them in.
+RewriteRule ^(assets|uploads)/(.*)$ public/$1/$2 [L]
+
+# Admin panel front controller.
+RewriteRule ^admin(/.*)?$ public/admin.php [QSA,L]
+
+# Everything else → public front controller.
+RewriteRule ^ public/index.php [QSA,L]

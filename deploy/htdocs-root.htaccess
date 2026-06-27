@@ -1,0 +1,6 @@
+# Place this file at the InfinityFree web root as:  htdocs/.htaccess
+# It sends visitors who hit the bare domain to the app, which lives in the
+# /door-showroom/ subfolder.
+
+RewriteEngine On
+RewriteRule ^$ /door-showroom/ [R=302,L]

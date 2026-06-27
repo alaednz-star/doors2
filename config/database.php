@@ -1,6 +1,15 @@
 <?php
 
-// Accept generic DB_* vars or Railway's MYSQL* vars; fall back to local LAMPP.
+// Resolve DB credentials in this order:
+//   1. config/database.local.php  (gitignored — used on shared hosts like
+//      InfinityFree where env vars aren't available; just fill in & upload it)
+//   2. environment variables       (generic DB_* or Railway MYSQL*)
+//   3. local LAMPP/XAMPP defaults
+$local = __DIR__ . '/database.local.php';
+if (is_file($local)) {
+    return require $local;
+}
+
 $env = static fn (array $keys, string $default): string => (static function () use ($keys, $default) {
     foreach ($keys as $k) {
         $v = getenv($k);

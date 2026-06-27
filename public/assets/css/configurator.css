@@ -181,7 +181,7 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 /* Door render area at the top of the sidebar */
 .cfg-sidebar-render {
   flex-shrink: 0; position: relative;
-  aspect-ratio: 3/4; background: #f0ece4;
+  aspect-ratio: 2/3; min-height: 440px; background: #f0ece4;
   border-radius: var(--cfg-radius) var(--cfg-radius) 0 0;
   overflow: hidden;
 }
@@ -468,6 +468,8 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   background-size: contain; background-position: center; background-repeat: no-repeat;
   transition: background-image .3s ease;
 }
+/* A full uploaded scene photo fills the whole preview card. */
+.cfg-render.is-photo .cfg-render-door { background-size: cover; }
 .cfg-render-tint {
   position: absolute; inset: 0; pointer-events: none;
   background-size: contain; background-position: center; background-repeat: no-repeat;

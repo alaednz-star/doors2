@@ -37,15 +37,18 @@ class ConfiguratorController
             'Serya'  => 'portes-seery.jpg',
         ];
 
-        // The SWATCH is the flat colour texture for the colour-grid tiles
-        // (uploaded image_filename / texture_filename, else the hex shows).
+        // The SWATCH is the flat colour texture for the small grid tiles. Use
+        // the dedicated "Texture Image"; if none, the tile falls back to the
+        // colour hex (we don't squeeze the big preview photo into a tile).
         $colorSwatch = function (array $c) use ($webBase): ?string {
-            if (!empty($c['image_filename']))   return $webBase . '/colors/' . $c['image_filename'];
             if (!empty($c['texture_filename'])) return $webBase . '/colors/' . $c['texture_filename'];
             return null;
         };
-        // The DOOR is the photo used in the preview: a real door shape.
-        $colorDoor = function (array $c) use ($assetDir, $colorAsset): string {
+        // The DOOR is the image shown in the live preview: the admin-uploaded
+        // colour photo (e.g. a door in a room) when present, else a project
+        // door asset so the preview is never empty.
+        $colorDoor = function (array $c) use ($webBase, $assetDir, $colorAsset): string {
+            if (!empty($c['image_filename']))   return $webBase . '/colors/' . $c['image_filename'];
             return $assetDir . ($colorAsset[$c['name']] ?? 'chene.jpg');
         };
 

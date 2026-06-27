@@ -84,24 +84,24 @@ $err = fn(string $k): string => $errors[$k] ?? '';
     <div class="form-card">
       <div class="form-card-header">
         <h2>Imagery</h2>
-        <p>Preview swatch and a seamless texture image (JPG/PNG/WebP).</p>
+        <p>The big preview photo and the small grid swatch (JPG/PNG/WebP).</p>
       </div>
       <div class="form-card-body">
         <div class="form-field">
-          <label for="color_image">Preview Image</label>
+          <label for="color_image">Preview Image (door in a room)</label>
           <?php if ($isEdit && !empty($color['image_filename'])): ?>
-            <div style="margin-bottom:10px"><img src="/door-showroom/uploads/colors/<?= $e($color['image_filename']) ?>" alt="" style="max-width:100px;border-radius:8px;border:1px solid var(--border,#e5e0d8)" /></div>
+            <div style="margin-bottom:10px"><img src="/door-showroom/uploads/colors/<?= $e($color['image_filename']) ?>" alt="" style="max-width:140px;border-radius:8px;border:1px solid var(--border,#e5e0d8)" /></div>
           <?php endif; ?>
           <input type="file" id="color_image" name="color_image" accept="image/jpeg,image/png,image/webp" />
-          <span class="form-hint">Shown as the swatch / chip.</span>
+          <span class="form-hint">Large photo shown in the configurator preview when this colour is selected. Use a real door / in-room photo (portrait works best).</span>
         </div>
         <div class="form-field">
-          <label for="texture_image">Texture Image</label>
+          <label for="texture_image">Swatch Image (flat colour tile)</label>
           <?php if ($isEdit && !empty($color['texture_filename'])): ?>
             <div style="margin-bottom:10px"><img src="/door-showroom/uploads/colors/<?= $e($color['texture_filename']) ?>" alt="" style="max-width:100px;border-radius:8px;border:1px solid var(--border,#e5e0d8)" /></div>
           <?php endif; ?>
           <input type="file" id="texture_image" name="texture_image" accept="image/jpeg,image/png,image/webp" />
-          <span class="form-hint">Used to render the door surface in the configurator.</span>
+          <span class="form-hint">Small flat texture shown on the colour-picker tile. If left empty, the tile uses the colour code below.</span>
         </div>
       </div>
     </div>

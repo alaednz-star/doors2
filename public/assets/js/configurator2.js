@@ -240,22 +240,27 @@
     clearProduct(); setRender(); setSummary(); requestPrice();
   });
 
-  /* ── preview: product image > colour door photo (door-shaped), tinted ── */
+  /* ── preview: product image > colour photo. A full uploaded photo fills
+        the card (cover); a bare door asset is shown whole (contain). ── */
   function setRender() {
     if (!$render || !$renderDoor) return;
     var url = state.product_img || state.color_door || '';
+    // Uploaded photos (in /uploads/) are real scenes → fill the card, no tint.
+    var isPhoto = /\/uploads\//.test(url);
     if (url) {
       $renderDoor.style.backgroundImage = "url('" + url + "')";
-      $renderDoor.style.filter = 'drop-shadow(0 30px 56px rgba(0,0,0,.55))';
+      $renderDoor.style.filter = isPhoto ? 'none' : 'drop-shadow(0 30px 56px rgba(0,0,0,.55))';
       $render.classList.remove('is-empty');
     } else {
       $renderDoor.style.backgroundImage = ''; $renderDoor.style.filter = 'none';
       $render.classList.add('is-empty');
     }
-    var mask = url ? "url('" + url + "')" : 'none';
+    $render.classList.toggle('is-photo', !!url && isPhoto);
+    // Tint only the bare door asset to the chosen colour; never a full photo.
+    var mask = (url && !isPhoto) ? "url('" + url + "')" : 'none';
     if ($renderTint) {
       $renderTint.style.background = state.color_hex || 'transparent';
-      $renderTint.style.opacity = (url && state.color_hex && !state.product_img) ? '0.35' : '0';
+      $renderTint.style.opacity = (url && !isPhoto && state.color_hex && !state.product_img) ? '0.35' : '0';
       $renderTint.style.webkitMaskImage = mask; $renderTint.style.maskImage = mask;
     }
     // Preview reacts to the chosen colour: gold ring + confirming chip.

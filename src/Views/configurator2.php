@@ -5,7 +5,7 @@ declare(strict_types=1);
 /** @var string $token */
 $e = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
-$steps = ['Collection', 'Color', 'Usage', 'Construction', 'Door Design', 'Dimensions', 'Review'];
+$steps = ['Collection', 'Color', 'Usage', 'Construction', 'Door Design', 'Dimensions', 'Review', 'Details'];
 
 $cfgData = [
     'csrf'      => $token,
@@ -155,15 +155,36 @@ $cfgData = [
           <input type="range" id="cfgHeight" min="1500" max="3000" step="10" value="2100" />
           <div class="cfg-dim-scale"><span>150</span><span>300 cm</span></div>
         </div>
+        <div class="cfg-qty">
+          <label for="cfgQty">Quantity</label>
+          <div class="cfg-qty-control">
+            <button type="button" class="cfg-qty-btn" id="cfgQtyMinus" aria-label="Decrease">−</button>
+            <input type="number" id="cfgQty" min="1" max="999" step="1" value="1" />
+            <button type="button" class="cfg-qty-btn" id="cfgQtyPlus" aria-label="Increase">+</button>
+          </div>
+        </div>
       </div>
 
-      <!-- STEP 6 · REVIEW & QUOTE -->
+      <!-- STEP 6 · REVIEW -->
       <div class="cfg-step" data-step="6">
-        <p class="cfg-step-eyebrow">Step 07 — Review &amp; Quote</p>
+        <p class="cfg-step-eyebrow">Step 07 — Review</p>
         <h2 class="cfg-step-title">Review your <em>Door</em></h2>
-        <p class="cfg-step-lead">Confirm your configuration, then request a personal quote.</p>
+        <p class="cfg-step-lead">Confirm this door. Add it to your request, or add more doors before continuing.</p>
         <dl class="cfg-review" id="cfgReview"></dl>
-        <div class="cfg-review-price"><span>Final Price</span><strong id="cfgReviewPrice">—</strong></div>
+        <div class="cfg-review-price"><span>This Door</span><strong id="cfgReviewPrice">—</strong></div>
+        <div class="cfg-review-actions">
+          <button type="button" class="btn btn--outline btn--block" id="cfgAddAnother">+ Add another door</button>
+          <button type="button" class="btn btn--gold btn--block" id="cfgToDetails">Continue to your details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 7 · YOUR DETAILS -->
+      <div class="cfg-step" data-step="7">
+        <p class="cfg-step-eyebrow">Step 08 — Your Details</p>
+        <h2 class="cfg-step-title">Request your <em>Quote</em></h2>
+        <p class="cfg-step-lead">Fill in your details and we'll prepare a personal quotation.</p>
         <form class="cfg-quote-form" id="cfgQuoteForm" novalidate>
           <input type="text" name="company_website" id="cfgHoneypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
           <div class="cfg-field"><label for="qName">Full name *</label><input type="text" id="qName" name="full_name" maxlength="120" required /></div>
@@ -175,7 +196,6 @@ $cfgData = [
           </div>
           <div class="cfg-field"><label for="qNotes">Notes</label><textarea id="qNotes" name="notes" rows="3" maxlength="3000"></textarea></div>
           <p class="cfg-form-error" id="cfgFormError" hidden></p>
-          <p class="cfg-form-success" id="cfgFormSuccess" hidden></p>
         </form>
       </div>
 
@@ -190,21 +210,31 @@ $cfgData = [
     </div>
   </section>
 
-  <!-- STICKY SUMMARY -->
+  <!-- STICKY SUMMARY / CART -->
   <aside class="cfg-summary" id="cfgSummary">
     <h3 class="cfg-summary-title">Your Configuration</h3>
-    <dl class="cfg-summary-list">
+
+    <!-- Current door being configured -->
+    <dl class="cfg-summary-list" id="cfgCurrentSummary">
       <div><dt>Collection</dt><dd id="sumCollection">—</dd></div>
       <div><dt>Colour</dt><dd id="sumColor">—</dd></div>
       <div><dt>Usage</dt><dd id="sumUsage">—</dd></div>
       <div><dt>Construction</dt><dd id="sumConstruction">—</dd></div>
       <div><dt>Design</dt><dd id="sumProduct">—</dd></div>
       <div><dt>Dimensions</dt><dd id="sumDim">90 × 210 cm</dd></div>
+      <div><dt>This door</dt><dd id="sumPrice">Configure to see price</dd></div>
     </dl>
-    <div class="cfg-summary-price">
-      <span class="cfg-summary-price-label">Estimated Price</span>
-      <strong class="cfg-summary-price-value" id="sumPrice">Configure to see price</strong>
+
+    <!-- Doors already added to the request -->
+    <div class="cfg-cart" id="cfgCart" hidden>
+      <h4 class="cfg-cart-title">Doors in your request</h4>
+      <ul class="cfg-cart-list" id="cfgCartList"></ul>
+      <div class="cfg-summary-price">
+        <span class="cfg-summary-price-label">Total</span>
+        <strong class="cfg-summary-price-value" id="cfgCartTotal">—</strong>
+      </div>
     </div>
+
     <div class="cfg-summary-actions">
       <button class="btn btn--gold btn--block" id="cfgQuote" type="button">Request Quote</button>
       <button class="btn btn--outline btn--block" id="cfgSave" type="button">Save Configuration</button>
@@ -212,6 +242,30 @@ $cfgData = [
   </aside>
 
 </main>
+
+<!-- CONFIRMATION (printable) -->
+<div class="cfg-confirm" id="cfgConfirm" hidden>
+  <div class="cfg-confirm-card" id="cfgConfirmCard">
+    <div class="cfg-confirm-head">
+      <span class="cfg-confirm-mark">PORTES</span>
+      <span class="cfg-confirm-sub">Quote Request</span>
+    </div>
+    <div class="cfg-confirm-check" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/><polyline points="15,25 21,31 33,18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2 class="cfg-confirm-title">Thank you</h2>
+    <p class="cfg-confirm-ref">Reference <strong id="cfgConfirmRef">—</strong></p>
+    <div class="cfg-confirm-customer" id="cfgConfirmCustomer"></div>
+    <table class="cfg-confirm-table" id="cfgConfirmItems"></table>
+    <div class="cfg-confirm-total"><span>Total</span><strong id="cfgConfirmTotal">—</strong></div>
+    <p class="cfg-confirm-note">We've received your request and will contact you shortly with a personal quotation.</p>
+    <div class="cfg-confirm-actions">
+      <button type="button" class="btn btn--gold" id="cfgPrint">Print / Save as PDF</button>
+      <button type="button" class="btn btn--outline" id="cfgAnother">Configure another door</button>
+      <a href="/door-showroom" class="btn btn--outline">Back to home</a>
+    </div>
+  </div>
+</div>
 
 <button class="cfg-summary-fab" id="cfgSummaryFab" type="button" aria-label="View summary">
   <span class="cfg-summary-fab-price" id="cfgFabPrice">—</span>

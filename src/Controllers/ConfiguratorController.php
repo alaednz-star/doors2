@@ -239,7 +239,15 @@ class ConfiguratorController
         $this->verifyCsrf();
 
         $body   = $this->jsonBody();
-        $config = is_array($body['config'] ?? null) ? $body['config'] : [];
+
+        // Accept a list of doors (items[]) or a single config (legacy).
+        $items = [];
+        if (is_array($body['items'] ?? null) && !empty($body['items'])) {
+            $items = $body['items'];
+        } elseif (is_array($body['config'] ?? null)) {
+            $items = [['config' => $body['config'], 'quantity' => (int)($body['quantity'] ?? 1)]];
+        }
+        $config = is_array($items[0]['config'] ?? null) ? $items[0]['config'] : [];
 
         // ── Spam: honeypot (bots fill hidden fields) ──
         if (!empty($body['company_website'])) {
@@ -269,7 +277,6 @@ class ConfiguratorController
         $city    = trim((string)($body['city'] ?? ''));
         $ptype   = trim((string)($body['project_type'] ?? ''));
         $instDate= trim((string)($body['install_date'] ?? ''));
-        $qty     = (int)($body['quantity'] ?? 1);
         $notes   = trim((string)($body['notes'] ?? ''));
 
         $allowedTypes = ['residential', 'commercial', 'hospitality', 'architectural'];
@@ -296,7 +303,6 @@ class ConfiguratorController
 
         if ($company !== '' && strlen($company) > 160) $errors['company'] = 'Company name is too long.';
         if ($notes !== '' && strlen($notes) > 3000)    $errors['notes'] = 'Notes must not exceed 3000 characters.';
-        if ($qty < 1 || $qty > 9999)         $qty = 1;
 
         $installDate = null;
         if ($instDate !== '') {
@@ -306,11 +312,38 @@ class ConfiguratorController
             }
         }
 
-        // ── Validate the configuration server-side (dimensions, existence) ──
-        [$cfgOk, $cfgErrors, $cleanConfig] = (new ConfigValidator())->validate($config);
-        if (!$cfgOk) {
-            // Surface a single, customer-friendly config error (they configured upstream).
-            $errors['config'] = 'Your configuration is incomplete or invalid. Please review your door in the configurator.';
+        // ── Validate every door server-side (dimensions, existence) + price it ──
+        $validator   = new ConfigValidator();
+        $calc        = new PricingCalculator();
+        $lineItems   = [];   // [{config, quantity, unit_price, line_total}]
+        $grandTotal  = 0.0;
+        $cleanConfig = [];   // first door (kept on the row columns for admin filtering)
+
+        foreach ($items as $i => $item) {
+            $itemConfig = is_array($item['config'] ?? null) ? $item['config'] : [];
+            $itemQty    = (int)($item['quantity'] ?? 1);
+            if ($itemQty < 1 || $itemQty > 9999) $itemQty = 1;
+
+            [$ok, $iErr, $clean] = $validator->validate($itemConfig);
+            if (!$ok) {
+                $errors['config'] = 'One of your doors is incomplete or invalid. Please review your configuration.';
+                break;
+            }
+            $p         = $calc->calculate($clean);
+            $unitPrice = (float)($p['total_price'] ?? 0);
+            $lineTotal = round($unitPrice * $itemQty, 2);
+            $grandTotal += $lineTotal;
+            if ($i === 0) $cleanConfig = $clean;
+
+            $lineItems[] = [
+                'config'     => $clean,
+                'quantity'   => $itemQty,
+                'unit_price' => $unitPrice,
+                'line_total' => $lineTotal,
+            ];
+        }
+        if (empty($lineItems) && empty($errors['config'])) {
+            $errors['config'] = 'Your configuration is incomplete. Please configure a door first.';
         }
 
         if (!empty($errors)) {
@@ -323,9 +356,9 @@ class ConfiguratorController
 
         $db = Database::conn();
 
-        // ── Duplicate protection: same email + same configuration within 5 min ──
+        // ── Duplicate protection: same email + same door list within 5 min ──
         try {
-            $cfgHash = sha1(json_encode($cleanConfig));
+            $cfgHash = sha1(json_encode($lineItems));
             $dup = $db->prepare(
                 "SELECT reference FROM quote_requests
                  WHERE customer_email = ? AND config_hash = ?
@@ -336,15 +369,14 @@ class ConfiguratorController
             $existingRef = $dup->fetchColumn();
             if ($existingRef) {
                 // Idempotent: return the existing reference instead of a duplicate row.
-                $p = (new PricingCalculator())->calculate($cleanConfig);
                 echo json_encode([
                     'success'   => true,
                     'reference' => $existingRef,
                     'duplicate' => true,
                     'pricing'   => [
-                        'total_price'     => $p['total_price'],
-                        'total_price_fmt' => $p['total_price_fmt'] ?? null,
-                        'currency'        => $p['currency'],
+                        'total_price'     => $grandTotal,
+                        'total_price_fmt' => $this->money($grandTotal),
+                        'currency'        => 'DZD',
                     ],
                 ]);
                 return;
@@ -354,10 +386,15 @@ class ConfiguratorController
             $cfgHash = null;
         }
 
-        // Recompute the price server-side — never trust a client price.
-        $pricing = (new PricingCalculator())->calculate($cleanConfig);
+        // Authoritative server-side total (sum of all priced line items).
+        $pricing = [
+            'total_price'     => $grandTotal,
+            'total_price_fmt' => $this->money($grandTotal),
+            'currency'        => 'DZD',
+        ];
 
         $intOrNull = static fn ($v) => isset($v) && $v !== '' && (int)$v > 0 ? (int)$v : null;
+        $totalQty  = array_sum(array_column($lineItems, 'quantity'));
 
         // ── Atomic, race-free persistence inside a transaction, with retry on the
         //    (rare) reference collision so a concurrent submission never loses a lead.
@@ -384,6 +421,8 @@ class ConfiguratorController
                 $reference = sprintf('PORTES-%s-%06d', $year, $lastSeq + 1);
 
                 $hasHashCol = $cfgHash !== null;
+                // The full door list is stored in features_json (keeps schema stable);
+                // the first door's FKs stay on the row columns for admin filtering.
                 $cols = 'reference, customer_name, customer_email, customer_company, customer_country,
                          customer_phone, customer_city, project_type, install_date, quantity, notes,
                          product_id, collection_id, material_id, color_id, door_type_id, room_type_id,
@@ -394,7 +433,7 @@ class ConfiguratorController
                 $params = [
                     $reference, $name, $email,
                     $company !== '' ? $company : null,
-                    $country, $phone, $city, $ptype !== '' ? $ptype : null, $installDate, $qty,
+                    $country, $phone, $city, $ptype !== '' ? $ptype : null, $installDate, $totalQty,
                     $notes !== '' ? $notes : null,
                     $intOrNull($cleanConfig['product_id'] ?? null),
                     $intOrNull($cleanConfig['collection_id'] ?? null),
@@ -404,7 +443,7 @@ class ConfiguratorController
                     $intOrNull($cleanConfig['room_type_id'] ?? null),
                     $intOrNull($cleanConfig['width_mm'] ?? null),
                     $intOrNull($cleanConfig['height_mm'] ?? null),
-                    json_encode($cleanConfig['feature_ids'] ?? []),
+                    json_encode(['items' => $lineItems]),
                     $pricing['total_price'], $pricing['currency'], 'new',
                 ];
                 if ($hasHashCol) {
@@ -456,7 +495,7 @@ class ConfiguratorController
             'customer_country' => $country,
             'customer_city'    => $city,
             'project_type'     => $ptype,
-            'quantity'         => $qty,
+            'quantity'         => $totalQty,
             'install_date'     => $installDate,
             'notes'            => $notes,
             'submitted_at'     => date('Y-m-d H:i:s'),
@@ -478,12 +517,18 @@ class ConfiguratorController
             'success'   => true,
             'reference' => $reference,
             'quote_id'  => $quoteId,
+            'total_qty' => $totalQty,
             'pricing'   => [
                 'total_price'     => $pricing['total_price'],
                 'total_price_fmt' => $pricing['total_price_fmt'] ?? null,
                 'currency'        => $pricing['currency'],
             ],
         ]);
+    }
+
+    private function money(float $amount): string
+    {
+        return number_format($amount, 0, '.', ' ') . ' DZD';
     }
 
     /** Resolve config FK ids to human labels for emails/summary. */

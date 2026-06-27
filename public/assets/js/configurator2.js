@@ -7,19 +7,22 @@
     if (_el) CFG = JSON.parse(_el.textContent || '{}');
   } catch (e) { CFG = window.CFG || {}; }
 
-  var STEPS = 7;
+  var STEPS = 8;
   var S_COLLECTION = 0, S_COLOR = 1, S_USAGE = 2, S_CONSTRUCTION = 3,
-      S_PRODUCT = 4, S_DIMENSIONS = 5, S_REVIEW = 6;
+      S_PRODUCT = 4, S_DIMENSIONS = 5, S_REVIEW = 6, S_DETAILS = 7;
 
-  var state = {
-    collection_id: null, collection_name: '',
-    color_id: null, color_name: '', color_hex: '', color_img: '',
-    usage_id: null, usage_name: '',
-    construction_id: null, construction_name: '',
-    product_id: null, product_name: '', product_img: '',
-    width_mm: 900, height_mm: 2100,
-  };
-
+  function freshState() {
+    return {
+      collection_id: null, collection_name: '',
+      color_id: null, color_name: '', color_hex: '', color_img: '',
+      usage_id: null, usage_name: '',
+      construction_id: null, construction_name: '',
+      product_id: null, product_name: '', product_img: '',
+      width_mm: 900, height_mm: 2100, quantity: 1,
+    };
+  }
+  var state = freshState();
+  var cart = [];            // [{ ...config snapshot, unit_price, line_total, label }]
   var step = 0;
   var lastPricing = null;
 
@@ -30,6 +33,7 @@
   var $sumColor = id('sumColor'), $sumColl = id('sumCollection'), $sumUsage = id('sumUsage'),
       $sumCon = id('sumConstruction'), $sumProd = id('sumProduct'),
       $sumDim = id('sumDim'), $sumPrice = id('sumPrice'), $fabPrice = id('cfgFabPrice');
+  var $cart = id('cfgCart'), $cartList = id('cfgCartList'), $cartTotal = id('cfgCartTotal');
 
   function id(x){ return document.getElementById(x); }
   function qa(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
@@ -228,9 +232,60 @@
       ['Colour', state.color_name], ['Usage', state.usage_name],
       ['Construction', state.construction_name],
       ['Dimensions', (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm'],
+      ['Quantity', String(state.quantity)],
     ];
     dl.innerHTML = rows.map(function (r) { return '<div><dt>'+r[0]+'</dt><dd>'+escapeHtml(r[1]||'—')+'</dd></div>'; }).join('');
-    var rp = id('cfgReviewPrice'); if (rp) rp.textContent = priceLabel(lastPricing);
+    var rp = id('cfgReviewPrice'); if (rp) rp.textContent = lineLabel();
+  }
+
+  /* ── cart of doors ── */
+  function unitPrice() { return (lastPricing && lastPricing.available !== false) ? Number(lastPricing.total_price||0) : 0; }
+  function lineLabel() {
+    if (!lastPricing || lastPricing.available === false) return 'Non disponible';
+    var line = unitPrice() * state.quantity;
+    return state.quantity > 1
+      ? (priceLabel(lastPricing) + ' × ' + state.quantity + ' = ' + money(line))
+      : priceLabel(lastPricing);
+  }
+  function money(n) { return Number(n).toLocaleString('en-US').replace(/,/g,' ') + ' DZD'; }
+
+  function snapshotCurrent() {
+    var unit = unitPrice();
+    return {
+      collection_id: state.collection_id, collection_name: state.collection_name,
+      color_id: state.color_id, color_name: state.color_name, color_img: state.color_img,
+      usage_id: state.usage_id, usage_name: state.usage_name,
+      construction_id: state.construction_id, construction_name: state.construction_name,
+      product_id: state.product_id, product_name: state.product_name, product_img: state.product_img,
+      width_mm: state.width_mm, height_mm: state.height_mm, quantity: state.quantity,
+      unit_price: unit, line_total: unit * state.quantity,
+      label: (state.product_name || (state.collection_name + ' ' + state.color_name)),
+    };
+  }
+  function addCurrentToCart() {
+    if (!state.collection_id || !state.color_id || !state.usage_id || !state.construction_id) { nudge(); return false; }
+    cart.push(snapshotCurrent());
+    renderCart();
+    return true;
+  }
+  function cartTotal() { return cart.reduce(function (s, i) { return s + i.line_total; }, 0); }
+  function renderCart() {
+    if (!$cart) return;
+    if (!cart.length) { $cart.hidden = true; if ($cartList) $cartList.innerHTML = ''; return; }
+    $cart.hidden = false;
+    $cartList.innerHTML = cart.map(function (it, i) {
+      return '<li class="cfg-cart-item">' +
+        '<span class="cfg-cart-thumb"' + (it.product_img || it.color_img ? ' style="background-image:url(\''+(it.product_img||it.color_img)+'\')"' : '') + '></span>' +
+        '<span class="cfg-cart-info"><span class="cfg-cart-name">' + escapeHtml(it.label) + '</span>' +
+        '<span class="cfg-cart-meta">' + escapeHtml(it.usage_name) + ' · ' + escapeHtml(it.construction_name) + ' · ' + (it.width_mm/10) + '×' + (it.height_mm/10) + 'cm × ' + it.quantity + '</span></span>' +
+        '<span class="cfg-cart-price">' + money(it.line_total) + '</span>' +
+        '<button type="button" class="cfg-cart-remove" data-i="' + i + '" aria-label="Remove">×</button>' +
+        '</li>';
+    }).join('');
+    if ($cartTotal) $cartTotal.textContent = money(cartTotal());
+    qa('#cfgCartList .cfg-cart-remove').forEach(function (b) {
+      b.addEventListener('click', function () { cart.splice(+b.dataset.i, 1); renderCart(); });
+    });
   }
 
   /* ── navigation ── */
@@ -243,7 +298,9 @@
     if (n === S_REVIEW) buildReview();
     if ($back) $back.disabled = (n === 0);
     if ($next) {
-      var label = (n === S_REVIEW) ? 'Submit Request' : 'Next';
+      // Review has its own buttons; Details submits; everything else advances.
+      $next.style.display = (n === S_REVIEW) ? 'none' : '';
+      var label = (n === S_DETAILS) ? 'Submit Request' : 'Next';
       $next.innerHTML = label + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
     }
     if ($navStep) $navStep.textContent = 'Step ' + (n+1) + ' of ' + STEPS;
@@ -261,14 +318,33 @@
   function nudge(){ var a=$steps[step]; if(!a)return; a.classList.remove('cfg-nudge'); void a.offsetWidth; a.classList.add('cfg-nudge'); }
 
   if ($next) $next.addEventListener('click', function () {
-    if (step === S_REVIEW) { submitQuote(); return; }
+    if (step === S_DETAILS) { submitQuote(); return; }
     if (!canAdvance()) { nudge(); return; }
     showStep(step + 1);
   });
   if ($back) $back.addEventListener('click', function () { showStep(step - 1); });
   $prog.forEach(function (p) { p.addEventListener('click', function () { var t=+p.dataset.step; if (t <= step) showStep(t); }); });
 
-  /* ── dimensions ── */
+  /* ── review actions: add another / continue ── */
+  if (id('cfgAddAnother')) id('cfgAddAnother').addEventListener('click', function () {
+    if (!addCurrentToCart()) return;
+    state = freshState();
+    deactivate('#cfgCollections'); deactivate('#cfgColors'); deactivate('#cfgUsages'); deactivate('#cfgConstructions'); deactivate('#cfgProducts');
+    if ($qty) $qty.value = 1;
+    if ($w) $w.value = 900; if ($h) $h.value = 2100;
+    if ($wv) $wv.textContent = '90 cm'; if ($hv) $hv.textContent = '210 cm';
+    buildColors(); refreshUsages(); refreshConstructions();
+    lastPricing = null; paintPrice('Configure to see price');
+    setRender(); setSummary();
+    showStep(S_COLLECTION);
+  });
+  if (id('cfgToDetails')) id('cfgToDetails').addEventListener('click', function () {
+    // Ensure the current door is part of the request if the cart is empty.
+    if (!cart.length && !addCurrentToCart()) return;
+    showStep(S_DETAILS);
+  });
+
+  /* ── dimensions + quantity ── */
   var $w = id('cfgWidth'), $h = id('cfgHeight'), $wv = id('cfgWidthVal'), $hv = id('cfgHeightVal'), dimTimer;
   function onDim() {
     state.width_mm = parseInt($w.value,10); state.height_mm = parseInt($h.value,10);
@@ -278,6 +354,12 @@
   }
   if ($w) $w.addEventListener('input', onDim);
   if ($h) $h.addEventListener('input', onDim);
+
+  var $qty = id('cfgQty');
+  function setQty(v) { v = Math.max(1, Math.min(999, parseInt(v,10) || 1)); state.quantity = v; if ($qty) $qty.value = v; }
+  if ($qty) $qty.addEventListener('input', function(){ setQty($qty.value); });
+  if (id('cfgQtyMinus')) id('cfgQtyMinus').addEventListener('click', function(){ setQty(state.quantity - 1); });
+  if (id('cfgQtyPlus'))  id('cfgQtyPlus').addEventListener('click',  function(){ setQty(state.quantity + 1); });
 
   /* ── pricing ── */
   function priceConfig() {
@@ -328,28 +410,81 @@
   function val(x){ var el=id(x); return el ? el.value.trim() : ''; }
   function showError(m){ var err=id('cfgFormError'); if(err){ err.hidden=false; err.textContent=m; } }
   function firstError(o){ for (var k in o){ if (o.hasOwnProperty(k)) return o[k]; } return 'Please review your details.'; }
+
+  // Doors to submit: the cart, plus the current door if not yet added.
+  function itemsToSubmit() {
+    var items = cart.map(function (it) {
+      return { quantity: it.quantity, config: {
+        collection_id: it.collection_id, color_id: it.color_id,
+        door_type_id: it.usage_id, construction_type_id: it.construction_id,
+        product_id: it.product_id, width_mm: it.width_mm, height_mm: it.height_mm,
+      }};
+    });
+    if (!items.length && state.collection_id) {
+      items.push({ quantity: state.quantity, config: priceConfig() });
+    }
+    return items;
+  }
+
   function submitQuote() {
-    var form = id('cfgQuoteForm'); if (!form) return;
-    var err = id('cfgFormError'), ok = id('cfgFormSuccess');
-    if (err) err.hidden = true; if (ok) ok.hidden = true;
-    var payload = {
+    var err = id('cfgFormError'); if (err) err.hidden = true;
+    var customer = {
       full_name: val('qName'), email: val('qEmail'), phone: val('qPhone'),
       country: val('qCountry'), city: val('qCity'), notes: val('qNotes'),
-      company_website: val('cfgHoneypot'), config: priceConfig(),
     };
-    if (!payload.full_name || !payload.email || !payload.phone || !payload.country || !payload.city) { showError('Please fill in all required fields.'); return; }
+    if (!customer.full_name || !customer.email || !customer.phone || !customer.country || !customer.city) {
+      showError('Please fill in all required fields.'); return;
+    }
+    var items = itemsToSubmit();
+    if (!items.length) { showError('Please configure at least one door.'); return; }
+
+    var payload = {
+      full_name: customer.full_name, email: customer.email, phone: customer.phone,
+      country: customer.country, city: customer.city, notes: customer.notes,
+      company_website: val('cfgHoneypot'), items: items,
+    };
     $next.disabled = true;
     fetch(CFG.quoteUrl, { method:'POST', headers:{'Content-Type':'application/json','X-CSRF-Token':CFG.csrf}, body:JSON.stringify(payload) })
       .then(function (r) { return r.json(); })
       .then(function (d) {
         $next.disabled = false;
         if (d.success && d.reference) {
-          if (ok) { ok.hidden=false; ok.textContent='Thank you — your request reference is '+d.reference+'. We will contact you shortly.'; }
-          form.style.display='none'; $next.style.display='none';
+          showConfirmation(d, customer);
         } else if (d.errors) { showError(firstError(d.errors)); }
         else { showError(d.message || 'Could not submit your request. Please try again.'); }
       }).catch(function(){ $next.disabled=false; showError('Network error. Please try again.'); });
   }
+
+  /* ── printable confirmation ── */
+  function showConfirmation(d, customer) {
+    // Build the line list from the cart (or the single current door).
+    var lines = cart.length ? cart : [snapshotCurrent()];
+    var ref = d.reference;
+    if (id('cfgConfirmRef')) id('cfgConfirmRef').textContent = ref;
+    if (id('cfgConfirmCustomer')) {
+      id('cfgConfirmCustomer').innerHTML =
+        '<strong>' + escapeHtml(customer.full_name) + '</strong><br>' +
+        escapeHtml(customer.email) + ' · ' + escapeHtml(customer.phone) + '<br>' +
+        escapeHtml(customer.city) + ', ' + escapeHtml(customer.country);
+    }
+    var rowsHtml = '<tr><th>Door</th><th>Details</th><th>Qty</th><th>Price</th></tr>';
+    lines.forEach(function (it) {
+      rowsHtml += '<tr>' +
+        '<td>' + escapeHtml(it.label) + '</td>' +
+        '<td>' + escapeHtml(it.collection_name + ' · ' + it.color_name + ' · ' + it.usage_name + ' · ' + it.construction_name) +
+          '<br>' + (it.width_mm/10) + ' × ' + (it.height_mm/10) + ' cm</td>' +
+        '<td>' + it.quantity + '</td>' +
+        '<td>' + money(it.line_total) + '</td>' +
+        '</tr>';
+    });
+    if (id('cfgConfirmItems')) id('cfgConfirmItems').innerHTML = rowsHtml;
+    var total = (d.pricing && d.pricing.total_price_fmt) ? d.pricing.total_price_fmt : money(lines.reduce(function(s,i){return s+i.line_total;},0));
+    if (id('cfgConfirmTotal')) id('cfgConfirmTotal').textContent = total;
+    var overlay = id('cfgConfirm'); if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  if (id('cfgPrint')) id('cfgPrint').addEventListener('click', function () { window.print(); });
+  if (id('cfgAnother')) id('cfgAnother').addEventListener('click', function () { window.location.href = '/door-showroom/configure'; });
 
   /* ── mobile summary ── */
   var $fab = id('cfgSummaryFab'), $summary = id('cfgSummary');

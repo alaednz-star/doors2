@@ -558,14 +558,20 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 .cfg-usage-visual--sanitaire    { background: linear-gradient(145deg, #607b7d, #333f40); }
 .cfg-usage-visual--salon        { background: linear-gradient(145deg, #7a6855, #3d3530); }
 .cfg-usage-visual--entree       { background: linear-gradient(145deg, #5c5c4a, #252520); }
-/* Keep gradients only as a fallback; a real photo gets a lighter scrim so
-   the image reads clearly, with just enough darkness for the label. */
+/* An uploaded photo is shown WHOLE (contain), never cropped, on a neutral
+   surface; the gradient only shows for usages with no image yet. */
+.cfg-usage-visual.has-img {
+  background-color: var(--cfg-surface);
+  background-size: contain; background-position: center; background-repeat: no-repeat;
+}
 .cfg-usage-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,.55), transparent 45%);
 }
+/* With a full image visible we don't darken it; the label sits on a small
+   gradient strip only at the very bottom. */
 .cfg-usage-visual.has-img .cfg-usage-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,.1) 38%, transparent 60%);
+  background: linear-gradient(to top, rgba(0,0,0,.45), transparent 22%);
 }
 .cfg-usage-label {
   position: absolute; left: .9rem; right: .9rem; bottom: .8rem; z-index: 1;

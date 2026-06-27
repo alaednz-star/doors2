@@ -12,6 +12,11 @@ class UsageController extends LookupController
     protected function navKey(): string    { return 'usages'; }
     protected function viewDir(): string   { return 'lookup'; }
 
+    protected function hasImage(): bool        { return true; }
+    protected function uploadDir(): string     { return APP_ROOT . '/public/uploads/usages'; }
+    protected function uploadWebPath(): string { return '/door-showroom/uploads/usages'; }
+    protected function imageField(): string    { return 'usage_image'; }
+
     protected function blockingReference(int $id): ?string
     {
         $n = (int) $this->scalar(

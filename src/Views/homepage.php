@@ -46,7 +46,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 <!-- ░ 1 · HERO ░ -->
 <section class="hero" id="top">
   <div class="hero-bg">
-    <img src="<?= $img('interior-hero-black.png') ?>" alt="" role="presentation" class="hero-img" />
+    <img src="<?= $img('bghero.png') ?>" alt="" role="presentation" class="hero-img" />
     <div class="hero-overlay"></div>
   </div>
   <div class="hero-inner">
@@ -95,7 +95,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
 <!-- ░ 2 · COLLECTIONS ░ -->
 <section class="collections" id="collections">
-  <div class="sec-intro reveal">
+  <div class="sec-intro sec-intro--center reveal">
     <p class="eyebrow">The Collections</p>
     <h2 class="sec-title">Three worlds,<br /><em>one standard.</em></h2>
   </div>
@@ -125,6 +125,10 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
 <!-- ░ 2b · PROCESS / CONFIGURE IN 7 STEPS ░ -->
 <section class="process" id="process">
+  <div class="process-bg" aria-hidden="true">
+    <img src="<?= $img('configurator-tablet.png') ?>" alt="" role="presentation" loading="lazy" />
+    <div class="process-overlay"></div>
+  </div>
   <div class="process-inner">
     <div class="process-copy reveal">
       <p class="eyebrow">Configure in 7 steps</p>
@@ -145,9 +149,6 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
-    <div class="process-visual reveal reveal-d1">
-      <img src="<?= $img('configurator-tablet.png') ?>" alt="PORTES configurator on a tablet" loading="lazy" />
-    </div>
   </div>
 </section>
 
@@ -163,7 +164,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
         <div class="fdoor-media">
           <img src="<?= $img($d['file']) ?>" alt="<?= $e($d['name']) ?>" loading="lazy" />
           <div class="fdoor-actions">
-            <a href="/door-showroom/configure" class="btn btn--gold btn--sm">Configure</a>
+            <a href="/door-showroom/product/<?= $e($d['slug']) ?>" class="btn btn--gold btn--sm">View Details</a>
             <a href="#quote" class="btn btn--outline-light btn--sm">Request Quote</a>
           </div>
         </div>
@@ -178,32 +179,48 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
 <!-- ░ 5 · INSPIRATION GALLERY ░ -->
 <section class="inspo" id="inspiration">
-  <div class="sec-intro reveal">
-    <p class="eyebrow">Inspiration</p>
-    <h2 class="sec-title">Doors in their<br /><em>natural habitat.</em></h2>
-  </div>
-  <div class="inspo-grid reveal">
-    <?php foreach ($inspiration as $i => $p): ?>
-      <figure class="inspo-card<?= $p['span'] ? ' inspo-card--' . $e($p['span']) : '' ?>">
-        <img src="<?= $img($p['file']) ?>" alt="<?= $e($p['caption']) ?>" loading="lazy" />
-        <figcaption><?= $e($p['caption']) ?></figcaption>
-      </figure>
-    <?php endforeach; ?>
+  <div class="inspo-band reveal">
+    <div class="inspo-copy">
+      <p class="eyebrow">Inspiration</p>
+      <h2 class="inspo-title">Inspiration<br /><em>comes to life.</em></h2>
+      <p class="inspo-lead">See how our doors settle naturally into every space — from quiet bedrooms to grand entrances.</p>
+      <a href="/door-showroom/collections" class="btn btn--gold">View Our Work
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="inspo-strip">
+      <?php foreach ($inspiration as $p): ?>
+        <figure class="inspo-card">
+          <img src="<?= $img($p['file']) ?>" alt="<?= $e($p['caption']) ?>" loading="lazy" />
+          <figcaption><?= $e($p['caption']) ?></figcaption>
+        </figure>
+      <?php endforeach; ?>
+    </div>
   </div>
 </section>
 
 <!-- ░ 5b · SIGNATURE COLOURS ░ -->
-<?php if (!empty($colors)): ?>
+<?php if (!empty($colors)):
+  $cBgs = ['interior-bedroom-black.png', 'interior-grey-kitchen.png', 'interior-entry-hall.png'];
+?>
 <section class="colours" id="colours">
+  <div class="colours-bg" aria-hidden="true">
+    <?php foreach ($cBgs as $bi => $bg): ?>
+      <span class="colours-bg-img" data-bg="<?= $bi ?>" style="background-image:url('<?= $img($bg) ?>')"></span>
+    <?php endforeach; ?>
+  </div>
   <div class="colours-inner reveal">
     <div class="colours-head">
       <p class="eyebrow">Signature Finishes</p>
       <h2 class="sec-title">A palette<br /><em>worth its name.</em></h2>
     </div>
-    <div class="colours-row">
-      <?php foreach (array_slice($colors, 0, 9) as $c): ?>
-        <span class="colour-chip" title="<?= $e($c['name'] . ($c['collection'] ? ' · ' . $c['collection'] : '')) ?>"
-              style="<?= $c['tex'] ? "background-image:url('" . $e($c['tex']) . "');" : '' ?>background-color:<?= $e($c['hex']) ?>;"></span>
+    <div class="colours-row" id="coloursRow">
+      <?php foreach (array_slice($colors, 0, 9) as $ci => $c): ?>
+        <span class="colour-chip" data-bg="<?= $ci % count($cBgs) ?>"
+              title="<?= $e($c['name'] . ($c['collection'] ? ' · ' . $c['collection'] : '')) ?>"
+              style="<?= $c['tex'] ? "background-image:url('" . $e($c['tex']) . "');" : '' ?>background-color:<?= $e($c['hex']) ?>;">
+          <span class="colour-chip-name"><?= $e($c['name']) ?></span>
+        </span>
       <?php endforeach; ?>
     </div>
     <a href="/door-showroom/configure" class="colours-link">Configure with your colour

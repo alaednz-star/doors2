@@ -108,6 +108,8 @@ contact_messages, then the PORTES phases:
 - `phase8_remove_finishes.sql` — drop the Finishes feature (tables/FKs/columns).
 - `phase9_real_catalog_v2.sql` — final price reconciliation + Le Chêne.
 - `phase10_products_as_combinations.sql` — products ARE combinations (57 rows).
+- `phase11_usage_images.sql` — add `door_types.image_filename` so usages
+  carry an admin-uploaded image (shown on the configurator Usage step).
 
 ## Notes / TODO
 - Admin password is currently a test value — reset before production.

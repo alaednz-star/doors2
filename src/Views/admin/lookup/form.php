@@ -4,8 +4,9 @@ $isEdit = ($row ?? null) !== null;
 $base   = $meta['routeBase'];
 $sing   = $meta['singular'];
 $plur   = $meta['plural'];
-$hasImg = !empty($meta['hasImage']);
-$imgWeb = str_contains($base, 'construction') ? '/door-showroom/uploads/construction' : '';
+$hasImg   = !empty($meta['hasImage']);
+$imgWeb   = $meta['imageWebPath'] ?? '';
+$imgField = $meta['imageField'] ?? 'image';
 
 $val = function (string $k, string $d = '') use ($old, $row): string {
     if (!empty($old)) return (string)($old[$k] ?? $d);
@@ -66,7 +67,8 @@ $err = fn(string $k): string => $errors[$k] ?? '';
           <div style="margin-bottom:12px"><img src="<?= $e($imgWeb) ?>/<?= $e($row['image_filename']) ?>" alt="" style="max-width:120px;border-radius:8px;border:1px solid var(--border,#e5e0d8)" /></div>
         <?php endif; ?>
         <div class="form-field">
-          <input type="file" name="construction_image" accept="image/jpeg,image/png,image/webp" />
+          <input type="file" name="<?= $e($imgField) ?>" accept="image/jpeg,image/png,image/webp" />
+          <p class="form-hint" style="margin-top:6px;color:var(--muted,#888);font-size:.85em">This is the image shown for this <?= $e(strtolower($sing)) ?> in the configurator.</p>
         </div>
       </div>
     </div>

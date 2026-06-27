@@ -6,6 +6,7 @@ $base   = $meta['routeBase'];
 $sing   = $meta['singular'];
 $plur   = $meta['plural'];
 $hasImg = !empty($meta['hasImage']);
+$imgWeb = $meta['imageWebPath'] ?? '';
 $slug   = trim((string)parse_url($base, PHP_URL_PATH));
 ?>
 
@@ -76,7 +77,7 @@ $slug   = trim((string)parse_url($base, PHP_URL_PATH));
             <?php if ($hasImg): ?>
               <td>
                 <?php if (!empty($r['image_filename'])): ?>
-                  <img src="/door-showroom/uploads/<?= $slug === '/door-showroom/admin/construction-types' ? 'construction' : 'misc' ?>/<?= $e($r['image_filename']) ?>" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:6px" />
+                  <img src="<?= $e($imgWeb) ?>/<?= $e($r['image_filename']) ?>" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:6px" />
                 <?php else: ?><span class="td-muted">—</span><?php endif; ?>
               </td>
             <?php endif; ?>

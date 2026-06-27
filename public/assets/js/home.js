@@ -56,6 +56,27 @@
     });
   });
 
+  /* ── Signature colours: hover shows a real interior in the background ── */
+  var coloursSec = document.getElementById('colours');
+  var coloursRow = document.getElementById('coloursRow');
+  if (coloursSec && coloursRow) {
+    var bgImgs = coloursSec.querySelectorAll('.colours-bg-img');
+    function showBg(idx) {
+      bgImgs.forEach(function (b) {
+        b.classList.toggle('is-active', b.getAttribute('data-bg') === String(idx));
+      });
+    }
+    coloursRow.querySelectorAll('.colour-chip').forEach(function (chip) {
+      chip.addEventListener('mouseenter', function () {
+        coloursSec.classList.add('is-hovering');
+        showBg(chip.getAttribute('data-bg'));
+      });
+    });
+    coloursRow.addEventListener('mouseleave', function () {
+      coloursSec.classList.remove('is-hovering');
+    });
+  }
+
   /* ── Scroll reveal ── */
   if (!reduce && 'IntersectionObserver' in window) {
     document.documentElement.classList.add('js-reveal');

@@ -42,7 +42,7 @@ class ConfiguratorController
 
         // ── Collections ──
         $collectionsRaw = $db->query(
-            'SELECT id, name, slug FROM collections WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
+            'SELECT id, name, slug, image_filename FROM collections WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
         )->fetchAll();
 
         // ── Colors (each tied to one collection) ──
@@ -51,13 +51,26 @@ class ConfiguratorController
              FROM colors WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
         )->fetchAll();
 
-        // ── Door usages + construction types ──
+        // ── Door usages + construction types (with admin-uploaded images) ──
         $usages = $db->query(
-            'SELECT id, name, slug FROM door_types WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
+            'SELECT id, name, slug, image_filename FROM door_types WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
         )->fetchAll();
+        $usages = array_map(static fn ($u) => [
+            'id'   => (int)$u['id'],
+            'name' => $u['name'],
+            'slug' => $u['slug'],
+            'img'  => !empty($u['image_filename']) ? $webBase . '/usages/' . $u['image_filename'] : null,
+        ], $usages);
+
         $constructions = $db->query(
             'SELECT id, name, slug, image_filename FROM construction_types WHERE is_active = 1 ORDER BY display_order ASC, name ASC'
         )->fetchAll();
+        $constructions = array_map(static fn ($c) => [
+            'id'   => (int)$c['id'],
+            'name' => $c['name'],
+            'slug' => $c['slug'],
+            'img'  => !empty($c['image_filename']) ? $webBase . '/construction/' . $c['image_filename'] : null,
+        ], $constructions);
 
         // ── Availability matrix ──
         $matrix = $db->query(
@@ -77,7 +90,10 @@ class ConfiguratorController
         }, $colorsRaw);
 
         $collectionsData = array_map(static fn ($c) => [
-            'id' => (int)$c['id'], 'name' => $c['name'], 'slug' => $c['slug'],
+            'id'   => (int)$c['id'],
+            'name' => $c['name'],
+            'slug' => $c['slug'],
+            'img'  => !empty($c['image_filename']) ? $webBase . '/collections/' . $c['image_filename'] : null,
         ], $collectionsRaw);
 
         // Optional preload from a product page (?product=slug) — locks the colour

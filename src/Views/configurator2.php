@@ -106,7 +106,7 @@ $cfgData = [
                   $slug = $usageVisuals[$u['name']] ?? 'chambre';
               ?>
               <button class="cfg-opt" type="button" data-id="<?= $e($u['id']) ?>" data-name="<?= $e($u['name']) ?>">
-                <div class="cfg-usage-visual cfg-usage-visual--<?= $e($slug) ?>">
+                <div class="cfg-usage-visual cfg-usage-visual--<?= $e($slug) ?><?= !empty($u['img']) ? ' has-img' : '' ?>"<?= !empty($u['img']) ? ' style="background-image:url(\'' . $e($u['img']) . '\')"' : '' ?>>
                   <div class="cfg-usage-overlay"></div>
                   <span class="cfg-usage-label"><?= $e($u['name']) ?></span>
                 </div>
@@ -135,7 +135,11 @@ $cfgData = [
               ?>
               <button class="cfg-opt" type="button" data-id="<?= $e($c['id']) ?>" data-name="<?= $e($c['name']) ?>">
                 <div class="cfg-const-visual">
-                  <div class="cfg-const-ph"></div>
+                  <?php if (!empty($c['img'])): ?>
+                    <img class="cfg-const-img" src="<?= $e($c['img']) ?>" alt="<?= $e($c['name']) ?>" loading="lazy" />
+                  <?php else: ?>
+                    <div class="cfg-const-ph"></div>
+                  <?php endif; ?>
                 </div>
                 <div class="cfg-const-body">
                   <span class="cfg-const-name"><?= $e($c['name']) ?></span>

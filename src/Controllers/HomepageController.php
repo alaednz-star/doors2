@@ -13,29 +13,29 @@ class HomepageController
             'name'  => 'Prestige',
             'line'  => 'Luxury without compromise.',
             'desc'  => 'The summit of the catalogue. Bespoke dimensions, rare veneers and finishes that cannot be ordered from a page.',
-            'file'  => 'marron-prestige.jpg',
+            'file'  => 'interior-bedroom-black.png',
         ],
         [
             'num'   => '02',
             'name'  => 'Moderne',
             'line'  => 'Quiet, flush, precise.',
             'desc'  => 'Surfaces that disappear into the wall. Grey lacquer and aluminium for interiors where the door is felt, not seen.',
-            'file'  => 'gris-prestige.jpg',
+            'file'  => 'interior-grey-kitchen.png',
         ],
         [
             'num'   => '03',
             'name'  => 'Heritage',
             'line'  => 'Crafted to endure.',
             'desc'  => 'Solid timber and aged bronze, shaped by hands that have spent a lifetime studying the threshold.',
-            'file'  => 'chene.jpg',
+            'file'  => 'interior-entry-hall.png',
         ],
     ];
 
     private const FEATURED = [
-        ['name' => 'Wengué Pivot',  'collection' => 'Prestige', 'file' => 'porte-scuro.jpg'],
-        ['name' => 'Chêne Naturel', 'collection' => 'Heritage', 'file' => 'chene.jpg'],
-        ['name' => 'Madera',        'collection' => 'Heritage', 'file' => 'portes-madera.jpg'],
-        ['name' => 'Simza',         'collection' => 'Moderne',  'file' => 'portes-cinza.jpg'],
+        ['name' => 'Scuro',         'collection' => 'Moderne',  'file' => 'porte-scuro.jpg',   'slug' => 'moderne-scuro-chambre-nedabaile'],
+        ['name' => 'Chêne Naturel', 'collection' => 'Heritage', 'file' => 'chene.jpg',         'slug' => 'heritage-chne-chambre-ndabaile'],
+        ['name' => 'Madera',        'collection' => 'Moderne',  'file' => 'portes-madera.jpg', 'slug' => 'moderne-madera-chambre-nedabaile'],
+        ['name' => 'Simza',         'collection' => 'Moderne',  'file' => 'portes-cinza.jpg',  'slug' => 'moderne-simza-chambre-nedabaile'],
     ];
 
     private const PROCESS = [
@@ -49,8 +49,8 @@ class HomepageController
     ];
 
     private const INSPIRATION = [
-        ['file' => 'interior-grey-kitchen.png', 'caption' => 'Moderne · Gris',  'span' => 'tall'],
-        ['file' => 'interior-bedroom-black.png','caption' => 'Prestige · Noir', 'span' => 'wide'],
+        ['file' => 'interior-bedroom-black.png','caption' => 'Prestige · Noir',  'span' => 'feature'],
+        ['file' => 'interior-grey-kitchen.png', 'caption' => 'Moderne · Gris',   'span' => ''],
         ['file' => 'interior-entry-hall.png',   'caption' => 'Heritage · Entrée','span' => ''],
     ];
 

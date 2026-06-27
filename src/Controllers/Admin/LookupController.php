@@ -278,10 +278,12 @@ abstract class LookupController
     protected function viewMeta(): array
     {
         return [
-            'singular'  => $this->singular(),
-            'plural'    => $this->plural(),
-            'routeBase' => $this->routeBase(),
-            'hasImage'  => $this->hasImage(),
+            'singular'    => $this->singular(),
+            'plural'      => $this->plural(),
+            'routeBase'   => $this->routeBase(),
+            'hasImage'    => $this->hasImage(),
+            'imageField'  => $this->imageField(),
+            'imageWebPath'=> $this->uploadWebPath(),
         ];
     }
 

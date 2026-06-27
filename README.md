@@ -101,7 +101,7 @@ features and have been removed from the database and the UI.
   - Prestige → Marron, Gris · Moderne → Scuro, Simza, Madera, Wengue, Serya ·
     Heritage → Chêne, Gris
 - **Door Usages** (table `door_types`) — Chambre, Sanitaire, Salon, Porte d'Entrée.
-- **Construction Types** — Nédabaile, Tebelaire, PVC.
+- **Construction Types** — Nédabaile, Tebelaire.
 - **Pricing Matrix** (`price_rules`) — one row per
   `Collection × Usage × Construction` → `base_price` + `is_available`. The source
   of truth for price and availability. Fully admin-editable, nothing hardcoded.
@@ -212,7 +212,8 @@ honeypot, and prepared statements throughout.
 - **Reset the admin password** before production (currently a dev/test value).
 - Two products (Prestige · Porte d'Entrée · Tebelaire — Marron & Gris) are at
   price **0**, pending the client's number; set it in the admin pricing matrix.
-- **PVC** construction has no pricing rows yet — admin can add them later.
+- **PVC** construction was removed from the catalogue — re-add it via the admin
+  panel (and set its pricing) if/when needed.
 - Colour/product images: real photos for the 57 products are uploaded per product
   via the admin; until then the configurator falls back to per-colour images in
   `public/assets/images/`.

@@ -16,10 +16,10 @@ INSERT INTO `door_types` (`name`, `slug`, `display_order`, `is_active`) VALUES
 ('Porte d''Entrée', 'porte-entree',  4, 1);
 
 -- ── CONSTRUCTION TYPES ──
+-- PVC intentionally omitted — add it via the admin panel if/when needed.
 INSERT INTO `construction_types` (`name`, `slug`, `display_order`, `is_active`) VALUES
 ('Nédabaile', 'nedabaile', 1, 1),
-('Tebelaire', 'tebelaire', 2, 1),
-('PVC',       'pvc',       3, 1)
+('Tebelaire', 'tebelaire', 2, 1)
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `display_order` = VALUES(`display_order`);
 
 -- ── COLORS reseeded to the real catalog, linked to collections ──

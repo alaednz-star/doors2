@@ -47,7 +47,8 @@ been fully removed.
   - Prestige → Marron, Gris · Moderne → Scuro, Simza, Madera, Wengue, Serya ·
     Heritage → Chêne, Gris.
 - **Door Usages** (`door_types` table): Chambre, Sanitaire, Salon, Porte d'Entrée.
-- **Construction Types**: Nédabaile, Tebelaire, PVC (PVC has no pricing yet).
+- **Construction Types**: Nédabaile, Tebelaire. (PVC was removed from the
+  catalogue; re-add it via the admin panel if/when the client needs it.)
 - **Pricing Matrix** (`price_rules`): one row per
   `Collection × Usage × Construction` → `base_price` + `is_available`.
   Source of truth for price + availability. Admin-editable. No hardcoded prices.
@@ -113,3 +114,94 @@ contact_messages, then the PORTES phases:
 - Two products (Prestige · Porte d'Entrée · Tebelaire, Marron & Gris) are at
   price 0 pending the client's number — admin sets it in the matrix/products.
 - `settings` table has no committed `CREATE TABLE` — verify it exists on fresh installs.
+
+## Configurator UI — Luxury Redesign (current state, do not revert)
+
+The configurator has been completely redesigned with a luxury light theme.
+Files: `src/Views/configurator2.php`, `public/assets/css/configurator.css`,
+`public/assets/js/configurator2.js`.
+
+### Theme — CSS custom properties (scoped to `.cfg-body`)
+```
+--cfg-bg:      #f7f4ef   warm cream page background
+--cfg-surface: #ffffff   card/panel surface
+--cfg-text:    #1c1a17   primary text
+--cfg-muted:   #7a7570   secondary/description text
+--cfg-gold:    #c4a060   brand gold accent (borders, badges, highlights)
+--cfg-gold-bg: #f5edd9   gold tint background
+--cfg-border:  #e8e2d9   subtle dividers
+--cfg-radius:  12px      default card border-radius
+--cfg-hdr-h:   72px      header height (used for sticky offset)
+```
+Serif class variable `--serif` used for collection names and step titles.
+Do NOT add dark-mode styles or override these on `.cfg-body`.
+
+### Layout — Steps 1–7 (two-column)
+`.cfg-page` is a CSS grid: `65fr 35fr` on ≥960px.
+- Left (`.cfg-content`): current step content.
+- Right (`aside.cfg-sidebar#cfgSummary`): sticky panel with door preview
+  (`#cfgRender`) and configuration summary DL + price + action buttons.
+- Mobile (<960px): single column; sidebar becomes a fixed bottom-sheet
+  drawer (`.is-open` toggled by FAB button `#cfgSummaryBtn`).
+
+### Layout — Step 0 (Collection): full-width immersive
+When `showStep(0)` is called, JS adds class `is-collection-step` to `.cfg-page`.
+CSS rules for that class:
+- Override grid to `1fr` (no sidebar column), max-width 1340px centered.
+- Hide `.cfg-sidebar` and `.cfg-summary-fab` entirely.
+- Center the step heading and lead paragraph.
+- Force `#cfgCollections` to `repeat(3, 1fr)` on desktop.
+- Expand `.cfg-col-visual` to 360px tall (vs 300px base).
+When user advances to Step 1+, `showStep(n)` removes the class and restores the
+65/35 grid with sidebar automatically.
+
+### Collection cards (built by JS `buildCollections()`)
+Each `<button class="cfg-opt">` contains:
+1. `.cfg-col-visual.cfg-col-visual--{slug}` — tall gradient area. If `col.img`
+   exists in API data it becomes `background-image`; otherwise the gradient
+   shows. Contains:
+   - `.cfg-col-art-svg` — architectural SVG door illustration (defined in
+     `COLL_ART` object in JS: panelled arch for Heritage, minimal for Moderne,
+     double arch for Prestige). Scales up on hover.
+   - `.cfg-col-overlay` — bottom-weighted gradient overlay.
+   - `.cfg-col-num` — collection index "01/02/03" top-left (serif, faded).
+   - `.cfg-col-tag` — "Collection" category label top-right (hidden behind badge
+     when selected).
+2. `.cfg-col-footer` — cream background below the visual:
+   - `.cfg-col-sep` — 1px separator line; turns gold when selected.
+   - `.cfg-col-name` — large (1.8rem) serif uppercase name; turns gold when
+     selected.
+   - `.cfg-col-desc` — short description in muted text.
+3. `.cfg-col-bar` — absolute gold top bar that slides in (scaleX) on selection.
+4. `.cfg-col-check` — gold circular checkmark badge, springs in on selection.
+
+Selection state class: `is-active` added by `selectCollection()`.
+Gradient backgrounds per slug:
+- `heritage` → amber/oak tones (`#a07828 → #1e1508`)
+- `moderne`  → charcoal (`#585858 → #0e0e0e`)
+- `prestige` → deep gold (`#c49640 → #221608`)
+
+### Progress bar
+8 internal steps (S_COLLECTION=0 … S_DETAILS=7). Step 8 (quote form) is hidden
+from the visible progress bar via CSS:
+`#cfgProgress > *:nth-child(14), #cfgProgress > *:nth-child(15) { display:none }`
+So users see 7 steps.
+
+### Key JS objects and functions
+- `COLL_DESCS` / `COLL_SLUGS` / `COLL_ART` — lookup objects for per-collection
+  copy, CSS slug and SVG art.
+- `showStep(n)` — single source of truth for step navigation; also toggles
+  `is-collection-step` on `.cfg-page`.
+- `setSummary()` — updates sidebar summary panel (collection, colour, usage,
+  construction, dimensions, price).
+- `paintPrice(label)` — updates all price display elements.
+- `buildCollections()` — renders collection cards into `#cfgCollections`.
+- `buildColors()` / `buildProducts()` — similar builders for other steps.
+- All DOM lookups via `id(x)` helper (`getElementById` wrapper).
+
+### Do NOT modify without care
+- The 62 JS-critical element IDs in `configurator2.php` — all must stay in DOM.
+- API response shape from `ConfiguratorController` (especially `total_price_fmt`,
+  `total_price`, `currency` consumed by `paintPrice`).
+- DB schema, business logic, pricing engine, admin panel.
+- `CsrfGuard`, `SecurityHeaders`, rate limiting.

@@ -7,9 +7,9 @@
     if (_el) CFG = JSON.parse(_el.textContent || '{}');
   } catch (e) { CFG = window.CFG || {}; }
 
-  var STEPS = 8;
+  var STEPS = 7;
   var S_COLLECTION = 0, S_COLOR = 1, S_USAGE = 2, S_CONSTRUCTION = 3,
-      S_PRODUCT = 4, S_DIMENSIONS = 5, S_REVIEW = 6, S_DETAILS = 7;
+      S_DIMENSIONS = 4, S_REVIEW = 5, S_DETAILS = 6;
 
   function freshState() {
     return {
@@ -29,16 +29,31 @@
   var $steps = qa('.cfg-step'), $prog = qa('.cfg-progress-step'), $lines = qa('.cfg-progress-line');
   var $back = id('cfgBack'), $next = id('cfgNext'), $navStep = id('cfgNavStep');
   var $render = id('cfgRender'), $renderDoor = id('cfgRenderDoor'), $renderTint = id('cfgRenderTint');
+  var $renderWrap = $render && $render.parentElement;
+  var $renderChip = id('cfgRenderChip'), $renderChipDot = id('cfgRenderChipDot'), $renderChipName = id('cfgRenderChipName');
   var $stageDim = id('cfgStageDim');
   var $sumColor = id('sumColor'), $sumColl = id('sumCollection'), $sumUsage = id('sumUsage'),
-      $sumCon = id('sumConstruction'), $sumProd = id('sumProduct'),
-      $sumDim = id('sumDim'), $sumPrice = id('sumPrice'), $fabPrice = id('cfgFabPrice');
+      $sumCon = id('sumConstruction'),
+      $sumDim = id('sumDim'), $sumPrice = id('sumPrice');
   var $cart = id('cfgCart'), $cartList = id('cfgCartList'), $cartTotal = id('cfgCartTotal');
 
   function id(x){ return document.getElementById(x); }
   function qa(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
   function findById(list, i){ list = list || []; for (var k=0;k<list.length;k++){ if(list[k].id===i) return list[k]; } return null; }
   function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+  // Display the colour name WITHOUT the collection it belongs to — the
+  // collection is already chosen (e.g. "Gris Prestige" → "Gris"). Data is
+  // untouched; this only affects what the user reads on the Colour step.
+  function colorLabel(name){
+    if (!name) return name;
+    var coll = state.collection_name || '';
+    if (coll) {
+      var re = new RegExp('\\s*' + coll.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\s*', 'i');
+      var stripped = name.replace(re, ' ').replace(/\s+/g,' ').trim();
+      if (stripped) return stripped;
+    }
+    return name;
+  }
 
   /* ── matrix helpers ── */
   function matrixRow(usageId, constructionId) {
@@ -63,24 +78,75 @@
   function colorsForCollection(collectionId) {
     return (CFG.colors || []).filter(function (c) { return c.collection_id === collectionId; });
   }
-  // Products matching Collection + Colour + Usage + Construction.
-  function matchingProducts() {
-    if (!state.collection_id || !state.color_id || !state.usage_id || !state.construction_id) return [];
-    return (CFG.products || []).filter(function (p) {
-      return p.collection_id===state.collection_id && p.color_id===state.color_id &&
-             p.usage_id===state.usage_id && p.construction_id===state.construction_id;
-    });
-  }
+  var COLL_DESCS = {
+    'Heritage': 'Portes traditionnelles en bois noble, inspirées du patrimoine algérien.',
+    'Moderne':  'Lignes épurées et matériaux contemporains pour un intérieur actuel.',
+    'Prestige': 'Le summum du luxe — finitions exclusives et détails raffinés.',
+  };
+  var COLL_SLUGS = {
+    'Heritage': 'heritage',
+    'Moderne':  'moderne',
+    'Prestige': 'prestige',
+  };
+  var COLL_ART = {
+    'heritage':
+      '<svg class="cfg-col-art-svg" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<rect x="16" y="14" width="88" height="180" rx="1" stroke="rgba(255,255,255,.32)" stroke-width="1.5"/>' +
+        '<path d="M16,68 Q60,24 104,68" stroke="rgba(255,255,255,.24)" stroke-width="1.3" fill="none"/>' +
+        '<rect x="24" y="76" width="32" height="44" rx="1" stroke="rgba(255,255,255,.2)" stroke-width="1"/>' +
+        '<rect x="64" y="76" width="32" height="44" rx="1" stroke="rgba(255,255,255,.2)" stroke-width="1"/>' +
+        '<rect x="24" y="130" width="32" height="52" rx="1" stroke="rgba(255,255,255,.2)" stroke-width="1"/>' +
+        '<rect x="64" y="130" width="32" height="52" rx="1" stroke="rgba(255,255,255,.2)" stroke-width="1"/>' +
+        '<circle cx="74" cy="157" r="3.5" stroke="rgba(196,168,120,.65)" stroke-width="1.3"/>' +
+      '</svg>',
+    'moderne':
+      '<svg class="cfg-col-art-svg" viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<rect x="22" y="18" width="76" height="170" rx="1" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>' +
+        '<line x1="22" y1="103" x2="98" y2="103" stroke="rgba(255,255,255,.16)" stroke-width="1"/>' +
+        '<line x1="22" y1="60" x2="98" y2="60" stroke="rgba(255,255,255,.1)" stroke-width="1"/>' +
+        '<rect x="74" y="116" width="3" height="22" rx="1.5" fill="rgba(255,255,255,.5)"/>' +
+      '</svg>',
+    'prestige':
+      '<svg class="cfg-col-art-svg" viewBox="0 0 140 210" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M16,88 Q70,26 124,88 L124,200 L16,200 Z" stroke="rgba(255,255,255,.3)" stroke-width="1.5" fill="none"/>' +
+        '<line x1="70" y1="88" x2="70" y2="200" stroke="rgba(255,255,255,.2)" stroke-width="1"/>' +
+        '<rect x="23" y="100" width="38" height="32" rx="1" stroke="rgba(255,255,255,.18)" stroke-width=".9"/>' +
+        '<rect x="23" y="142" width="38" height="48" rx="1" stroke="rgba(255,255,255,.18)" stroke-width=".9"/>' +
+        '<rect x="79" y="100" width="38" height="32" rx="1" stroke="rgba(255,255,255,.18)" stroke-width=".9"/>' +
+        '<rect x="79" y="142" width="38" height="48" rx="1" stroke="rgba(255,255,255,.18)" stroke-width=".9"/>' +
+        '<circle cx="62" cy="170" r="3.5" stroke="rgba(196,168,120,.65)" stroke-width="1.3"/>' +
+        '<circle cx="78" cy="170" r="3.5" stroke="rgba(196,168,120,.65)" stroke-width="1.3"/>' +
+      '</svg>',
+  };
 
   /* ── builders ── */
   function buildCollections() {
     var wrap = id('cfgCollections'); if (!wrap) return;
     wrap.innerHTML = '';
-    (CFG.collections || []).forEach(function (col) {
+    (CFG.collections || []).forEach(function (col, i) {
+      var slug = COLL_SLUGS[col.name] || col.name.toLowerCase().replace(/\s+/g, '-');
+      var desc = COLL_DESCS[col.name] || '';
+      var num  = String(i + 1).padStart(2, '0');
+      var art  = COLL_ART[slug] || COLL_ART['moderne'];
+      var hasImg   = !!col.img;
+      var imgClass = hasImg ? ' has-img' : '';
+      var imgStyle = hasImg ? ' style="background-image:url(\'' + col.img + '\')"' : '';
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'cfg-opt'; b.dataset.id = col.id; b.dataset.name = col.name;
-      b.innerHTML = '<span class="cfg-opt-name">' + escapeHtml(col.name) + '</span>' +
-        '<span class="cfg-opt-check" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+      b.innerHTML =
+        '<div class="cfg-col-visual cfg-col-visual--' + slug + imgClass + '"' + imgStyle + '>' +
+          art +
+          '<div class="cfg-col-overlay"></div>' +
+          '<span class="cfg-col-num">' + num + '</span>' +
+          '<span class="cfg-col-tag">Collection</span>' +
+        '</div>' +
+        '<div class="cfg-col-footer">' +
+          '<div class="cfg-col-sep"></div>' +
+          '<span class="cfg-col-name">' + escapeHtml(col.name) + '</span>' +
+          (desc ? '<span class="cfg-col-desc">' + escapeHtml(desc) + '</span>' : '') +
+        '</div>' +
+        '<div class="cfg-col-bar"></div>' +
+        '<span class="cfg-col-check" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
       b.addEventListener('click', function () { selectCollection(col, b, wrap); });
       wrap.appendChild(b);
     });
@@ -98,43 +164,17 @@
       b.dataset.id = c.id; b.dataset.name = c.name; b.dataset.hex = c.hex || ''; b.dataset.img = c.img || '';
       b.title = c.name; b.setAttribute('aria-label', c.name);
       b.style.setProperty('--sw', c.hex || '#ccc');
-      b.innerHTML = '<span class="cfg-swatch-dot" style="' +
-        (c.img ? "background-image:url('"+c.img+"')" : 'background-color:'+(c.hex||'#ccc')) +
-        '"></span><span class="cfg-swatch-name">' + escapeHtml(c.name) + '</span>';
+      var tileStyle = c.img
+        ? "background-image:url('" + c.img + "')"
+        : 'background-color:' + (c.hex || '#ccc');
+      b.innerHTML =
+        '<div class="cfg-swatch-tile" style="' + tileStyle + '">' +
+          '<span class="cfg-swatch-chk" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '</div>' +
+        '<span class="cfg-swatch-name">' + escapeHtml(colorLabel(c.name)) + '</span>';
       b.addEventListener('click', function () { selectColor(c, b, wrap); });
       wrap.appendChild(b);
     });
-  }
-
-  // Door Design step: show products matching all four choices; preselect if one.
-  function buildProducts() {
-    var wrap = id('cfgProducts'); var empty = id('cfgProductsEmpty'); if (!wrap) return;
-    wrap.innerHTML = '';
-    var list = matchingProducts();
-    if (!list.length) {
-      if (empty) empty.hidden = false;
-      state.product_id = null; state.product_name = ''; state.product_img = '';
-      setRender(); setSummary();
-      return;
-    }
-    if (empty) empty.hidden = true;
-    list.forEach(function (p, i) {
-      var b = document.createElement('button');
-      b.type = 'button'; b.className = 'cfg-card' + (p.img ? '' : ' cfg-card--noimg');
-      b.dataset.id = p.id;
-      b.innerHTML =
-        (p.img ? '<span class="cfg-card-img" style="background-image:url(\'' + p.img + '\')"></span>' : '') +
-        '<span class="cfg-card-overlay"></span>' +
-        '<span class="cfg-card-label">' + escapeHtml(p.name) + '</span>' +
-        '<span class="cfg-card-check" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-      b.addEventListener('click', function () { selectProduct(p, b, wrap); });
-      wrap.appendChild(b);
-    });
-    // Preselect when only one design matches.
-    if (list.length === 1) {
-      var only = wrap.querySelector('.cfg-card');
-      selectProduct(list[0], only, wrap);
-    }
   }
 
   function refreshUsages() {
@@ -170,15 +210,18 @@
     state.color_id = c.id; state.color_name = c.name; state.color_hex = c.hex || ''; state.color_img = c.img || '';
     clearProduct();
     setRender(); setSummary(); requestPrice();
+    pulsePreview();
   }
-  function selectProduct(p, btn, wrap) {
-    activate(wrap, btn);
-    state.product_id = p.id; state.product_name = p.name; state.product_img = p.img || '';
-    setRender(); setSummary();
+  // Brief gold pulse on the preview so colour changes feel responsive.
+  function pulsePreview() {
+    if (!$renderWrap) return;
+    $renderWrap.classList.remove('cfg-color-pulse');
+    void $renderWrap.offsetWidth; // reflow to restart the animation
+    $renderWrap.classList.add('cfg-color-pulse');
   }
   function clearUsage(){ state.usage_id=null; state.usage_name=''; deactivate('#cfgUsages'); }
   function clearConstruction(){ state.construction_id=null; state.construction_name=''; deactivate('#cfgConstructions'); }
-  function clearProduct(){ state.product_id=null; state.product_name=''; state.product_img=''; deactivate('#cfgProducts'); }
+  function clearProduct(){ state.product_id=null; state.product_name=''; state.product_img=''; }
 
   var $usages = id('cfgUsages');
   if ($usages) $usages.addEventListener('click', function (e) {
@@ -213,29 +256,61 @@
       $renderTint.style.opacity = (url && state.color_hex && !state.product_img) ? '0.35' : '0';
       $renderTint.style.webkitMaskImage = mask; $renderTint.style.maskImage = mask;
     }
+    // Preview reacts to the chosen colour: gold ring + confirming chip.
+    if ($renderWrap) {
+      var hasColor = !!state.color_id;
+      $renderWrap.classList.toggle('has-color', hasColor);
+      if (hasColor) {
+        if ($renderChipDot) $renderChipDot.style.setProperty('--chip',
+          state.color_img ? "url('" + state.color_img + "')" : (state.color_hex || '#ccc'));
+        if ($renderChipName) $renderChipName.textContent = state.color_name || '';
+      }
+    }
   }
 
   function setSummary() {
     txt($sumColl, state.collection_name); txt($sumColor, state.color_name);
     txt($sumUsage, state.usage_name); txt($sumCon, state.construction_name);
-    txt($sumProd, state.product_name);
     var dim = (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm';
     if ($sumDim) $sumDim.textContent = dim;
     if ($stageDim) $stageDim.textContent = dim;
   }
   function txt(el,v){ if (el) el.textContent = v || '—'; }
 
-  function buildReview() {
-    var dl = id('cfgReview'); if (!dl) return;
+  // Shared configuration rows (Collection → Quantité) for the summary panels.
+  function summaryRowsHtml() {
     var rows = [
-      ['Design', state.product_name], ['Collection', state.collection_name],
-      ['Colour', state.color_name], ['Usage', state.usage_name],
+      ['Collection', state.collection_name],
+      ['Couleur', state.color_name], ['Usage', state.usage_name],
       ['Construction', state.construction_name],
       ['Dimensions', (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm'],
-      ['Quantity', String(state.quantity)],
+      ['Quantité', String(state.quantity)],
     ];
-    dl.innerHTML = rows.map(function (r) { return '<div><dt>'+r[0]+'</dt><dd>'+escapeHtml(r[1]||'—')+'</dd></div>'; }).join('');
+    return rows.map(function (r) { return '<div><dt>'+r[0]+'</dt><dd>'+escapeHtml(r[1]||'—')+'</dd></div>'; }).join('');
+  }
+  function doorImagePh() {
+    return '<div class="cfg-review-img-ph"><svg viewBox="0 0 48 64" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="2" width="36" height="60" rx="1"/><circle cx="34" cy="32" r="1.5" fill="currentColor"/></svg></div>';
+  }
+  function paintDoorImg(el) {
+    if (!el) return;
+    var imgUrl = state.product_img || state.color_img || '';
+    if (imgUrl) { el.style.backgroundImage = "url('" + imgUrl + "')"; el.innerHTML = ''; }
+    else { el.style.backgroundImage = ''; el.innerHTML = doorImagePh(); }
+  }
+
+  function buildReview() {
+    var dl = id('cfgReview'); if (!dl) return;
+    dl.innerHTML = summaryRowsHtml();
     var rp = id('cfgReviewPrice'); if (rp) rp.textContent = lineLabel();
+    paintDoorImg(id('cfgReviewImg'));
+  }
+
+  // Final quote (Devis) step: compact recap + price.
+  function buildQuote() {
+    var nm = id('cfgQuoteName');
+    if (nm) nm.textContent = ((state.collection_name||'') + ' ' + (state.color_name||'')).trim() || '—';
+    var dl = id('cfgQuoteReview'); if (dl) dl.innerHTML = summaryRowsHtml();
+    var qp = id('cfgQuotePrice'); if (qp) qp.textContent = lineLabel();
   }
 
   /* ── cart of doors ── */
@@ -291,19 +366,25 @@
   /* ── navigation ── */
   function showStep(n) {
     n = Math.max(0, Math.min(STEPS - 1, n)); step = n;
-    if (n === S_PRODUCT) buildProducts();
     $steps.forEach(function (s) { s.classList.toggle('is-active', +s.dataset.step === n); });
     $prog.forEach(function (p, i) { p.classList.toggle('is-active', i===n); p.classList.toggle('is-done', i<n); });
     $lines.forEach(function (l, i) { l.classList.toggle('is-done', i<n); });
     if (n === S_REVIEW) buildReview();
+    if (n === S_DETAILS) buildQuote();
+    var $page = document.querySelector('.cfg-page');
+    if ($page) $page.classList.toggle('is-collection-step', n === S_COLLECTION);
+    document.body.classList.toggle('cfg-on-collection', n === S_COLLECTION);
+    // Preview sidebar is shown only on the Colour step (Collection has its own
+    // immersive layout; Résumé has its own inline review). Hidden elsewhere.
+    document.body.classList.toggle('cfg-on-color', n === S_COLOR);
     if ($back) $back.disabled = (n === 0);
     if ($next) {
       // Review has its own buttons; Details submits; everything else advances.
       $next.style.display = (n === S_REVIEW) ? 'none' : '';
-      var label = (n === S_DETAILS) ? 'Submit Request' : 'Next';
+      var label = (n === S_DETAILS) ? 'Demander mon devis' : 'Suivant';
       $next.innerHTML = label + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
     }
-    if ($navStep) $navStep.textContent = 'Step ' + (n+1) + ' of ' + STEPS;
+    if ($navStep) $navStep.textContent = 'Étape ' + Math.min(n+1, STEPS-1) + ' / ' + (STEPS-1);
   }
   function canAdvance() {
     switch (step) {
@@ -311,7 +392,6 @@
       case S_COLOR:        return !!state.color_id;
       case S_USAGE:        return !!state.usage_id;
       case S_CONSTRUCTION: return !!state.construction_id && !!(matrixRow(state.usage_id, state.construction_id) || {}).available;
-      case S_PRODUCT:      return !!state.product_id;
       default: return true;
     }
   }
@@ -329,10 +409,10 @@
   if (id('cfgAddAnother')) id('cfgAddAnother').addEventListener('click', function () {
     if (!addCurrentToCart()) return;
     state = freshState();
-    deactivate('#cfgCollections'); deactivate('#cfgColors'); deactivate('#cfgUsages'); deactivate('#cfgConstructions'); deactivate('#cfgProducts');
+    deactivate('#cfgCollections'); deactivate('#cfgColors'); deactivate('#cfgUsages'); deactivate('#cfgConstructions');
     if ($qty) $qty.value = 1;
     if ($w) $w.value = 900; if ($h) $h.value = 2100;
-    if ($wv) $wv.textContent = '90 cm'; if ($hv) $hv.textContent = '210 cm';
+    syncVisibleSliders();
     buildColors(); refreshUsages(); refreshConstructions();
     lastPricing = null; paintPrice('Configure to see price');
     setRender(); setSummary();
@@ -344,22 +424,68 @@
     showStep(S_DETAILS);
   });
 
-  /* ── dimensions + quantity ── */
-  var $w = id('cfgWidth'), $h = id('cfgHeight'), $wv = id('cfgWidthVal'), $hv = id('cfgHeightVal'), dimTimer;
+  /* ── dimensions (cm steppers → mm state) ── */
+  var $w = id('cfgWidth'), $h = id('cfgHeight'), dimTimer;
+  var $wcm = id('cfgWidthCm'), $hcm = id('cfgHeightCm');
+  // cm bounds mirror the hidden mm range inputs (500–2000 / 1500–3000 mm).
+  var W_MIN = 50, W_MAX = 200, H_MIN = 150, H_MAX = 300;
+
+  function clampCm(v, lo, hi){ v = parseInt(v,10); if (isNaN(v)) v = lo; return Math.max(lo, Math.min(hi, v)); }
+
+  // Refresh the on-diagram captions, the summary card, and the door proportions.
+  function paintDim() {
+    var wcm = state.width_mm/10, hcm = state.height_mm/10;
+    var wv = id('cfgDimWViz'), hv = id('cfgDimHViz');
+    if (wv) wv.innerHTML = wcm + '<small>cm</small>';
+    if (hv) hv.innerHTML = hcm + '<small>cm</small>';
+    var sum = id('cfgDimSummary'); if (sum) sum.textContent = wcm + ' × ' + hcm + ' cm';
+    // Scale the door figure proportionally to the chosen dimensions.
+    var door = id('cfgDimDoor');
+    if (door) {
+      var wRatio = (state.width_mm - 500) / (2000 - 500);   // 0..1
+      var hRatio = (state.height_mm - 1500) / (3000 - 1500); // 0..1
+      door.style.width  = (46 + wRatio * 26) + '%';
+      door.style.height = (78 + hRatio * 18) + '%';
+    }
+  }
+
   function onDim() {
     state.width_mm = parseInt($w.value,10); state.height_mm = parseInt($h.value,10);
-    if ($wv) $wv.textContent = (state.width_mm/10)+' cm';
-    if ($hv) $hv.textContent = (state.height_mm/10)+' cm';
+    if ($wcm) $wcm.value = state.width_mm/10;
+    if ($hcm) $hcm.value = state.height_mm/10;
+    paintDim();
     setSummary(); clearTimeout(dimTimer); dimTimer = setTimeout(requestPrice, 180);
   }
   if ($w) $w.addEventListener('input', onDim);
   if ($h) $h.addEventListener('input', onDim);
 
+  // cm input → hidden mm range → onDim
+  function setWidthCm(cm){ cm = clampCm(cm, W_MIN, W_MAX); if ($w) { $w.value = cm * 10; onDim(); } }
+  function setHeightCm(cm){ cm = clampCm(cm, H_MIN, H_MAX); if ($h) { $h.value = cm * 10; onDim(); } }
+  function curWcm(){ return Math.round(state.width_mm/10); }
+  function curHcm(){ return Math.round(state.height_mm/10); }
+
+  if ($wcm) $wcm.addEventListener('input', function(){ if ($w) { $w.value = clampCm($wcm.value, W_MIN, W_MAX)*10; onDimSoft(); } });
+  if ($hcm) $hcm.addEventListener('input', function(){ if ($h) { $h.value = clampCm($hcm.value, H_MIN, H_MAX)*10; onDimSoft(); } });
+  // Re-clamp the visible field only when the user leaves it (avoids fighting typing).
+  if ($wcm) $wcm.addEventListener('blur', function(){ $wcm.value = curWcm(); });
+  if ($hcm) $hcm.addEventListener('blur', function(){ $hcm.value = curHcm(); });
+  // Like onDim but doesn't overwrite the field the user is typing in.
+  function onDimSoft() {
+    state.width_mm = parseInt($w.value,10); state.height_mm = parseInt($h.value,10);
+    paintDim(); setSummary(); clearTimeout(dimTimer); dimTimer = setTimeout(requestPrice, 180);
+  }
+
+  if (id('cfgWidthMinus'))  id('cfgWidthMinus').addEventListener('click',  function(){ setWidthCm(curWcm() - 1); });
+  if (id('cfgWidthPlus'))   id('cfgWidthPlus').addEventListener('click',   function(){ setWidthCm(curWcm() + 1); });
+  if (id('cfgHeightMinus')) id('cfgHeightMinus').addEventListener('click', function(){ setHeightCm(curHcm() - 1); });
+  if (id('cfgHeightPlus'))  id('cfgHeightPlus').addEventListener('click',  function(){ setHeightCm(curHcm() + 1); });
+
+  // Quantity is no longer surfaced on this step; keep state in sync with the
+  // (now hidden) input so the cart/quote logic is unaffected (defaults to 1).
   var $qty = id('cfgQty');
-  function setQty(v) { v = Math.max(1, Math.min(999, parseInt(v,10) || 1)); state.quantity = v; if ($qty) $qty.value = v; }
-  if ($qty) $qty.addEventListener('input', function(){ setQty($qty.value); });
-  if (id('cfgQtyMinus')) id('cfgQtyMinus').addEventListener('click', function(){ setQty(state.quantity - 1); });
-  if (id('cfgQtyPlus'))  id('cfgQtyPlus').addEventListener('click',  function(){ setQty(state.quantity + 1); });
+  function setQty(v) { v = Math.max(1, Math.min(999, parseInt(v,10) || 1)); state.quantity = v; if ($qty) $qty.value = v; setSummary(); }
+  function syncVisibleSliders() { if ($wcm) $wcm.value = curWcm(); if ($hcm) $hcm.value = curHcm(); paintDim(); }
 
   /* ── pricing ── */
   function priceConfig() {
@@ -392,17 +518,22 @@
         if (step === S_REVIEW) buildReview();
       }).catch(function(){});
   }
-  function paintPrice(label) { if ($sumPrice) $sumPrice.textContent = label; if ($fabPrice) $fabPrice.textContent = label; }
+  function paintPrice(label) {
+    if ($sumPrice) $sumPrice.textContent = label;
+  }
 
   /* ── save ── */
-  var $save = id('cfgSave');
-  if ($save) $save.addEventListener('click', function () {
+  function saveConfig(btn, doneLabel, restoreLabel) {
     if (!state.collection_id) { nudge(); return; }
     fetch(CFG.saveUrl, { method:'POST', headers:{'Content-Type':'application/json','X-CSRF-Token':CFG.csrf}, body:JSON.stringify({ config: priceConfig(), name: (state.collection_name||'PORTES')+' '+(state.color_name||'')+' Door' }) })
       .then(function (r) { return r.json(); })
-      .then(function (d) { if (d && d.success && d.url) { $save.textContent='Saved ✓'; history.replaceState(null,'',d.url); setTimeout(function(){$save.textContent='Save Configuration';},2200); } })
+      .then(function (d) { if (d && d.success && d.url) { history.replaceState(null,'',d.url); if (btn) { btn.textContent=doneLabel; setTimeout(function(){btn.textContent=restoreLabel;},2200); } } })
       .catch(function(){});
-  });
+  }
+  var $save = id('cfgSave');
+  if ($save) $save.addEventListener('click', function () { saveConfig($save, 'Saved ✓', 'Save Configuration'); });
+  var $reviewSave = id('cfgReviewSave');
+  if ($reviewSave) $reviewSave.addEventListener('click', function () { saveConfig($reviewSave, 'Sauvegardée ✓', 'Sauvegarder la configuration'); });
 
   /* ── quote ── */
   var $quote = id('cfgQuote');
@@ -486,10 +617,6 @@
   if (id('cfgPrint')) id('cfgPrint').addEventListener('click', function () { window.print(); });
   if (id('cfgAnother')) id('cfgAnother').addEventListener('click', function () { window.location.href = '/door-showroom/configure'; });
 
-  /* ── mobile summary ── */
-  var $fab = id('cfgSummaryFab'), $summary = id('cfgSummary');
-  if ($fab && $summary) $fab.addEventListener('click', function () { $summary.classList.toggle('is-open'); });
-
   /* ── helpers ── */
   function activate(c, btn){ if(!c)return; c.querySelectorAll('.is-active').forEach(function(x){x.classList.remove('is-active');}); if(btn) btn.classList.add('is-active'); }
   function deactivate(sel){ qa(sel + ' .is-active').forEach(function(x){x.classList.remove('is-active');}); }
@@ -510,7 +637,7 @@
   /* init */
   buildCollections();
   applyPreload();
-  setRender(); setSummary();
+  setRender(); setSummary(); paintDim();
   showStep(state.color_id ? S_USAGE : (state.collection_id ? S_COLOR : S_COLLECTION));
   requestPrice();
 }());

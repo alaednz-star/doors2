@@ -29,8 +29,7 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
   </a>
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#collections">Collections</a>
-    <a href="#configurator">Configurator</a>
-    <a href="#colors">Colours</a>
+    <a href="/door-showroom/configure">Configurator</a>
     <a href="#featured">Doors</a>
     <a href="#why">About</a>
   </nav>
@@ -63,125 +62,42 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
     <span>Expert Installation</span>
     <span>Durable &amp; Reliable</span>
   </div>
-  <a href="#configurator" class="hero-scroll" aria-label="Scroll down">
+  <a href="#collections" class="hero-scroll" aria-label="Scroll down">
     <span class="hero-scroll-line"></span>
   </a>
 </section>
 
-<!-- ░ 2 · CONFIGURATOR PREVIEW ░ -->
-<?php
-  // Flat index so swatches (grouped below) map to the door preview.
-  $flatColors = [];
-  foreach ($colorGroups as $gName => $gColors) {
-      foreach ($gColors as $c) { $flatColors[] = $c; }
-  }
-  $first = $flatColors[0] ?? null;
-?>
-<section class="cfg" id="configurator">
-  <div class="cfg-preview">
-    <!-- Hex-tinted door placeholder; upgrades to the real photo when one is uploaded. -->
-    <div class="cfg-door-figure" id="cfgDoorFigure"
-         style="--door-color:<?= $e($first['hex'] ?? '#9A9389') ?>;<?= !empty($first['file']) ? " --door-img:url('" . $e($first['file']) . "')" : '' ?>">
-      <span class="cfg-door-handle" aria-hidden="true"></span>
-    </div>
-    <?php if ($first): ?>
-      <span class="cfg-preview-tag" id="cfgTag"><?= $e($first['name']) ?><?php if ($first['collection'] !== ''): ?> <em>· <?= $e($first['collection']) ?></em><?php endif; ?></span>
-    <?php endif; ?>
-  </div>
-
-  <div class="cfg-panel">
-    <p class="eyebrow">The Configurator</p>
-    <h2 class="cfg-title">Your door,<br /><em>made yours.</em></h2>
-    <p class="cfg-lead">Collection, colour, usage and construction — previewed live. Choose a colour to see it on the door, then open the full configurator for dimensions and a personal quote.</p>
-
-    <?php if (!empty($flatColors)): ?>
-    <div class="cfg-control">
-      <div class="cfg-control-head">
-        <span>Colour</span>
-        <strong id="cfgFinishName"><?= $e($first['name']) ?></strong>
-      </div>
-      <div class="cfg-swatch-groups" id="cfgSwatchGroups">
-        <?php $gi = 0; foreach ($colorGroups as $gName => $gColors): ?>
-          <div class="cfg-swatch-group">
-            <span class="cfg-swatch-group-label"><?= $e($gName) ?></span>
-            <div class="cfg-swatches" role="listbox" aria-label="<?= $e($gName) ?> colours">
-              <?php foreach ($gColors as $f): ?>
-                <button class="cfg-swatch<?= $gi === 0 ? ' is-active' : '' ?>"
-                        data-index="<?= $gi ?>"
-                        data-name="<?= $e($f['name']) ?>"
-                        data-collection="<?= $e($f['collection']) ?>"
-                        data-hex="<?= $e($f['hex']) ?>"
-                        <?= !empty($f['file']) ? 'data-img="' . $e($f['file']) . '"' : '' ?>
-                        style="--sw:<?= $e($f['hex']) ?>;<?= !empty($f['tex']) ? " --tex:url('" . $e($f['tex']) . "')" : '' ?>"
-                        role="option" aria-selected="<?= $gi === 0 ? 'true' : 'false' ?>"
-                        title="<?= $e($f['name']) ?> · <?= $e($f['collection']) ?>"
-                        aria-label="<?= $e($f['name']) ?> · <?= $e($f['collection']) ?>"></button>
-                <?php $gi++; ?>
-              <?php endforeach; ?>
-            </div>
-          </div>
-        <?php endforeach; ?>
-      </div>
-    </div>
-    <?php endif; ?>
-
-    <a href="/door-showroom/configure" class="btn btn--gold btn--block">Open Full Configurator
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-</section>
-
-<!-- ░ 3 · COLLECTIONS ░ -->
+<!-- ░ 2 · COLLECTIONS ░ -->
 <section class="collections" id="collections">
   <div class="sec-intro reveal">
     <p class="eyebrow">The Collections</p>
     <h2 class="sec-title">Three worlds,<br /><em>one standard.</em></h2>
   </div>
 
-  <?php foreach ($collections as $i => $c): ?>
-    <article class="story<?= $i % 2 ? ' story--reverse' : '' ?> reveal">
-      <div class="story-media">
-        <img src="<?= $img($c['file']) ?>" alt="<?= $e($c['name']) ?> collection" loading="lazy" />
-      </div>
-      <div class="story-body">
-        <span class="story-num">Collection <?= $e($c['num']) ?></span>
-        <h3 class="story-name"><?= $e($c['name']) ?></h3>
-        <p class="story-line"><?= $e($c['line']) ?></p>
-        <p class="story-desc"><?= $e($c['desc']) ?></p>
-        <a href="/door-showroom/collections" class="btn btn--outline">Explore <?= $e($c['name']) ?>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </div>
-    </article>
-  <?php endforeach; ?>
-</section>
-
-<!-- ░ 4 · COLORS ░ -->
-<?php if (!empty($colors)): ?>
-<section class="finishes" id="colors">
-  <div class="finishes-media" aria-hidden="true">
-    <?php foreach ($colors as $i => $f): if (empty($f['file'])) continue; ?>
-      <img src="<?= $e($f['file']) ?>" alt="" class="finishes-door<?= $i === 0 ? ' is-active' : '' ?>" data-index="<?= $i ?>" loading="lazy" />
+  <div class="coll-grid reveal">
+    <?php foreach ($collections as $i => $c): ?>
+      <a class="coll-card" href="/door-showroom/collections" aria-label="<?= $e($c['name']) ?>">
+        <span class="coll-card-img" style="background-image:url('<?= $img($c['file']) ?>')"></span>
+        <span class="coll-card-shade"></span>
+        <span class="coll-card-num">Collection <?= $e($c['num']) ?></span>
+        <span class="coll-card-body">
+          <span class="coll-card-name"><?= $e($c['name']) ?></span>
+          <span class="coll-card-line"><?= $e($c['line']) ?></span>
+          <span class="coll-card-specs">
+            <span>Made to measure</span>
+            <span>Exclusive finishes</span>
+            <span>Crafted locally</span>
+          </span>
+          <span class="coll-card-cta">Explore
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </span>
+      </a>
     <?php endforeach; ?>
   </div>
-  <div class="finishes-content">
-    <div class="sec-intro sec-intro--center reveal">
-      <p class="eyebrow">Available Colours</p>
-      <h2 class="sec-title">Signature<br /><em>colours.</em></h2>
-    </div>
-    <div class="finishes-ring reveal" id="finishRing">
-      <?php foreach ($colors as $i => $f): ?>
-        <button class="finish<?= $i === 0 ? ' is-active' : '' ?>" data-index="<?= $i ?>" aria-label="<?= $e($f['name']) ?>">
-          <span class="finish-chip" style="--sw:<?= $e($f['hex']) ?>;<?= !empty($f['tex']) ? " --tex:url('" . $e($f['tex']) . "')" : '' ?>"></span>
-          <span class="finish-name"><?= $e($f['name']) ?></span>
-        </button>
-      <?php endforeach; ?>
-    </div>
-  </div>
 </section>
-<?php endif; ?>
 
-<!-- ░ 5 · FEATURED DOORS ░ -->
+<!-- ░ 3 · FEATURED DOORS ░ -->
 <section class="featured" id="featured">
   <div class="sec-intro reveal">
     <p class="eyebrow">Selected Doors</p>

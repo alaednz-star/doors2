@@ -5,7 +5,7 @@
 --  room_types kept dormant for FK safety).
 -- ============================================================
 
--- ── construction_types (new lookup: Nédabaile / Tebelaire / PVC) ──
+-- ── construction_types (new lookup: Nédabaile / Tebelaire) ──
 CREATE TABLE IF NOT EXISTS `construction_types` (
   `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name`           VARCHAR(100) NOT NULL,

@@ -65,35 +65,6 @@ class ConfiguratorController
              FROM price_rules WHERE is_active = 1'
         )->fetchAll();
 
-        // ── Products keyed by their full combination, with image for the preview ──
-        $products = $db->query(
-            "SELECT p.id, p.name, p.slug, p.collection_id, p.color_id, p.door_type_id,
-                    p.construction_type_id, p.base_price, p.width_mm, p.height_mm,
-                    (SELECT pi.filename FROM product_images pi
-                     WHERE pi.product_id = p.id ORDER BY pi.is_cover DESC, pi.sort_order ASC LIMIT 1) AS cover
-             FROM products p WHERE p.is_active = 1"
-        )->fetchAll();
-
-        // Index colour names by id for product asset fallback.
-        $colorNameById = [];
-        foreach ($colorsRaw as $c) { $colorNameById[(int)$c['id']] = $c['name']; }
-
-        $productsData = array_map(function ($p) use ($webBase, $assetDir, $colorAsset, $colorNameById) {
-            $img = !empty($p['cover'])
-                ? $webBase . '/products/' . $p['cover']
-                : $assetDir . ($colorAsset[$colorNameById[(int)$p['color_id']] ?? ''] ?? 'chene.jpg');
-            return [
-                'id'              => (int)$p['id'],
-                'slug'            => $p['slug'],
-                'collection_id'   => (int)$p['collection_id'],
-                'color_id'        => $p['color_id'] !== null ? (int)$p['color_id'] : null,
-                'usage_id'        => $p['door_type_id'] !== null ? (int)$p['door_type_id'] : null,
-                'construction_id' => $p['construction_type_id'] !== null ? (int)$p['construction_type_id'] : null,
-                'price'           => (float)$p['base_price'],
-                'img'             => $img,
-            ];
-        }, $products);
-
         // Colours for the view (carry their door image + collection).
         $colorsData = array_map(function ($c) use ($colorImg) {
             return [

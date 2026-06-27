@@ -36,6 +36,8 @@
       $sumCon = id('sumConstruction'),
       $sumDim = id('sumDim'), $sumPrice = id('sumPrice');
   var $cart = id('cfgCart'), $cartList = id('cfgCartList'), $cartTotal = id('cfgCartTotal');
+  var $sumPriceBlock = $sumPrice && $sumPrice.closest('.cfg-summary-price');
+  var $sumActions = document.querySelector('.cfg-summary-actions');
 
   function id(x){ return document.getElementById(x); }
   function qa(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
@@ -281,8 +283,25 @@
     var dim = (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm';
     if ($sumDim) $sumDim.textContent = dim;
     if ($stageDim) $stageDim.textContent = dim;
+    // Only show a summary row once it has a value, so early steps stay clean
+    // (e.g. on the Colour step the panel shows just Collection + Couleur).
+    rowToggle($sumColl, state.collection_name);
+    rowToggle($sumColor, state.color_name);
+    rowToggle($sumUsage, state.usage_name);
+    rowToggle($sumCon, state.construction_name);
+    rowToggle($sumDim, (state.usage_name || state.construction_name) ? dim : '');
+    // Price + actions only appear once a full combination is chosen.
+    var ready = !!(state.collection_id && state.color_id && state.usage_id && state.construction_id);
+    if ($sumPriceBlock) $sumPriceBlock.style.display = ready ? '' : 'none';
+    if ($sumActions)    $sumActions.style.display    = ready ? '' : 'none';
   }
   function txt(el,v){ if (el) el.textContent = v || '—'; }
+  // Show/hide a summary row (the <div> wrapping the <dt>/<dd>) by value.
+  function rowToggle(dd, value){
+    if (!dd) return;
+    var row = dd.parentElement;
+    if (row) row.style.display = value ? '' : 'none';
+  }
 
   // Shared configuration rows (Collection → Quantité) for the summary panels.
   function summaryRowsHtml() {
@@ -300,7 +319,9 @@
   }
   function paintDoorImg(el) {
     if (!el) return;
-    var imgUrl = state.product_img || state.color_img || '';
+    // Use the door photo (product image or per-colour door), never the flat
+    // swatch texture — a swatch stretched to fill the card looks like a blur.
+    var imgUrl = state.product_img || state.color_door || '';
     if (imgUrl) { el.style.backgroundImage = "url('" + imgUrl + "')"; el.innerHTML = ''; }
     else { el.style.backgroundImage = ''; el.innerHTML = doorImagePh(); }
   }

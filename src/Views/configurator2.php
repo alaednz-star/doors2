@@ -323,7 +323,7 @@ $cfgData = [
 
           <!-- Summary body -->
           <div class="cfg-sidebar-body">
-            <h3 class="cfg-summary-title">Configuration</h3>
+            <h3 class="cfg-summary-title">Aperçu rapide</h3>
 
             <dl class="cfg-summary-list" id="cfgCurrentSummary">
               <div><dt>Collection</dt><dd id="sumCollection">—</dd></div>

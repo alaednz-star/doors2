@@ -537,7 +537,7 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   position: relative; overflow: hidden;
   border: 1.5px solid var(--cfg-border); border-radius: var(--cfg-radius);
   background: var(--cfg-surface); cursor: pointer; padding: 0;
-  min-height: 190px; display: flex; flex-direction: column;
+  min-height: 300px; display: flex; flex-direction: column;
   transition: border-color .25s, box-shadow .25s, transform .25s ease;
 }
 #cfgUsages .cfg-opt:not(.is-disabled):hover {
@@ -551,16 +551,21 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 #cfgUsages .cfg-opt.is-disabled { cursor: not-allowed; pointer-events: none; }
 
 .cfg-usage-visual {
-  flex: 1; min-height: 130px; position: relative;
+  flex: 1; min-height: 240px; position: relative;
   background-size: cover; background-position: center;
 }
 .cfg-usage-visual--chambre      { background: linear-gradient(145deg, #8b7355, #4a3828); }
 .cfg-usage-visual--sanitaire    { background: linear-gradient(145deg, #607b7d, #333f40); }
 .cfg-usage-visual--salon        { background: linear-gradient(145deg, #7a6855, #3d3530); }
 .cfg-usage-visual--entree       { background: linear-gradient(145deg, #5c5c4a, #252520); }
+/* Keep gradients only as a fallback; a real photo gets a lighter scrim so
+   the image reads clearly, with just enough darkness for the label. */
 .cfg-usage-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.65), transparent 60%);
+  background: linear-gradient(to top, rgba(0,0,0,.55), transparent 45%);
+}
+.cfg-usage-visual.has-img .cfg-usage-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,.1) 38%, transparent 60%);
 }
 .cfg-usage-label {
   position: absolute; left: .9rem; right: .9rem; bottom: .8rem; z-index: 1;

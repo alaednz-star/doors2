@@ -2,6 +2,7 @@ Options -Indexes
 Options -MultiViews
 
 RewriteEngine On
+RewriteBase /door-showroom/
 
 # Block sensitive file access
 RewriteRule ^(\.env|\.git|composer\.(json|lock)) - [F,L]

@@ -1,7 +1,0 @@
-.git
-.gitignore
-*.md
-memory/
-.claude/
-storage/logs/
-storage/mail/

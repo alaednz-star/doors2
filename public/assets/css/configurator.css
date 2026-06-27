@@ -537,7 +537,7 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   position: relative; overflow: hidden;
   border: 1.5px solid var(--cfg-border); border-radius: var(--cfg-radius);
   background: var(--cfg-surface); cursor: pointer; padding: 0;
-  min-height: 300px; display: flex; flex-direction: column;
+  aspect-ratio: 3/4; min-height: 320px; display: flex; flex-direction: column;
   transition: border-color .25s, box-shadow .25s, transform .25s ease;
 }
 #cfgUsages .cfg-opt:not(.is-disabled):hover {
@@ -558,20 +558,18 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 .cfg-usage-visual--sanitaire    { background: linear-gradient(145deg, #607b7d, #333f40); }
 .cfg-usage-visual--salon        { background: linear-gradient(145deg, #7a6855, #3d3530); }
 .cfg-usage-visual--entree       { background: linear-gradient(145deg, #5c5c4a, #252520); }
-/* An uploaded photo is shown WHOLE (contain), never cropped, on a neutral
-   surface; the gradient only shows for usages with no image yet. */
+/* An uploaded photo fills the card edge-to-edge (cover); the gradient only
+   shows for usages with no image yet. */
 .cfg-usage-visual.has-img {
-  background-color: var(--cfg-surface);
-  background-size: contain; background-position: center; background-repeat: no-repeat;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 .cfg-usage-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,.55), transparent 45%);
 }
-/* With a full image visible we don't darken it; the label sits on a small
-   gradient strip only at the very bottom. */
+/* Dark strip at the bottom so the label is always readable over the photo. */
 .cfg-usage-visual.has-img .cfg-usage-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,.45), transparent 22%);
+  background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,.15) 30%, transparent 55%);
 }
 .cfg-usage-label {
   position: absolute; left: .9rem; right: .9rem; bottom: .8rem; z-index: 1;

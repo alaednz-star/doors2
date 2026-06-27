@@ -1,0 +1,23 @@
+# Uploaded media (user content, not source) — keep the dirs, ignore their contents
+public/uploads/*/*
+!public/uploads/*/.gitkeep
+
+# Logs & storage
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Local config with secrets (keep example only)
+config/database.local.php
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Dependency dirs (none used, but guard)
+vendor/
+node_modules/
+!public/uploads/*/.gitkeep

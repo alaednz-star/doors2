@@ -1,0 +1,98 @@
+[2026-06-26 20:08:55] TO: 
+SUBJECT: New Quote Request — PORTES-2026-000001
+
+NEW QUOTE REQUEST — PORTES-2026-000001
+Submitted: 2026-06-26 20:08:55
+
+CUSTOMER
+----------------------------------------
+Name:    Test Phase4
+Email:   phase4@test.dz
+Phone:   0550000000
+Company: 
+Country: Algeria
+City:    Alger
+Project: 
+Qty:     1
+Install: —
+
+CONFIGURATION
+----------------------------------------
+Room Type:        —
+Collection:       Moderne
+Material:         —
+Finish:           —
+Colour:           Simza
+Door Type:        Chambre
+Dimensions:       120 × 240 cm
+----------------------------------------
+Estimated price: 51 810 DZD
+
+NOTES: phase4 e2e
+
+Manage: /door-showroom/admin/quotes
+============================================================
+[2026-06-26 22:06:58] TO: 
+SUBJECT: New Quote Request — PORTES-2026-000001
+
+NEW QUOTE REQUEST — PORTES-2026-000001
+Submitted: 2026-06-26 22:06:58
+
+CUSTOMER
+----------------------------------------
+Name:    Ala Din
+Email:   alaed22@gmail.com
+Phone:   0798966042R3
+Company: 
+Country: algeria
+City:    mosta
+Project: 
+Qty:     1
+Install: —
+
+CONFIGURATION
+----------------------------------------
+Collection:       Moderne
+Colour:           Madera
+Usage:            Chambre
+Construction:     Nédabaile
+Dimensions:       200 × 300 cm
+----------------------------------------
+Estimated price: 107 937 DZD
+
+NOTES: testing
+
+Manage: /door-showroom/admin/quotes
+============================================================
+[2026-06-26 22:09:59] TO: 
+SUBJECT: New Quote Request — PORTES-2026-000002
+
+NEW QUOTE REQUEST — PORTES-2026-000002
+Submitted: 2026-06-26 22:09:59
+
+CUSTOMER
+----------------------------------------
+Name:    okkkkk
+Email:   okkk@gmaol.vop
+Phone:   0798966042R3
+Company: 
+Country: algeria
+City:    mosta
+Project: 
+Qty:     1
+Install: —
+
+CONFIGURATION
+----------------------------------------
+Collection:       Moderne
+Colour:           Serya
+Usage:            Chambre
+Construction:     Nédabaile
+Dimensions:       90 × 210 cm
+----------------------------------------
+Estimated price: 34 000 DZD
+
+NOTES: test
+
+Manage: /door-showroom/admin/quotes
+============================================================

@@ -25,19 +25,22 @@ $qData = [
     'features'   => array_map(static fn ($f) => ['id' => (int)$f['id'], 'name' => $f['name']], $features),
 ];
 $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
+$L   = \App\Core\I18n::lang();
+$DIR = \App\Core\I18n::dir();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= $e($L) ?>" dir="<?= $e($DIR) ?>">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Request a tailored quotation for your bespoke PORTES door. Our specialists respond within 24–48 hours." />
-  <title>Request a Quote — PORTES</title>
+  <meta name="description" content="<?= $e(t('quote_page.meta')) ?>" />
+  <title><?= $e(t('quote_page.title')) ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/door-showroom/assets/css/home.css?v=<?= $ver('/assets/css/home.css') ?>" />
   <link rel="stylesheet" href="/door-showroom/assets/css/quote.css?v=<?= $ver('/assets/css/quote.css') ?>" />
+  <link rel="stylesheet" href="/door-showroom/assets/css/i18n.css?v=<?= $ver('/assets/css/i18n.css') ?>" />
 </head>
 <body class="q-body">
 
@@ -45,18 +48,21 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 <header class="q-top">
   <a href="/door-showroom" class="q-logo">
     <span class="q-logo-mark">PORTES</span>
-    <span class="q-logo-sub">Request a Quote</span>
+    <span class="q-logo-sub"><?= $e(t('quote_page.logo_sub')) ?></span>
   </a>
-  <a href="/door-showroom/configure" class="q-back-link">&larr; Back to Configurator</a>
+  <div style="display:flex;align-items:center;gap:1.25rem">
+    <?php $variant = ''; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>
+    <a href="/door-showroom/configure" class="q-back-link"><?= $e(t('quote_page.back')) ?></a>
+  </div>
 </header>
 
 <!-- ░ PROGRESS ░ -->
 <div class="q-steps" id="qSteps">
-  <button class="q-step is-active" data-step="0" type="button"><span>01</span> Review</button>
+  <button class="q-step is-active" data-step="0" type="button"><span>01</span> <?= $e(t('quote_page.step_review')) ?></button>
   <span class="q-step-line"></span>
-  <button class="q-step" data-step="1" type="button"><span>02</span> Your Details</button>
+  <button class="q-step" data-step="1" type="button"><span>02</span> <?= $e(t('quote_page.step_details')) ?></button>
   <span class="q-step-line"></span>
-  <button class="q-step" data-step="2" type="button"><span>03</span> Confirmation</button>
+  <button class="q-step" data-step="2" type="button"><span>03</span> <?= $e(t('quote_page.step_confirm')) ?></button>
 </div>
 
 <main class="q-main">
@@ -69,30 +75,30 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
         <span class="q-render-dim" id="qDim">—</span>
       </div>
       <div class="q-review-body">
-        <p class="eyebrow">Step 01 — Review</p>
-        <h1 class="q-h1">Your door is<br /><em>ready.</em></h1>
-        <p class="q-lead">Confirm your configuration below. Submit your project details and our specialists will prepare a tailored quotation within 24–48 hours.</p>
+        <p class="eyebrow"><?= $e(t('quote_page.r_eyebrow')) ?></p>
+        <h1 class="q-h1"><?= $e(t('quote_page.r_h_1')) ?><br /><em><?= $e(t('quote_page.r_h_2')) ?></em></h1>
+        <p class="q-lead"><?= $e(t('quote_page.r_lead')) ?></p>
 
         <dl class="q-spec" id="qSpec">
-          <div><dt>Room Type</dt><dd data-spec="room">—</dd></div>
-          <div><dt>Collection</dt><dd data-spec="collection">—</dd></div>
-          <div><dt>Colour</dt><dd data-spec="color">—</dd></div>
-          <div><dt>Usage</dt><dd data-spec="doorType">—</dd></div>
-          <div><dt>Dimensions</dt><dd data-spec="dim">—</dd></div>
-          <div class="q-spec-features" data-features-row hidden><dt>Options</dt><dd data-spec="features">—</dd></div>
+          <div><dt><?= $e(t('quote_page.room')) ?></dt><dd data-spec="room">—</dd></div>
+          <div><dt><?= $e(t('quote_page.collection')) ?></dt><dd data-spec="collection">—</dd></div>
+          <div><dt><?= $e(t('quote_page.colour')) ?></dt><dd data-spec="color">—</dd></div>
+          <div><dt><?= $e(t('quote_page.usage')) ?></dt><dd data-spec="doorType">—</dd></div>
+          <div><dt><?= $e(t('quote_page.dimensions')) ?></dt><dd data-spec="dim">—</dd></div>
+          <div class="q-spec-features" data-features-row hidden><dt><?= $e(t('quote_page.options')) ?></dt><dd data-spec="features">—</dd></div>
         </dl>
 
         <div class="q-price">
-          <span class="q-price-label">Estimated Price</span>
+          <span class="q-price-label"><?= $e(t('quote_page.est_price')) ?></span>
           <strong class="q-price-value" id="qPrice">—</strong>
-          <span class="q-price-note">Indicative — your final quotation is confirmed by our team.</span>
+          <span class="q-price-note"><?= $e(t('quote_page.price_note')) ?></span>
         </div>
 
         <div class="q-review-actions">
-          <button class="btn btn--gold btn--lg" id="qToDetails" type="button">Continue to Details
+          <button class="btn btn--gold btn--lg" id="qToDetails" type="button"><?= $e(t('quote_page.continue')) ?>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
-          <a href="/door-showroom/configure" class="btn btn--outline btn--lg">Edit Configuration</a>
+          <a href="/door-showroom/configure" class="btn btn--outline btn--lg"><?= $e(t('quote_page.edit')) ?></a>
         </div>
       </div>
     </div>
@@ -101,39 +107,39 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
   <!-- ══ STEP 2 — PROJECT INFORMATION ══ -->
   <section class="q-panel" data-panel="1">
     <div class="q-form-wrap">
-      <p class="eyebrow">Step 02 — Your Details</p>
-      <h2 class="q-h2">Project<br /><em>information.</em></h2>
-      <p class="q-lead">Tell us where this door will live. Fields marked * are required.</p>
+      <p class="eyebrow"><?= $e(t('quote_page.d_eyebrow')) ?></p>
+      <h2 class="q-h2"><?= $e(t('quote_page.d_h_1')) ?><br /><em><?= $e(t('quote_page.d_h_2')) ?></em></h2>
+      <p class="q-lead"><?= $e(t('quote_page.d_lead')) ?></p>
 
       <form class="q-form" id="qForm" novalidate>
         <div class="q-field-grid">
           <div class="q-field">
-            <label for="qName">Full Name *</label>
+            <label for="qName"><?= $e(t('quote_page.f_name')) ?></label>
             <input type="text" id="qName" name="full_name" autocomplete="name" maxlength="120" required />
             <span class="q-err" data-err="full_name"></span>
           </div>
           <div class="q-field">
-            <label for="qEmail">Email *</label>
+            <label for="qEmail"><?= $e(t('quote_page.f_email')) ?></label>
             <input type="email" id="qEmail" name="email" autocomplete="email" maxlength="180" required />
             <span class="q-err" data-err="email"></span>
           </div>
           <div class="q-field">
-            <label for="qPhone">Phone *</label>
+            <label for="qPhone"><?= $e(t('quote_page.f_phone')) ?></label>
             <input type="tel" id="qPhone" name="phone" autocomplete="tel" maxlength="30" required />
             <span class="q-err" data-err="phone"></span>
           </div>
           <div class="q-field">
-            <label for="qCompany">Company <span class="q-opt">(optional)</span></label>
+            <label for="qCompany"><?= $e(t('quote_page.f_company')) ?> <span class="q-opt"><?= $e(t('common.optional')) ?></span></label>
             <input type="text" id="qCompany" name="company" autocomplete="organization" maxlength="160" />
             <span class="q-err" data-err="company"></span>
           </div>
           <div class="q-field">
-            <label for="qCountry">Installation Country *</label>
+            <label for="qCountry"><?= $e(t('quote_page.f_country')) ?></label>
             <input type="text" id="qCountry" name="country" autocomplete="country-name" maxlength="100" value="Algeria" required />
             <span class="q-err" data-err="country"></span>
           </div>
           <div class="q-field">
-            <label for="qCity">Installation City *</label>
+            <label for="qCity"><?= $e(t('quote_page.f_city')) ?></label>
             <input type="text" id="qCity" name="city" autocomplete="address-level2" maxlength="100" required />
             <span class="q-err" data-err="city"></span>
           </div>
@@ -141,20 +147,20 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
         <div class="q-field-grid">
           <div class="q-field">
-            <label for="qInstallDate">Desired Installation Date <span class="q-opt">(optional)</span></label>
+            <label for="qInstallDate"><?= $e(t('quote_page.f_date')) ?> <span class="q-opt"><?= $e(t('common.optional')) ?></span></label>
             <input type="date" id="qInstallDate" name="install_date" />
             <span class="q-err" data-err="install_date"></span>
           </div>
           <div class="q-field">
-            <label for="qQuantity">Quantity of Doors</label>
+            <label for="qQuantity"><?= $e(t('quote_page.f_qty')) ?></label>
             <input type="number" id="qQuantity" name="quantity" min="1" max="9999" value="1" />
             <span class="q-err" data-err="quantity"></span>
           </div>
         </div>
 
         <div class="q-field">
-          <label for="qNotes">Additional Notes <span class="q-opt">(optional)</span></label>
-          <textarea id="qNotes" name="notes" rows="4" maxlength="3000" placeholder="Anything our specialists should know — opening direction, site constraints, timeline…"></textarea>
+          <label for="qNotes"><?= $e(t('quote_page.f_notes')) ?> <span class="q-opt"><?= $e(t('common.optional')) ?></span></label>
+          <textarea id="qNotes" name="notes" rows="4" maxlength="3000" placeholder="<?= $e(t('quote_page.f_notes_ph')) ?>"></textarea>
           <span class="q-err" data-err="notes"></span>
         </div>
 
@@ -164,8 +170,8 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
         </div>
 
         <div class="q-form-actions">
-          <button type="button" class="btn btn--outline btn--lg" id="qBackToReview">&larr; Back</button>
-          <button type="submit" class="btn btn--gold btn--lg" id="qSubmit">Request My Quote
+          <button type="button" class="btn btn--outline btn--lg" id="qBackToReview"><?= $e(t('quote_page.back_btn')) ?></button>
+          <button type="submit" class="btn btn--gold btn--lg" id="qSubmit"><?= $e(t('quote_page.submit')) ?>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
@@ -180,17 +186,17 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
       <span class="q-success-mark" aria-hidden="true">
         <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="32" cy="32" r="29"/><path d="M20 33l8 8 16-18" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
-      <p class="eyebrow">Request Received</p>
-      <h2 class="q-success-title">Thank you.<br /><em>Your project has been received.</em></h2>
+      <p class="eyebrow"><?= $e(t('quote_page.s_eyebrow')) ?></p>
+      <h2 class="q-success-title"><?= $e(t('quote_page.s_title_1')) ?><br /><em><?= $e(t('quote_page.s_title_2')) ?></em></h2>
       <div class="q-success-ref">
-        <span>Your reference</span>
+        <span><?= $e(t('quote_page.s_ref')) ?></span>
         <strong id="qRefOut">—</strong>
       </div>
-      <p class="q-success-text">Our specialists will review your requirements and contact you within <strong>24–48 hours</strong> with a tailored quotation.</p>
+      <p class="q-success-text"><?= t('quote_page.s_text') ?></p>
       <div class="q-success-actions">
-        <button class="btn btn--outline-light btn--lg" id="qDownloadPdf" type="button">Download Configuration</button>
-        <a href="/door-showroom/configure" class="btn btn--gold btn--lg">Configure Another Door</a>
-        <a href="/door-showroom" class="btn btn--outline btn--lg">Return Home</a>
+        <button class="btn btn--outline-light btn--lg" id="qDownloadPdf" type="button"><?= $e(t('quote_page.s_download')) ?></button>
+        <a href="/door-showroom/configure" class="btn btn--gold btn--lg"><?= $e(t('quote_page.s_another')) ?></a>
+        <a href="/door-showroom" class="btn btn--outline btn--lg"><?= $e(t('quote_page.s_home')) ?></a>
       </div>
     </div>
   </section>
@@ -199,10 +205,10 @@ $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
 <!-- ░ empty-config state (no configuration found) ░ -->
 <section class="q-empty" id="qEmpty" hidden>
-  <p class="eyebrow">No Configuration</p>
-  <h2 class="q-h2">Start with a door.</h2>
-  <p class="q-lead">There’s no configuration to quote yet. Build your door first, then request a tailored quotation.</p>
-  <a href="/door-showroom/configure" class="btn btn--gold btn--lg">Open the Configurator
+  <p class="eyebrow"><?= $e(t('quote_page.empty_eyebrow')) ?></p>
+  <h2 class="q-h2"><?= $e(t('quote_page.empty_h')) ?></h2>
+  <p class="q-lead"><?= $e(t('quote_page.empty_lead')) ?></p>
+  <a href="/door-showroom/configure" class="btn btn--gold btn--lg"><?= $e(t('quote_page.empty_btn')) ?>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </a>
 </section>

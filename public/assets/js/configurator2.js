@@ -7,6 +7,17 @@
     if (_el) CFG = JSON.parse(_el.textContent || '{}');
   } catch (e) { CFG = window.CFG || {}; }
 
+  // i18n strings supplied by PHP (single source of truth). Falls back to the
+  // key so the UI never shows blanks if a string is missing.
+  var I18N = CFG.i18n || {};
+  function T(key, args) {
+    var s = (I18N[key] != null) ? I18N[key] : key;
+    if (args) { for (var k in args) { if (args.hasOwnProperty(k)) s = s.replace(':' + k, args[k]); } }
+    return s;
+  }
+  // Number formatting locale tracks the chosen language.
+  var NUM_LOCALE = (CFG.lang === 'ar') ? 'ar-DZ' : (CFG.lang === 'fr' ? 'fr-DZ' : 'en-US');
+
   var STEPS = 7;
   var S_COLLECTION = 0, S_COLOR = 1, S_USAGE = 2, S_CONSTRUCTION = 3,
       S_DIMENSIONS = 4, S_REVIEW = 5, S_DETAILS = 6;
@@ -80,11 +91,8 @@
   function colorsForCollection(collectionId) {
     return (CFG.colors || []).filter(function (c) { return c.collection_id === collectionId; });
   }
-  var COLL_DESCS = {
-    'Heritage': 'Portes traditionnelles en bois noble, inspirées du patrimoine algérien.',
-    'Moderne':  'Lignes épurées et matériaux contemporains pour un intérieur actuel.',
-    'Prestige': 'Le summum du luxe — finitions exclusives et détails raffinés.',
-  };
+  // Collection descriptions come from PHP i18n (CFG.i18n.coll_desc).
+  var COLL_DESCS = I18N.coll_desc || {};
   var COLL_SLUGS = {
     'Heritage': 'heritage',
     'Moderne':  'moderne',
@@ -306,11 +314,11 @@
   // Shared configuration rows (Collection → Quantité) for the summary panels.
   function summaryRowsHtml() {
     var rows = [
-      ['Collection', state.collection_name],
-      ['Couleur', state.color_name], ['Usage', state.usage_name],
-      ['Construction', state.construction_name],
-      ['Dimensions', (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm'],
-      ['Quantité', String(state.quantity)],
+      [T('collection'), state.collection_name],
+      [T('colour'), state.color_name], [T('usage'), state.usage_name],
+      [T('construction'), state.construction_name],
+      [T('dimensions'), (state.width_mm/10) + ' × ' + (state.height_mm/10) + ' cm'],
+      [T('quantity'), String(state.quantity)],
     ];
     return rows.map(function (r) { return '<div><dt>'+r[0]+'</dt><dd>'+escapeHtml(r[1]||'—')+'</dd></div>'; }).join('');
   }
@@ -344,13 +352,13 @@
   /* ── cart of doors ── */
   function unitPrice() { return (lastPricing && lastPricing.available !== false) ? Number(lastPricing.total_price||0) : 0; }
   function lineLabel() {
-    if (!lastPricing || lastPricing.available === false) return 'Non disponible';
+    if (!lastPricing || lastPricing.available === false) return T('na');
     var line = unitPrice() * state.quantity;
     return state.quantity > 1
       ? (priceLabel(lastPricing) + ' × ' + state.quantity + ' = ' + money(line))
       : priceLabel(lastPricing);
   }
-  function money(n) { return Number(n).toLocaleString('en-US').replace(/,/g,' ') + ' DZD'; }
+  function money(n) { return Number(n).toLocaleString(NUM_LOCALE).replace(/,/g,' ') + ' DZD'; }
 
   function snapshotCurrent() {
     var unit = unitPrice();
@@ -409,10 +417,10 @@
     if ($next) {
       // Review has its own buttons; Details submits; everything else advances.
       $next.style.display = (n === S_REVIEW) ? 'none' : '';
-      var label = (n === S_DETAILS) ? 'Demander mon devis' : 'Suivant';
+      var label = (n === S_DETAILS) ? T('submit_quote') : T('next');
       $next.innerHTML = label + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
     }
-    if ($navStep) $navStep.textContent = 'Étape ' + Math.min(n+1, STEPS-1) + ' / ' + (STEPS-1);
+    if ($navStep) $navStep.textContent = T('step_x_y', { n: Math.min(n+1, STEPS-1), total: (STEPS-1) });
   }
   function canAdvance() {
     switch (step) {
@@ -442,7 +450,7 @@
     if ($w) $w.value = 900; if ($h) $h.value = 2100;
     syncVisibleSliders();
     buildColors(); refreshUsages(); refreshConstructions();
-    lastPricing = null; paintPrice('Configure to see price');
+    lastPricing = null; paintPrice(T('price_hint'));
     setRender(); setSummary();
     showStep(S_COLLECTION);
   });
@@ -525,15 +533,15 @@
   }
   function priceLabel(p) {
     if (!p) return '—';
-    if (p.available === false) return 'Non disponible';
+    if (p.available === false) return T('na');
     if (p.total_price_fmt) return p.total_price_fmt;
-    if (p.total_price != null) return Number(p.total_price).toLocaleString('en-US') + ' ' + (p.currency || 'DZD');
+    if (p.total_price != null) return Number(p.total_price).toLocaleString(NUM_LOCALE) + ' ' + (p.currency || 'DZD');
     return '—';
   }
   var priceTimer;
   function requestPrice() {
     if (!state.collection_id || !state.usage_id || !state.construction_id) {
-      lastPricing = null; paintPrice('Configure to see price'); return;
+      lastPricing = null; paintPrice(T('price_hint')); return;
     }
     clearTimeout(priceTimer); priceTimer = setTimeout(doPrice, 120);
   }
@@ -559,16 +567,16 @@
       .catch(function(){});
   }
   var $save = id('cfgSave');
-  if ($save) $save.addEventListener('click', function () { saveConfig($save, 'Saved ✓', 'Save Configuration'); });
+  if ($save) $save.addEventListener('click', function () { saveConfig($save, T('saved'), T('save')); });
   var $reviewSave = id('cfgReviewSave');
-  if ($reviewSave) $reviewSave.addEventListener('click', function () { saveConfig($reviewSave, 'Sauvegardée ✓', 'Sauvegarder la configuration'); });
+  if ($reviewSave) $reviewSave.addEventListener('click', function () { saveConfig($reviewSave, T('saved'), T('save_cfg')); });
 
   /* ── quote ── */
   var $quote = id('cfgQuote');
   if ($quote) $quote.addEventListener('click', function () { showStep(S_REVIEW); });
   function val(x){ var el=id(x); return el ? el.value.trim() : ''; }
   function showError(m){ var err=id('cfgFormError'); if(err){ err.hidden=false; err.textContent=m; } }
-  function firstError(o){ for (var k in o){ if (o.hasOwnProperty(k)) return o[k]; } return 'Please review your details.'; }
+  function firstError(o){ for (var k in o){ if (o.hasOwnProperty(k)) return o[k]; } return T('err_review'); }
 
   // Doors to submit: the cart, plus the current door if not yet added.
   function itemsToSubmit() {

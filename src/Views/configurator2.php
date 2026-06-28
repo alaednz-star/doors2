@@ -5,13 +5,46 @@ declare(strict_types=1);
 /** @var string $token */
 $e = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
-$steps = ['Collection', 'Couleur', 'Usage', 'Construction', 'Dimensions', 'Résumé', 'Devis'];
+use App\Core\I18n;
+$L   = I18n::lang();
+$DIR = I18n::dir();
+
+$steps = I18n::group('cfg.steps');
+
+// i18n strings the JS needs at runtime (labels it renders dynamically).
+$jsI18n = [
+    'na'            => t('cfg.na'),
+    'next'          => t('cfg.next'),
+    'submit_quote'  => t('cfg.submit_quote'),
+    'back'          => t('cfg.back'),
+    'step_x_y'      => t('cfg.step_x_y'),
+    'price_hint'    => t('cfg.price_hint'),
+    'saved'         => t('cfg.saved'),
+    'save'          => t('cfg.save'),
+    'save_cfg'      => t('cfg.save_cfg'),
+    'preview_empty' => t('cfg.preview_empty'),
+    'collection'    => t('cfg.collection'),
+    'colour'        => t('cfg.colour'),
+    'usage'         => t('cfg.usage'),
+    'construction'  => t('cfg.construction'),
+    'dimensions'    => t('cfg.dimensions'),
+    'quantity'      => t('cfg.quantity'),
+    'err_review'    => t('cfg.err_review'),
+    'err_required'  => t('cfg.err_required'),
+    'err_no_door'   => t('cfg.err_no_door'),
+    'err_submit'    => t('cfg.err_submit'),
+    'err_network'   => t('cfg.err_network'),
+    'coll_desc'     => I18n::group('cfg.coll_desc'),
+];
 
 $cfgData = [
     'csrf'      => $token,
     'priceUrl'  => '/door-showroom/configure/price',
     'quoteUrl'  => '/door-showroom/configure/quote',
     'saveUrl'   => '/door-showroom/configure/save',
+    'lang'      => $L,
+    'dir'       => $DIR,
+    'i18n'      => $jsI18n,
     'preColorId'      => $preColorId,
     'preCollectionId' => $preCollectionId,
     'colors'        => $colorsData,
@@ -28,25 +61,26 @@ $cfgData = [
 ];
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="<?= $e($L) ?>" dir="<?= $e($DIR) ?>">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configurez votre porte — PORTES</title>
+  <title><?= $e(t('cfg.title')) ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/door-showroom/assets/css/home.css?v=<?= @filemtime(APP_ROOT . '/public/assets/css/home.css') ?>" />
   <link rel="stylesheet" href="/door-showroom/assets/css/configurator.css?v=<?= @filemtime(APP_ROOT . '/public/assets/css/configurator.css') ?>" />
+  <link rel="stylesheet" href="/door-showroom/assets/css/i18n.css?v=<?= @filemtime(APP_ROOT . '/public/assets/css/i18n.css') ?>" />
 </head>
 <body class="cfg-body">
 
 <header class="cfg-top">
   <a href="/door-showroom" class="cfg-logo">
     <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="cfg-logo-img" />
-    <span class="cfg-logo-sub">Configurateur</span>
+    <span class="cfg-logo-sub"><?= $e(t('cfg.logo_sub')) ?></span>
   </a>
-  <nav class="cfg-progress" id="cfgProgress" aria-label="Étapes">
+  <nav class="cfg-progress" id="cfgProgress" aria-label="<?= $e(t('cfg.steps_aria')) ?>">
     <?php foreach ($steps as $i => $s): ?>
       <button class="cfg-progress-step<?= $i === 0 ? ' is-active' : '' ?>" data-step="<?= $i ?>" type="button" aria-label="<?= $e($s) ?>">
         <span class="cfg-progress-num"><?= $i + 1 ?></span>
@@ -55,7 +89,8 @@ $cfgData = [
       <?php if ($i < count($steps) - 1): ?><span class="cfg-progress-line"></span><?php endif; ?>
     <?php endforeach; ?>
   </nav>
-  <a href="/door-showroom" class="cfg-close" aria-label="Quitter le configurateur">&times;</a>
+  <?php $variant = ''; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>
+  <a href="/door-showroom" class="cfg-close" aria-label="<?= $e(t('cfg.close')) ?>">&times;</a>
 </header>
 
 <main class="cfg-main">
@@ -74,26 +109,26 @@ $cfgData = [
 
           <!-- ═══ STEP 0 · COLLECTION ═══ -->
           <div class="cfg-step is-active" data-step="0">
-            <p class="cfg-step-eyebrow">1 — Collection</p>
-            <h2 class="cfg-step-title">Choisissez votre <em>Collection</em></h2>
-            <p class="cfg-step-lead">Chaque collection incarne une philosophie de design distincte. Sélectionnez celle qui vous correspond.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s0_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s0_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s0_lead')) ?></p>
             <div class="cfg-list" id="cfgCollections"><!-- built by JS --></div>
           </div>
 
           <!-- ═══ STEP 1 · COULEUR ═══ -->
           <div class="cfg-step" data-step="1">
-            <p class="cfg-step-eyebrow">2 — Couleur</p>
-            <h2 class="cfg-step-title">Choisissez la <em>Couleur</em></h2>
-            <p class="cfg-step-lead">Seules les couleurs disponibles dans votre collection sont affichées.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s1_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s1_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s1_lead')) ?></p>
             <div class="cfg-swatch-grid" id="cfgColors"><!-- built by JS --></div>
-            <p class="cfg-empty-hint" id="cfgColorsEmpty" hidden>Sélectionnez d'abord une collection.</p>
+            <p class="cfg-empty-hint" id="cfgColorsEmpty" hidden><?= $e(t('cfg.s1_empty')) ?></p>
           </div>
 
           <!-- ═══ STEP 2 · USAGE ═══ -->
           <div class="cfg-step" data-step="2">
-            <p class="cfg-step-eyebrow">3 — Usage</p>
-            <h2 class="cfg-step-title">Où sera-t-elle <em>installée ?</em></h2>
-            <p class="cfg-step-lead">Les combinaisons non disponibles sont affichées mais désactivées.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s2_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s2_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s2_lead')) ?></p>
             <div class="cfg-list" id="cfgUsages">
               <?php
               $usageVisuals = [
@@ -110,7 +145,7 @@ $cfgData = [
                   <div class="cfg-usage-overlay"></div>
                   <span class="cfg-usage-label"><?= $e($u['name']) ?></span>
                 </div>
-                <span class="cfg-opt-na">Non disponible</span>
+                <span class="cfg-opt-na"><?= $e(t('cfg.na')) ?></span>
                 <span class="cfg-opt-check" aria-hidden="true">
                   <svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </span>
@@ -121,17 +156,14 @@ $cfgData = [
 
           <!-- ═══ STEP 3 · CONSTRUCTION ═══ -->
           <div class="cfg-step" data-step="3">
-            <p class="cfg-step-eyebrow">4 — Construction</p>
-            <h2 class="cfg-step-title">Type de <em>Construction</em></h2>
-            <p class="cfg-step-lead">Les options non disponibles pour votre sélection sont désactivées.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s3_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s3_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s3_lead')) ?></p>
             <div class="cfg-list" id="cfgConstructions">
               <?php
-              $constFeatures = [
-                  'Nédabaile' => ['Structure bois massif', 'Finition premium', 'Isolation phonique'],
-                  'Tebelaire' => ['Construction hybride', 'Grande résistance', 'Design épuré'],
-              ];
+              $constFeatures = I18n::group('cfg.const_features');
               foreach ($constructions as $c):
-                  $feats = $constFeatures[$c['name']] ?? ['Qualité supérieure', 'Fabrication locale'];
+                  $feats = $constFeatures[$c['name']] ?? ($constFeatures['default'] ?? []);
               ?>
               <button class="cfg-opt" type="button" data-id="<?= $e($c['id']) ?>" data-name="<?= $e($c['name']) ?>">
                 <div class="cfg-const-visual">
@@ -148,7 +180,7 @@ $cfgData = [
                       <li><?= $e($f) ?></li>
                     <?php endforeach; ?>
                   </ul>
-                  <span class="cfg-opt-na">Non disponible</span>
+                  <span class="cfg-opt-na"><?= $e(t('cfg.na')) ?></span>
                 </div>
                 <span class="cfg-opt-check" aria-hidden="true">
                   <svg viewBox="0 0 20 20" fill="none"><polyline points="4,10 8,14 16,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -160,9 +192,9 @@ $cfgData = [
 
           <!-- ═══ STEP 4 · DIMENSIONS ═══ -->
           <div class="cfg-step" data-step="4">
-            <p class="cfg-step-eyebrow">5 — Dimensions</p>
-            <h2 class="cfg-step-title">Vos <em>Dimensions</em></h2>
-            <p class="cfg-step-lead">Entrez les dimensions souhaitées en centimètres.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s4_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s4_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s4_lead')) ?></p>
 
             <!-- Hidden range inputs (mm) — kept as the JS state bridge -->
             <div class="cfg-dim" hidden>
@@ -198,27 +230,27 @@ $cfgData = [
               <div class="cfg-dim2-panel">
                 <div class="cfg-dim2-controls">
                   <div class="cfg-dim2-row">
-                    <label for="cfgWidthCm">Largeur <span>(cm)</span></label>
+                    <label for="cfgWidthCm"><?= $e(t('cfg.width')) ?> <span><?= $e(t('cfg.unit_cm')) ?></span></label>
                     <div class="cfg-stepper">
                       <input type="number" id="cfgWidthCm" inputmode="numeric" min="50" max="200" step="1" value="90" />
-                      <button type="button" class="cfg-stepper-btn" id="cfgWidthMinus" aria-label="Réduire la largeur">−</button>
-                      <button type="button" class="cfg-stepper-btn" id="cfgWidthPlus" aria-label="Augmenter la largeur">+</button>
+                      <button type="button" class="cfg-stepper-btn" id="cfgWidthMinus" aria-label="<?= $e(t('cfg.width_dec')) ?>">−</button>
+                      <button type="button" class="cfg-stepper-btn" id="cfgWidthPlus" aria-label="<?= $e(t('cfg.width_inc')) ?>">+</button>
                     </div>
                   </div>
                   <div class="cfg-dim2-row">
-                    <label for="cfgHeightCm">Hauteur <span>(cm)</span></label>
+                    <label for="cfgHeightCm"><?= $e(t('cfg.height')) ?> <span><?= $e(t('cfg.unit_cm')) ?></span></label>
                     <div class="cfg-stepper">
                       <input type="number" id="cfgHeightCm" inputmode="numeric" min="150" max="300" step="1" value="210" />
-                      <button type="button" class="cfg-stepper-btn" id="cfgHeightMinus" aria-label="Réduire la hauteur">−</button>
-                      <button type="button" class="cfg-stepper-btn" id="cfgHeightPlus" aria-label="Augmenter la hauteur">+</button>
+                      <button type="button" class="cfg-stepper-btn" id="cfgHeightMinus" aria-label="<?= $e(t('cfg.height_dec')) ?>">−</button>
+                      <button type="button" class="cfg-stepper-btn" id="cfgHeightPlus" aria-label="<?= $e(t('cfg.height_inc')) ?>">+</button>
                     </div>
                   </div>
                 </div>
 
                 <div class="cfg-dim2-summary">
-                  <p class="cfg-dim2-summary-label">Dimensions sélectionnées</p>
+                  <p class="cfg-dim2-summary-label"><?= $e(t('cfg.dim_sel')) ?></p>
                   <p class="cfg-dim2-summary-value" id="cfgDimSummary">90 × 210 cm</p>
-                  <p class="cfg-dim2-summary-sub">Porte intérieure standard</p>
+                  <p class="cfg-dim2-summary-sub"><?= $e(t('cfg.dim_std')) ?></p>
                 </div>
               </div>
             </div>
@@ -226,9 +258,9 @@ $cfgData = [
 
           <!-- ═══ STEP 5 · RÉSUMÉ ═══ -->
           <div class="cfg-step" data-step="5">
-            <p class="cfg-step-eyebrow">6 — Résumé</p>
-            <h2 class="cfg-step-title">Votre <em>Porte</em></h2>
-            <p class="cfg-step-lead">Vérifiez votre configuration complète, puis demandez votre devis ou sauvegardez-la pour plus tard.</p>
+            <p class="cfg-step-eyebrow"><?= $e(t('cfg.s5_eyebrow')) ?></p>
+            <h2 class="cfg-step-title"><?= t('cfg.s5_title') ?></h2>
+            <p class="cfg-step-lead"><?= $e(t('cfg.s5_lead')) ?></p>
             <div class="cfg-review-layout">
               <!-- Left: door preview -->
               <div class="cfg-review-visual">
@@ -238,16 +270,16 @@ $cfgData = [
               <div class="cfg-review-details">
                 <dl class="cfg-review" id="cfgReview"></dl>
                 <div class="cfg-review-price">
-                  <span>Prix estimé</span>
+                  <span><?= $e(t('cfg.est_price')) ?></span>
                   <strong id="cfgReviewPrice">—</strong>
                 </div>
                 <div class="cfg-review-actions">
                   <button type="button" class="btn btn--gold btn--block" id="cfgToDetails">
-                    Demander un Devis
+                    <?= $e(t('cfg.ask_quote')) ?>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:16px;height:16px;vertical-align:middle;margin-left:.4rem;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </button>
-                  <button type="button" class="btn btn--outline btn--block" id="cfgReviewSave">Sauvegarder la configuration</button>
-                  <button type="button" class="btn btn--outline btn--block cfg-review-add" id="cfgAddAnother">+ Ajouter une autre porte</button>
+                  <button type="button" class="btn btn--outline btn--block" id="cfgReviewSave"><?= $e(t('cfg.save_cfg')) ?></button>
+                  <button type="button" class="btn btn--outline btn--block cfg-review-add" id="cfgAddAnother"><?= $e(t('cfg.add_door')) ?></button>
                 </div>
               </div>
             </div>
@@ -258,15 +290,15 @@ $cfgData = [
             <div class="cfg-quote2">
               <!-- LEFT: intro + compact configuration recap -->
               <div class="cfg-quote2-intro">
-                <p class="cfg-step-eyebrow">7 — Devis</p>
-                <h2 class="cfg-step-title">Demandez votre <em>devis</em></h2>
-                <p class="cfg-step-lead">Vérifiez votre porte sur mesure, notre équipe vous répond dans les plus brefs délais.</p>
+                <p class="cfg-step-eyebrow"><?= $e(t('cfg.s6_eyebrow')) ?></p>
+                <h2 class="cfg-step-title"><?= t('cfg.s6_title') ?></h2>
+                <p class="cfg-step-lead"><?= $e(t('cfg.s6_lead')) ?></p>
 
                 <div class="cfg-quote2-recap">
                   <span class="cfg-quote2-recap-name" id="cfgQuoteName">—</span>
                   <dl class="cfg-quote2-recap-list" id="cfgQuoteReview"></dl>
                   <div class="cfg-quote2-recap-price">
-                    <span>Prix estimé</span>
+                    <span><?= $e(t('cfg.est_price')) ?></span>
                     <strong id="cfgQuotePrice">—</strong>
                   </div>
                 </div>
@@ -275,16 +307,16 @@ $cfgData = [
               <!-- RIGHT: contact form -->
               <form class="cfg-quote-form cfg-quote2-form" id="cfgQuoteForm" novalidate>
                 <input type="text" name="company_website" id="cfgHoneypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
-                <div class="cfg-field"><label for="qName">Nom complet *</label><input type="text" id="qName" name="full_name" maxlength="120" required placeholder="Votre nom" /></div>
+                <div class="cfg-field"><label for="qName"><?= $e(t('cfg.f_name')) ?></label><input type="text" id="qName" name="full_name" maxlength="120" required placeholder="<?= $e(t('cfg.f_name_ph')) ?>" /></div>
                 <div class="cfg-field-row">
-                  <div class="cfg-field"><label for="qEmail">Email *</label><input type="email" id="qEmail" name="email" maxlength="180" required placeholder="votre@email.com" /></div>
-                  <div class="cfg-field"><label for="qPhone">Téléphone *</label><input type="tel" id="qPhone" name="phone" maxlength="30" required placeholder="+213 …" /></div>
+                  <div class="cfg-field"><label for="qEmail"><?= $e(t('cfg.f_email')) ?></label><input type="email" id="qEmail" name="email" maxlength="180" required placeholder="<?= $e(t('cfg.f_email_ph')) ?>" /></div>
+                  <div class="cfg-field"><label for="qPhone"><?= $e(t('cfg.f_phone')) ?></label><input type="tel" id="qPhone" name="phone" maxlength="30" required placeholder="<?= $e(t('cfg.f_phone_ph')) ?>" /></div>
                 </div>
                 <div class="cfg-field-row">
-                  <div class="cfg-field"><label for="qCity">Ville *</label><input type="text" id="qCity" name="city" maxlength="100" required placeholder="Alger" /></div>
-                  <div class="cfg-field"><label for="qCountry">Pays *</label><input type="text" id="qCountry" name="country" maxlength="100" required placeholder="Algérie" /></div>
+                  <div class="cfg-field"><label for="qCity"><?= $e(t('cfg.f_city')) ?></label><input type="text" id="qCity" name="city" maxlength="100" required placeholder="<?= $e(t('cfg.f_city_ph')) ?>" /></div>
+                  <div class="cfg-field"><label for="qCountry"><?= $e(t('cfg.f_country')) ?></label><input type="text" id="qCountry" name="country" maxlength="100" required placeholder="<?= $e(t('cfg.f_country_ph')) ?>" /></div>
                 </div>
-                <div class="cfg-field"><label for="qNotes">Notes</label><textarea id="qNotes" name="notes" rows="2" maxlength="3000" placeholder="Informations complémentaires…"></textarea></div>
+                <div class="cfg-field"><label for="qNotes"><?= $e(t('cfg.f_notes')) ?></label><textarea id="qNotes" name="notes" rows="2" maxlength="3000" placeholder="<?= $e(t('cfg.f_notes_ph')) ?>"></textarea></div>
                 <p class="cfg-form-error" id="cfgFormError" hidden></p>
               </form>
             </div>
@@ -292,10 +324,10 @@ $cfgData = [
 
           <!-- Navigation -->
           <div class="cfg-nav">
-            <button class="btn btn--outline" id="cfgBack" type="button" disabled>Retour</button>
-            <span class="cfg-nav-step" id="cfgNavStep">Étape 1 / 7</span>
+            <button class="btn btn--outline" id="cfgBack" type="button" disabled><?= $e(t('cfg.back')) ?></button>
+            <span class="cfg-nav-step" id="cfgNavStep"><?= $e(t('cfg.step_x_y', ['n' => 1, 'total' => count($steps)])) ?></span>
             <button class="btn btn--gold" id="cfgNext" type="button">
-              Suivant
+              <?= $e(t('cfg.next')) ?>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:16px;height:16px;vertical-align:middle;margin-left:.4rem;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
           </div>
@@ -315,7 +347,7 @@ $cfgData = [
               <span class="cfg-render-tint" id="cfgRenderTint"></span>
               <span class="cfg-render-empty" id="cfgRenderEmpty">
                 <svg viewBox="0 0 48 64" fill="none" stroke="currentColor" stroke-width="1"><rect x="6" y="2" width="36" height="60" rx="1"/><circle cx="34" cy="32" r="1.5" fill="currentColor"/></svg>
-                <em>Sélectionnez une couleur</em>
+                <em><?= $e(t('cfg.preview_empty')) ?></em>
               </span>
               <span class="cfg-render-chip" id="cfgRenderChip"><span class="cfg-render-chip-dot" id="cfgRenderChipDot"></span><span id="cfgRenderChipName"></span></span>
             </div>
@@ -323,33 +355,33 @@ $cfgData = [
 
           <!-- Summary body -->
           <div class="cfg-sidebar-body">
-            <h3 class="cfg-summary-title">Aperçu rapide</h3>
+            <h3 class="cfg-summary-title"><?= $e(t('cfg.quick')) ?></h3>
 
             <dl class="cfg-summary-list" id="cfgCurrentSummary">
-              <div><dt>Collection</dt><dd id="sumCollection">—</dd></div>
-              <div><dt>Couleur</dt><dd id="sumColor">—</dd></div>
-              <div><dt>Usage</dt><dd id="sumUsage">—</dd></div>
-              <div><dt>Construction</dt><dd id="sumConstruction">—</dd></div>
-              <div><dt>Dimensions</dt><dd id="sumDim">90 × 210 cm</dd></div>
+              <div><dt><?= $e(t('cfg.collection')) ?></dt><dd id="sumCollection">—</dd></div>
+              <div><dt><?= $e(t('cfg.colour')) ?></dt><dd id="sumColor">—</dd></div>
+              <div><dt><?= $e(t('cfg.usage')) ?></dt><dd id="sumUsage">—</dd></div>
+              <div><dt><?= $e(t('cfg.construction')) ?></dt><dd id="sumConstruction">—</dd></div>
+              <div><dt><?= $e(t('cfg.dimensions')) ?></dt><dd id="sumDim">90 × 210 cm</dd></div>
             </dl>
 
             <div class="cfg-summary-price">
-              <span class="cfg-summary-price-label">Prix estimé</span>
+              <span class="cfg-summary-price-label"><?= $e(t('cfg.est_price')) ?></span>
               <strong class="cfg-summary-price-value" id="sumPrice">—</strong>
             </div>
 
             <div class="cfg-cart" id="cfgCart" hidden>
-              <h4 class="cfg-cart-title">Portes dans votre demande</h4>
+              <h4 class="cfg-cart-title"><?= $e(t('cfg.cart_title')) ?></h4>
               <ul class="cfg-cart-list" id="cfgCartList"></ul>
               <div class="cfg-summary-price">
-                <span class="cfg-summary-price-label">Total</span>
+                <span class="cfg-summary-price-label"><?= $e(t('cfg.total')) ?></span>
                 <strong class="cfg-summary-price-value" id="cfgCartTotal">—</strong>
               </div>
             </div>
 
             <div class="cfg-summary-actions">
-              <button class="btn btn--gold btn--block" id="cfgQuote" type="button">Demander un Devis</button>
-              <button class="btn btn--outline btn--block" id="cfgSave" type="button">Sauvegarder</button>
+              <button class="btn btn--gold btn--block" id="cfgQuote" type="button"><?= $e(t('cfg.ask_quote')) ?></button>
+              <button class="btn btn--outline btn--block" id="cfgSave" type="button"><?= $e(t('cfg.save')) ?></button>
             </div>
           </div>
 
@@ -366,21 +398,21 @@ $cfgData = [
   <div class="cfg-confirm-card" id="cfgConfirmCard">
     <div class="cfg-confirm-head">
       <img src="/door-showroom/assets/images/logo-adk.png" alt="ADK — Algerian Doors &amp; Kitchens" class="cfg-confirm-logo" />
-      <span class="cfg-confirm-sub">Demande de Devis</span>
+      <span class="cfg-confirm-sub"><?= $e(t('cfg.confirm_sub')) ?></span>
     </div>
     <div class="cfg-confirm-check" aria-hidden="true">
       <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5"/><polyline points="15,25 21,31 33,18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <h2 class="cfg-confirm-title">Merci</h2>
-    <p class="cfg-confirm-ref">Référence <strong id="cfgConfirmRef">—</strong></p>
+    <h2 class="cfg-confirm-title"><?= $e(t('cfg.confirm_thanks')) ?></h2>
+    <p class="cfg-confirm-ref"><?= $e(t('cfg.confirm_ref')) ?> <strong id="cfgConfirmRef">—</strong></p>
     <div class="cfg-confirm-customer" id="cfgConfirmCustomer"></div>
     <table class="cfg-confirm-table" id="cfgConfirmItems"></table>
-    <div class="cfg-confirm-total"><span>Total</span><strong id="cfgConfirmTotal">—</strong></div>
-    <p class="cfg-confirm-note">Votre demande a bien été reçue. Nous vous contacterons sous 24h avec un devis personnalisé.</p>
+    <div class="cfg-confirm-total"><span><?= $e(t('cfg.total')) ?></span><strong id="cfgConfirmTotal">—</strong></div>
+    <p class="cfg-confirm-note"><?= $e(t('cfg.confirm_note')) ?></p>
     <div class="cfg-confirm-actions">
-      <button type="button" class="btn btn--gold" id="cfgPrint">Imprimer / PDF</button>
-      <button type="button" class="btn btn--outline" id="cfgAnother">Configurer une autre porte</button>
-      <a href="/door-showroom" class="btn btn--outline">Retour à l'accueil</a>
+      <button type="button" class="btn btn--gold" id="cfgPrint"><?= $e(t('cfg.print')) ?></button>
+      <button type="button" class="btn btn--outline" id="cfgAnother"><?= $e(t('cfg.another')) ?></button>
+      <a href="/door-showroom" class="btn btn--outline"><?= $e(t('cfg.home')) ?></a>
     </div>
   </div>
 </div>

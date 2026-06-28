@@ -26,6 +26,7 @@ body {
   background: var(--black); color: var(--cream);
   font-family: var(--sans); font-weight: 300; line-height: 1.65;
   overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -47,6 +48,7 @@ button { font-family: inherit; cursor: pointer; }
   font-size: .7rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase;
   padding: .95rem 1.9rem; border-radius: 2px; border: 1px solid transparent;
   transition: background .3s var(--ease), color .3s, border-color .3s, transform .2s; white-space: nowrap;
+  max-width: 100%; text-align: center;
 }
 .btn:disabled { opacity: .4; cursor: not-allowed; }
 .btn svg { width: 16px; height: 16px; transition: transform .25s; }
@@ -62,6 +64,13 @@ button { font-family: inherit; cursor: pointer; }
 .btn--outline:hover { color: var(--cream); border-color: var(--gold); }
 .btn--outline-light { color: var(--cream); border-color: rgba(255,255,255,.32); }
 .btn--outline-light:hover { background: rgba(255,255,255,.1); }
+
+/* Small phones: let long uppercase CTA labels wrap and tighten spacing so they
+   never run past the viewport edge. Desktop/tablet keep the single-line look. */
+@media (max-width: 380px) {
+  .btn { white-space: normal; letter-spacing: .1em; padding: .9rem 1.4rem; }
+  .btn--lg { padding: 1.05rem 1.6rem; }
+}
 
 /* ─── NAV ─── */
 .nav {
@@ -88,14 +97,25 @@ button { font-family: inherit; cursor: pointer; }
 .nav-links a:hover { color: var(--cream); }
 .nav-cta { display: none; font-size: .66rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--cream); border: 1px solid var(--gold); padding: .7rem 1.5rem; border-radius: 2px; transition: background .25s, color .25s; }
 .nav-cta:hover { background: var(--gold); color: #1a1208; }
-.nav-burger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; }
-.nav-burger span { width: 24px; height: 1.5px; background: var(--cream); transition: transform .3s var(--ease), opacity .3s; }
-.nav-burger.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+/* Burger sits last so it always hugs the end of the bar. The cream bars carry a
+   soft dark halo so they stay legible over the bright areas of the hero photo
+   (before the nav gains its scrolled background). */
+.nav-burger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; padding: 6px; margin-left: auto; flex-shrink: 0; }
+.nav-burger span { width: 24px; height: 2px; border-radius: 2px; background: var(--cream); filter: drop-shadow(0 1px 2px rgba(0,0,0,.55)); transition: transform .3s var(--ease), opacity .3s; }
+.nav-burger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .nav-burger.is-open span:nth-child(2) { opacity: 0; }
-.nav-burger.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.nav-burger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 .nav-mobile.is-open { display: flex; }
-.nav-links.is-open { display: flex; flex-direction: column; position: fixed; inset: var(--nav-h) 0 0 0; background: rgba(11,10,9,.98); align-items: center; justify-content: center; gap: 2.2rem; backdrop-filter: blur(20px); }
-.nav-links.is-open a { font-size: 1.15rem; }
+/* Mobile drawer — full-screen luxury panel. Items spaced and centered; the
+   in-drawer Request-Quote CTA and language switch live at the bottom. */
+.nav-links.is-open { display: flex; flex-direction: column; position: fixed; inset: var(--nav-h) 0 0 0; background: rgba(11,10,9,.98); align-items: center; justify-content: center; gap: 2.2rem; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 2rem var(--pad) 3rem; overflow-y: auto; }
+.nav-links.is-open a { font-size: 1.3rem; letter-spacing: .12em; color: var(--cream); }
+.nav-links.is-open a:hover { color: var(--gold); }
+/* The in-drawer Request-Quote CTA is hidden everywhere except inside the open
+   mobile drawer (it lives inside .nav-links, which is the horizontal desktop row
+   — so it must stay hidden there to avoid changing the desktop bar). */
+.nav-cta--drawer { display: none; }
+.nav-links.is-open .nav-cta--drawer { display: inline-flex; align-items: center; justify-content: center; margin-top: .6rem; font-size: .72rem; padding: .95rem 2.2rem; }
 
 /* ─── 1 · HERO ─── */
 .hero { position: relative; height: 100svh; min-height: 620px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
@@ -450,6 +470,9 @@ button { font-family: inherit; cursor: pointer; }
 @media (min-width: 980px) {
   .nav-links { display: flex; }
   .nav-cta { display: inline-flex; }
+  /* The in-drawer CTA is mobile-only; keep it hidden on the desktop bar so the
+     single standalone Request-Quote button is the only one shown. */
+  .nav-cta--drawer { display: none; }
   .nav-burger { display: none; }
   .hero-scroll { display: block; }
 

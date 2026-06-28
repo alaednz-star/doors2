@@ -81,7 +81,7 @@ a.ct-info-card:hover { background: var(--ink); }
 .ct-map { position: relative; min-height: 460px; border-bottom: 1px solid var(--line); }
 .ct-map-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(.4) brightness(.7) contrast(1.1); }
 .ct-map-overlay { position: relative; z-index: 2; display: flex; align-items: center; min-height: 460px; padding: var(--pad); pointer-events: none; }
-.ct-map-card { pointer-events: auto; background: rgba(11,10,9,.92); border: 1px solid var(--line); border-radius: 6px; padding: clamp(2rem, 4vw, 2.75rem); max-width: 380px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.ct-map-card { pointer-events: auto; background: rgba(11,10,9,.92); border: 1px solid var(--line); border-radius: 6px; padding: clamp(1.5rem, 4vw, 2.75rem); width: 100%; max-width: 380px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .ct-map-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; margin: .65rem 0 .75rem; }
 .ct-map-addr { font-size: .9rem; color: var(--mid); line-height: 1.7; margin-bottom: 1.75rem; }
 

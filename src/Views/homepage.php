@@ -38,6 +38,7 @@ $DIR = \App\Core\I18n::dir();
     <a href="#featured"><?= $e(t('nav.doors')) ?></a>
     <a href="#inspiration"><?= $e(t('nav.inspiration')) ?></a>
     <a href="#why"><?= $e(t('nav.about')) ?></a>
+    <a href="#quote" class="nav-cta nav-cta--drawer"><?= $e(t('nav.request_quote')) ?></a>
     <?php $variant = 'mobile'; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>
   </nav>
   <?php $variant = ''; include APP_ROOT . '/src/Views/partials/lang-switch.php'; ?>

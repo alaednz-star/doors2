@@ -68,6 +68,14 @@
 .col-empty p, .col-noresults p { font-size: .95rem; color: var(--mid); margin-bottom: 2rem; }
 
 /* ── RESPONSIVE ── */
+/* Small phones: ease the header stats so the three figures + labels never get
+   clipped on the narrowest screens. */
+@media (max-width: 360px) {
+  .col-head-stats { gap: 1rem; }
+  .col-stat strong { font-size: 1.8rem; }
+  .col-stat span { letter-spacing: .1em; }
+  .col-stat-sep { height: 34px; }
+}
 @media (min-width: 640px) {
   .col-bar-inner { flex-direction: row; align-items: center; justify-content: space-between; gap: 2rem; }
   .col-search { max-width: 320px; }

@@ -126,3 +126,46 @@
 @media (prefers-reduced-motion: reduce) {
   .pd-stage:hover .pd-stage-img { transform: none; }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   MOBILE-ONLY REFINEMENTS (≤640px) — desktop layout is final, untouched.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Product photo: source images sit on a WHITE studio background. Match the
+     stage to white and show the whole door (contain) so its white margins blend
+     in seamlessly — clean catalogue look, no floating box or empty dark bars. */
+  .pd-stage {
+    background: #ffffff;
+    min-height: 56svh;
+  }
+  .pd-stage-img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: none;
+  }
+  .pd-thumb { background: #ffffff; }
+  .pd-thumb img { object-fit: contain; }
+
+  /* Long product names (e.g. "Heritage Chêne · Chambre · Nédabaile") were
+     clipping off the right edge — shrink and allow wrapping. */
+  .pd-name {
+    font-size: 1.9rem;
+    line-height: 1.12;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Spec rows: stack label above value so long values can't overflow the row. */
+  .pd-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .35rem;
+  }
+  .pd-meta-row strong {
+    text-align: left;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+}

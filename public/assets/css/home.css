@@ -516,3 +516,26 @@ button { font-family: inherit; cursor: pointer; }
   font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
   color: var(--dim); font-weight: 500;
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   MOBILE-ONLY REFINEMENTS  (≤640px)
+   Desktop layout is final — these rules never apply above 640px.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Featured doors: source photos are on a WHITE studio background with a
+     baked-in label at the bottom. On the dark card they showed an ugly white
+     box + black bars. Use a white card and cover-crop so the door fills it
+     cleanly and the redundant baked-in label is cropped away. */
+  .fdoor-media {
+    background: #ffffff;
+    aspect-ratio: 4 / 5;
+  }
+  .fdoor-media img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center 34%;
+    filter: none;
+  }
+}

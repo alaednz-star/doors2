@@ -81,3 +81,33 @@
 @media (min-width: 1280px) {
   .col-story-body { padding-inline: clamp(3.5rem, 6vw, 6rem); }
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   MOBILE-ONLY REFINEMENTS (≤640px) — desktop layout is final, untouched.
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Guard against any element pushing the page wider than the screen. */
+  html, body { overflow-x: hidden; max-width: 100%; }
+
+  /* The horizontal filter-scroll row must stay within the viewport (min-width:0
+     lets the flex child shrink) instead of stretching the bar past the screen
+     and pushing all the page copy off the right edge. */
+  .col-bar-inner { min-width: 0; max-width: 100%; }
+  .col-filters { min-width: 0; max-width: 100%; }
+
+  /* Long words / copy must wrap inside the viewport, never clip off the edge. */
+  .col-head-inner { max-width: 100%; width: 100%; }
+  .col-head-sub, .col-head-title, .col-story-copy p, .col-story-lead {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    width: 100%;
+  }
+  /* Slightly smaller lead so lines are comfortably short on a phone. */
+  .col-head-sub { font-size: .92rem; }
+
+  /* Featured/story door photos are on a white studio background — show them on
+     white so they read cleanly (no dark bars around a white image). */
+  .col-story-media { background: #ffffff; }
+  .col-story-media img { object-fit: cover; }
+}

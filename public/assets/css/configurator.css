@@ -1096,6 +1096,15 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 /* ─── MOBILE FAB (shows summary drawer) ─── */
 @media (max-width: 480px) {
   .cfg-field-row { flex-direction: column; }
+
+  /* The "COLLECTION" category tag on each card has very wide letter-spacing
+     and was running off the right edge on narrow phones. Tighten it so it
+     sits cleanly inside the card. */
+  .cfg-col-tag {
+    right: 1.1rem;
+    letter-spacing: .14em;
+    font-size: .5rem;
+  }
 }
 
 /* ─── CONFIRMATION MODAL ─── */

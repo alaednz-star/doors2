@@ -8,7 +8,7 @@ use App\Core\Database;
  * Builds WhatsApp lead notifications for new quote requests.
  *
  * The destination number is read from the admin setting `notification_whatsapp`
- * (digits only, e.g. 213661234567). When it isn't configured, the notifier is
+ * (digits only, e.g. 2136XXXXXXXX). When it isn't configured, the notifier is
  * "disabled" and callers simply skip the WhatsApp step — nothing breaks.
  *
  * Today this produces a click-to-send https://wa.me/ link (the customer/admin

@@ -522,6 +522,75 @@ button { font-family: inherit; cursor: pointer; }
    Desktop layout is final — these rules never apply above 640px.
    ════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
+  /* ── Global overflow guard ──
+     home.css is loaded by every public page (home, collections, collection
+     detail, contact, product, quote). On phones, several hero/lead paragraphs
+     were running off the right edge. Stop the page scrolling sideways and make
+     all lead copy + headings wrap safely inside the viewport. */
+  html, body { overflow-x: hidden; max-width: 100%; }
+
+  /* Hero/lead containers are flex items inside `display:flex; overflow:hidden`
+     heroes. Flex items default to min-width:auto and refuse to shrink below
+     their content, so long copy laid out wider than the screen and got clipped.
+     min-width:0 lets them shrink so the text wraps instead. */
+  .hero, .ct-hero, .cd-hero, .quote, .col-head { overflow-x: hidden; }
+  .hero-inner, .ct-hero-inner, .cd-hero-inner, .quote-inner, .col-head-inner {
+    min-width: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    overflow: visible !important;   /* let text wrap, don't clip it */
+  }
+
+  /* Hard-cap lead copy + headings to their (now viewport-bounded) container so a
+     line can never lay out wider than the screen and get clipped. */
+  .hero-sub, .quote-sub, .col-head-sub, .cd-hero-sub, .cd-hero-desc, .cd-hero-lead,
+  .ct-hero-sub, .inspo-lead, .process-copy p, .sec-intro p,
+  .hero-title, .quote-title, .col-head-title, .cd-hero-name, .ct-hero-title {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* ── Buttons ──
+     .btn has white-space:nowrap, so a long gold CTA ("CONFIGURER ET DEMANDER
+     UN DEVIS") can't shrink and was stretching its flex column — and therefore
+     the whole hero — wider than the screen, which clipped all the copy. On
+     phones let the button text wrap and keep buttons full-width within the
+     container. */
+  .hero-actions, .quote-actions, .cd-hero-actions { width: 100%; }
+  .hero-actions .btn, .quote-actions .btn, .cd-hero-actions .btn {
+    width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: break-word;
+  }
+
+  /* ── Mobile menu overlay ──
+     The open menu must fully cover the page (it was letting the sections behind
+     bleed through and overlap the links). Force a solid, full-screen overlay
+     above everything, and lock body scroll while it's open. */
+  .nav-links.is-open {
+    z-index: 200;
+    inset: 0;
+    background: #0b0a09;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    padding: var(--nav-h) var(--pad) 2rem;
+    overflow-y: auto;
+  }
+  /* Keep the burger (which toggles it) tappable above the overlay. */
+  .nav-burger { z-index: 210; }
+
+  /* ── Hero height ──
+     A full 100svh hero hid the whole background behind the copy and pushed all
+     content off-screen. Cap it so the door photo is visible and the page feels
+     less heavy on a phone. */
+  .hero { height: auto; min-height: 0; }
+  .hero-inner { padding-top: calc(var(--nav-h) + 2rem); padding-bottom: 2.5rem; }
+
   /* Featured doors: source photos are on a WHITE studio background with a
      baked-in label at the bottom. On the dark card they showed an ugly white
      box + black bars. Use a white card and cover-crop so the door fills it
@@ -539,3 +608,4 @@ button { font-family: inherit; cursor: pointer; }
     filter: none;
   }
 }
+

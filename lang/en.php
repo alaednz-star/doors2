@@ -216,6 +216,9 @@ return [
         'dimensions' => 'Dimensions',
         'quantity'   => 'Quantity',
         'cart_title' => 'Doors in your request',
+        'cart_total' => 'Request total',
+        'this_door'  => 'This door',
+        'door_added' => 'Door added to your request (:n total). Configure the next one.',
         'total'      => 'Total',
         'save'       => 'Save',
 

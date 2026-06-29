@@ -98,6 +98,7 @@ class QuoteController
         $log       = $this->statusLog($id);
         $selects   = $this->loadSelects();
         $features  = $this->resolveFeatures($quote['features_json']);
+        $doorItems = $this->parseDoorItems($quote['features_json']);
         $user      = $this->auth->user();
         $csrfToken = CsrfGuard::token();
         $flash     = Session::getFlash('quote_success');
@@ -173,14 +174,14 @@ class QuoteController
         $db->prepare(
             'INSERT INTO quote_requests
              (reference, customer_name, customer_phone, customer_email, customer_city, notes,
-              product_id, material_id, color_id, door_type_id,
+              product_id, collection_id, material_id, color_id, door_type_id,
               width_mm, height_mm, handle, features_json, final_price, status)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
         )->execute([
             $ref,
             $d['customer_name'], $d['customer_phone'], $d['customer_email'],
             $d['customer_city'], $d['notes'],
-            $d['product_id'], $d['material_id'],
+            $d['product_id'], $d['collection_id'], $d['material_id'],
             $d['color_id'], $d['door_type_id'],
             $d['width_mm'], $d['height_mm'], $d['handle'],
             $d['features_json'], $d['final_price'], 'new',
@@ -220,13 +221,13 @@ class QuoteController
         Database::conn()->prepare(
             'UPDATE quote_requests
              SET customer_name=?, customer_phone=?, customer_email=?, customer_city=?, notes=?,
-                 product_id=?, material_id=?, color_id=?, door_type_id=?,
+                 product_id=?, collection_id=?, material_id=?, color_id=?, door_type_id=?,
                  width_mm=?, height_mm=?, handle=?, features_json=?, final_price=?
              WHERE id=?'
         )->execute([
             $d['customer_name'], $d['customer_phone'], $d['customer_email'],
             $d['customer_city'], $d['notes'],
-            $d['product_id'], $d['material_id'],
+            $d['product_id'], $d['collection_id'], $d['material_id'],
             $d['color_id'], $d['door_type_id'],
             $d['width_mm'], $d['height_mm'], $d['handle'],
             $d['features_json'], $d['final_price'],
@@ -352,19 +353,24 @@ class QuoteController
     {
         $db = Database::conn();
         return [
-            'products'  => $db->query('SELECT id, name FROM products   WHERE is_active=1 ORDER BY name')->fetchAll(),
-            'materials' => $db->query('SELECT id, name FROM materials  WHERE is_active=1 ORDER BY display_order')->fetchAll(),
-            'colors'    => $db->query('SELECT id, name, hex FROM colors WHERE is_active=1 ORDER BY display_order')->fetchAll(),
-            'doorTypes' => $db->query('SELECT id, name FROM door_types WHERE is_active=1 ORDER BY display_order')->fetchAll(),
-            'features'  => $db->query('SELECT id, name, price, price_type FROM optional_features WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'products'      => $db->query('SELECT id, name FROM products   WHERE is_active=1 ORDER BY name')->fetchAll(),
+            'collections'   => $db->query('SELECT id, name FROM collections WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'materials'     => $db->query('SELECT id, name FROM materials  WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'colors'        => $db->query('SELECT id, name, hex FROM colors WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'doorTypes'     => $db->query('SELECT id, name FROM door_types WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'constructions' => $db->query('SELECT id, name FROM construction_types WHERE is_active=1 ORDER BY display_order')->fetchAll(),
+            'features'      => $db->query('SELECT id, name, price, price_type FROM optional_features WHERE is_active=1 ORDER BY display_order')->fetchAll(),
         ];
     }
 
     private function resolveFeatures(?string $json): array
     {
         if (!$json) return [];
-        $ids = json_decode($json, true);
-        if (empty($ids)) return [];
+        $data = json_decode($json, true);
+        if (!is_array($data)) return [];
+
+        $ids = $this->extractFeatureIds($data);
+        if (!$ids) return [];
 
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $stmt = Database::conn()->prepare(
@@ -372,6 +378,101 @@ class QuoteController
         );
         $stmt->execute($ids);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Pull optional-feature IDs out of a quote's features_json. Handles both the
+     * configurator cart shape ({"items":[{"config":{"feature_ids":[...]}}]}) and
+     * a plain list of IDs ([1,2,3]) for backward compatibility.
+     */
+    private function extractFeatureIds(array $data): array
+    {
+        $ids = [];
+        if (isset($data['items']) && is_array($data['items'])) {
+            foreach ($data['items'] as $item) {
+                $fids = $item['config']['feature_ids'] ?? [];
+                if (is_array($fids)) {
+                    foreach ($fids as $fid) {
+                        if (is_numeric($fid)) $ids[] = (int)$fid;
+                    }
+                }
+            }
+        } else {
+            foreach ($data as $fid) {
+                if (is_numeric($fid)) $ids[] = (int)$fid;
+            }
+        }
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * Decode a quote's features_json into a list of doors with resolved names,
+     * so the admin can see every door the customer ordered (collection, colour,
+     * usage, construction, dimensions, quantity, line total). Returns [] when the
+     * quote has no itemised door list (legacy single-door quote).
+     */
+    private function parseDoorItems(?string $json): array
+    {
+        if (!$json) return [];
+        $data = json_decode($json, true);
+        if (!is_array($data) || empty($data['items']) || !is_array($data['items'])) {
+            return [];
+        }
+
+        // Collect every referenced id so we can resolve names in one pass each.
+        $ids = ['collections' => [], 'colors' => [], 'door_types' => [], 'construction_types' => []];
+        foreach ($data['items'] as $it) {
+            $c = $it['config'] ?? [];
+            if (!empty($c['collection_id']))        $ids['collections'][]        = (int)$c['collection_id'];
+            if (!empty($c['color_id']))             $ids['colors'][]             = (int)$c['color_id'];
+            if (!empty($c['door_type_id']))         $ids['door_types'][]         = (int)$c['door_type_id'];
+            if (!empty($c['construction_type_id'])) $ids['construction_types'][] = (int)$c['construction_type_id'];
+        }
+
+        $names = [
+            'collections'        => $this->lookupNames('collections', $ids['collections']),
+            'colors'             => $this->lookupNames('colors', $ids['colors'], true),
+            'door_types'         => $this->lookupNames('door_types', $ids['door_types']),
+            'construction_types' => $this->lookupNames('construction_types', $ids['construction_types']),
+        ];
+
+        $rows = [];
+        foreach ($data['items'] as $it) {
+            $c   = $it['config'] ?? [];
+            $qty = (int)($it['quantity'] ?? 1);
+            $col = $names['collections'][(int)($c['collection_id'] ?? 0)] ?? null;
+            $clr = $names['colors'][(int)($c['color_id'] ?? 0)] ?? null;
+
+            $rows[] = [
+                'collection'   => $col['name']  ?? '—',
+                'color'        => $clr['name']  ?? '—',
+                'color_hex'    => $clr['hex']   ?? '',
+                'usage'        => $names['door_types'][(int)($c['door_type_id'] ?? 0)]['name'] ?? '—',
+                'construction' => $names['construction_types'][(int)($c['construction_type_id'] ?? 0)]['name'] ?? '—',
+                'width_mm'     => (int)($c['width_mm'] ?? 0),
+                'height_mm'    => (int)($c['height_mm'] ?? 0),
+                'quantity'     => $qty,
+                'unit_price'   => (float)($it['unit_price'] ?? 0),
+                'line_total'   => (float)($it['line_total'] ?? 0),
+            ];
+        }
+        return $rows;
+    }
+
+    /** id => ['name'=>..., 'hex'=>...] for a lookup table (one query). */
+    private function lookupNames(string $table, array $ids, bool $withHex = false): array
+    {
+        $ids = array_values(array_unique(array_filter($ids)));
+        if (!$ids) return [];
+        $ph   = implode(',', array_fill(0, count($ids), '?'));
+        $cols = $withHex ? 'id, name, hex' : 'id, name';
+        $stmt = Database::conn()->prepare("SELECT $cols FROM `$table` WHERE id IN ($ph)");
+        $stmt->execute($ids);
+        $out = [];
+        foreach ($stmt->fetchAll() as $r) {
+            $out[(int)$r['id']] = ['name' => $r['name'], 'hex' => $r['hex'] ?? ''];
+        }
+        return $out;
     }
 
     private function generateReference(): string
@@ -437,16 +538,18 @@ class QuoteController
             'customer_phone' => $_POST['customer_phone'] ?? '',
             'customer_email' => $_POST['customer_email'] ?? '',
             'customer_city'  => $_POST['customer_city']  ?? '',
-            'notes'          => $_POST['notes']          ?? '',
-            'product_id'     => $_POST['product_id']     ?? '',
-            'material_id'    => $_POST['material_id']    ?? '',
-            'color_id'       => $_POST['color_id']       ?? '',
-            'door_type_id'   => $_POST['door_type_id']   ?? '',
-            'width_mm'       => $_POST['width_mm']       ?? '',
-            'height_mm'      => $_POST['height_mm']      ?? '',
-            'handle'         => $_POST['handle']         ?? '',
-            'feature_ids'    => $_POST['feature_ids']    ?? [],
-            'final_price'    => $_POST['final_price']    ?? '',
+            'notes'               => $_POST['notes']               ?? '',
+            'product_id'          => $_POST['product_id']          ?? '',
+            'collection_id'       => $_POST['collection_id']       ?? '',
+            'material_id'         => $_POST['material_id']         ?? '',
+            'color_id'            => $_POST['color_id']            ?? '',
+            'door_type_id'        => $_POST['door_type_id']        ?? '',
+            'construction_type_id'=> $_POST['construction_type_id']?? '',
+            'width_mm'            => $_POST['width_mm']            ?? '',
+            'height_mm'           => $_POST['height_mm']           ?? '',
+            'handle'             => $_POST['handle']             ?? '',
+            'feature_ids'        => $_POST['feature_ids']        ?? [],
+            'final_price'        => $_POST['final_price']        ?? '',
         ];
     }
 

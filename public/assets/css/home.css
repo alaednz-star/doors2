@@ -391,7 +391,7 @@ button { font-family: inherit; cursor: pointer; }
 .quote-bg img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 10s var(--ease); }
 .quote-bg img.is-loaded { transform: scale(1); }
 .quote-overlay { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(11,10,9,.92) 0%, rgba(58,36,23,.6) 55%, rgba(11,10,9,.35) 100%); }
-.quote-inner { position: relative; z-index: 2; padding: clamp(4rem, 8vw, 7rem) var(--pad); max-width: 680px; }
+.quote-inner { position: relative; z-index: 2; padding: clamp(4rem, 8vw, 7rem) var(--pad); max-width: min(960px, 92vw); }
 .quote-title { font-family: var(--serif); font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 300; line-height: 1.05; margin-bottom: 1.25rem; }
 .quote-title em { font-style: italic; color: rgba(245,238,228,.62); }
 .quote-sub { font-size: clamp(.9rem, 1.5vw, 1.08rem); color: var(--mid); max-width: 440px; margin-bottom: 2.5rem; }
@@ -436,7 +436,15 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── TABLET 720px+ ─── */
 @media (min-width: 720px) {
-  .hero-actions, .quote-actions { flex-direction: row; }
+  /* Buttons sit side-by-side on one line. Keep them at their natural content
+     width — the gold button has overflow:hidden (for its shine) so it must
+     never shrink, or its label gets clipped. The actions row sizes to its
+     content (max-content) so the surrounding text max-width never squeezes it. */
+  .hero-actions, .quote-actions {
+    flex-direction: row; flex-wrap: nowrap; align-items: center;
+    width: max-content; max-width: 100%;
+  }
+  .hero-actions .btn, .quote-actions .btn { flex: 0 0 auto; white-space: nowrap; }
   .featured-grid { grid-template-columns: repeat(2, 1fr); }
   .why-grid { grid-template-columns: repeat(2, 1fr); }
   .finishes-ring { grid-template-columns: repeat(4, 1fr); }

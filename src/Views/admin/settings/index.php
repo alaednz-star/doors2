@@ -37,6 +37,7 @@ $groupLabels = [
       <div class="form-card-body">
         <?php foreach ($rows as $row): ?>
           <?php $key = $row['setting_key']; ?>
+          <?php if ($key === 'vat_percent') continue; // VAT removed — not used in pricing ?>
 
           <?php if ($key === 'maintenance_mode' || $key === 'quote_email_notify'): ?>
             <div class="form-field">
@@ -61,13 +62,6 @@ $groupLabels = [
             <div class="form-field">
               <label for="<?= $e($key) ?>"><?= $e($row['label']) ?></label>
               <textarea id="<?= $e($key) ?>" name="<?= $e($key) ?>" rows="3"><?= $get($key) ?></textarea>
-            </div>
-
-          <?php elseif ($key === 'vat_percent'): ?>
-            <div class="form-field form-field--sm">
-              <label for="<?= $e($key) ?>"><?= $e($row['label']) ?></label>
-              <input type="number" id="<?= $e($key) ?>" name="<?= $e($key) ?>" value="<?= $get($key) ?>" min="0" max="100" step="0.01" style="max-width:120px" />
-              <span class="form-hint">Percentage applied to price calculations.</span>
             </div>
 
           <?php else: ?>

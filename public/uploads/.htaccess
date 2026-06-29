@@ -1,7 +1,3 @@
-Options -Indexes
-<FilesMatch "\.php$">
-    Require all denied
-</FilesMatch>
 <FilesMatch "\.(php|php3|php4|php5|phtml|phar|cgi|pl|py|sh|rb|asp|aspx|exe)$">
     Require all denied
 </FilesMatch>

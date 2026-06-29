@@ -29,6 +29,7 @@ class PricingCalculator
         $collectionId   = $this->intOrNull($input['collection_id'] ?? null);
         $doorTypeId     = $this->intOrNull($input['door_type_id'] ?? null);
         $constructionId = $this->intOrNull($input['construction_type_id'] ?? null);
+        $colorId        = $this->intOrNull($input['color_id'] ?? null);
         $widthMm        = $this->intOrNull($input['width_mm'] ?? null);
         $heightMm       = $this->intOrNull($input['height_mm'] ?? null);
         $featureIds     = isset($input['feature_ids']) ? array_map('intval', (array)$input['feature_ids']) : [];
@@ -48,10 +49,15 @@ class PricingCalculator
         $orderedHeight = $heightMm ?: $refHeight;
         $orderedArea   = $orderedWidth * $orderedHeight;
 
+        // Per-colour surcharge is added to the matrix price BEFORE area scaling,
+        // so the colour cost scales with door size too: (matrix + colour) × area.
         $matrixPrice = (float)$cell['base_price'];
+        $colorPrice  = $this->colorPrice($colorId);
+        $combined    = $matrixPrice + $colorPrice;
+
         $basePrice   = $referenceArea > 0
-            ? $matrixPrice * ($orderedArea / $referenceArea)
-            : $matrixPrice;
+            ? $combined * ($orderedArea / $referenceArea)
+            : $combined;
         $basePrice = round($basePrice, 2);
 
         // Optional features sit on top of the (scaled) base price.
@@ -90,6 +96,7 @@ class PricingCalculator
 
             // pricing transparency / audit
             'matrix_price'     => round($matrixPrice, 2),
+            'color_price'      => round($colorPrice, 2),
             'reference_size'   => ['width_mm' => $refWidth, 'height_mm' => $refHeight],
             'ordered_size'     => ['width_mm' => $orderedWidth, 'height_mm' => $orderedHeight],
             'rule_id'          => (int)$cell['id'],
@@ -202,6 +209,22 @@ class PricingCalculator
             'rules_applied'    => [],
             'features_applied' => [],
         ];
+    }
+
+    /** Per-colour surcharge (0 when no colour, colour not found, or column absent). */
+    private function colorPrice(?int $colorId): float
+    {
+        if (!$colorId) {
+            return 0.0;
+        }
+        try {
+            $stmt = Database::conn()->prepare('SELECT price FROM colors WHERE id = ? LIMIT 1');
+            $stmt->execute([$colorId]);
+            $val = $stmt->fetchColumn();
+            return $val !== false ? (float)$val : 0.0;
+        } catch (\Throwable $e) {
+            return 0.0;
+        }
     }
 
     private function loadFeatures(array $ids): array

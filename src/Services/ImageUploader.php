@@ -55,6 +55,11 @@ class ImageUploader
         if (is_file($path)) {
             unlink($path);
         }
+        // Remove the generated .webp twin too, if any.
+        $webp = preg_replace('/\.(png|jpe?g)$/i', '.webp', $path);
+        if ($webp && $webp !== $path && is_file($webp)) {
+            unlink($webp);
+        }
     }
 
     private function uploadOne(array $file, int $index): ?string
@@ -108,7 +113,54 @@ class ImageUploader
 
         chmod($dest, 0644);
 
+        // Generate a .webp twin so the front-end's transparent WebP serving
+        // (.htaccess) can deliver a small, fast image. Best-effort — if GD/WebP
+        // isn't available the original is still served unchanged.
+        $this->generateWebp($dest);
+
         return $filename;
+    }
+
+    /** Write an optimized .webp sibling next to an uploaded image (best-effort). */
+    private function generateWebp(string $path): void
+    {
+        if (!function_exists('imagewebp')) {
+            return;
+        }
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $img = match ($ext) {
+            'png'         => @imagecreatefrompng($path),
+            'jpg', 'jpeg' => @imagecreatefromjpeg($path),
+            'webp'        => null, // already webp
+            default       => null,
+        };
+        if (!$img) {
+            return;
+        }
+
+        // Downscale very large images — nothing here needs to exceed 1600px wide.
+        $w = imagesx($img);
+        $h = imagesy($img);
+        $maxW = 1600;
+        if ($w > $maxW) {
+            $nh = (int) round($h * ($maxW / $w));
+            $resized = imagecreatetruecolor($maxW, $nh);
+            imagealphablending($resized, false);
+            imagesavealpha($resized, true);
+            imagecopyresampled($resized, $img, 0, 0, 0, 0, $maxW, $nh, $w, $h);
+            imagedestroy($img);
+            $img = $resized;
+        }
+
+        $webpPath = preg_replace('/\.(png|jpe?g)$/i', '.webp', $path);
+        if ($webpPath && $webpPath !== $path) {
+            imagepalettetotruecolor($img);
+            @imagewebp($img, $webpPath, 80);
+            if (is_file($webpPath)) {
+                @chmod($webpPath, 0644);
+            }
+        }
+        imagedestroy($img);
     }
 
     private function generateFilename(string $ext): string

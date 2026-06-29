@@ -9,6 +9,7 @@ $statusMeta = [
     'quotation_sent' => ['label' => 'Quotation Sent', 'color' => 'purple'],
     'in_progress'    => ['label' => 'In Progress',    'color' => 'orange'],
     'confirmed'      => ['label' => 'Confirmed',      'color' => 'green'],
+    'delivered'      => ['label' => 'Delivered',      'color' => 'teal'],
     'completed'      => ['label' => 'Completed',      'color' => 'ink'],
     'cancelled'      => ['label' => 'Cancelled',      'color' => 'red'],
 ];

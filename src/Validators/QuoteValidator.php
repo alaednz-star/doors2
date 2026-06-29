@@ -6,7 +6,7 @@ class QuoteValidator
 {
     private const VALID_STATUSES = [
         'new', 'contacted', 'quotation_sent',
-        'in_progress', 'confirmed', 'completed', 'cancelled',
+        'in_progress', 'confirmed', 'delivered', 'completed', 'cancelled',
     ];
 
     private array $errors = [];
@@ -106,6 +106,7 @@ class QuoteValidator
             'quotation_sent' => 'Quotation Sent',
             'in_progress'    => 'In Progress',
             'confirmed'      => 'Confirmed',
+            'delivered'      => 'Delivered',
             'completed'      => 'Completed',
             'cancelled'      => 'Cancelled',
             default          => ucfirst($status),
@@ -119,7 +120,8 @@ class QuoteValidator
             'contacted'      => ['quotation_sent', 'in_progress', 'cancelled'],
             'quotation_sent' => ['in_progress', 'confirmed', 'cancelled'],
             'in_progress'    => ['confirmed', 'cancelled'],
-            'confirmed'      => ['completed', 'cancelled'],
+            'confirmed'      => ['delivered', 'completed', 'cancelled'],
+            'delivered'      => ['completed', 'cancelled'],
             'completed'      => [],
             'cancelled'      => ['new'],
             default          => [],
@@ -128,7 +130,7 @@ class QuoteValidator
 
     private function validateConfig(array $input): void
     {
-        foreach (['product_id', 'material_id', 'color_id', 'door_type_id'] as $field) {
+        foreach (['product_id', 'collection_id', 'material_id', 'color_id', 'door_type_id', 'construction_type_id'] as $field) {
             $val = $input[$field] ?? '';
             if ($val !== '' && $val !== null && !ctype_digit((string)$val)) {
                 $this->errors[$field] = 'Must be a valid selection.';
@@ -167,16 +169,45 @@ class QuoteValidator
 
         $price = $input['final_price'] ?? '';
 
+        $collectionId   = $nullableInt($input['collection_id']        ?? '');
+        $constructionId = $nullableInt($input['construction_type_id'] ?? '');
+        $colorId        = $nullableInt($input['color_id']             ?? '');
+        $doorTypeId     = $nullableInt($input['door_type_id']         ?? '');
+        $widthMm        = $nullableInt($input['width_mm']             ?? '');
+        $heightMm       = $nullableInt($input['height_mm']            ?? '');
+
+        // Preserve the configurator cart shape so the customer's full selection
+        // (collection, construction, dimensions, features) survives an admin edit.
+        $config = [
+            'width_mm'             => $widthMm,
+            'height_mm'            => $heightMm,
+            'collection_id'        => $collectionId,
+            'color_id'             => $colorId,
+            'door_type_id'         => $doorTypeId,
+            'construction_type_id' => $constructionId,
+            'feature_ids'          => $featureIds,
+        ];
+        $featuresJson = json_encode([
+            'items' => [[
+                'config'     => $config,
+                'quantity'   => 1,
+                'unit_price' => ($price !== '' && $price !== null) ? (float)$price : null,
+                'line_total' => ($price !== '' && $price !== null) ? (float)$price : null,
+            ]],
+        ]);
+
         return [
-            'product_id'    => $nullableInt($input['product_id']   ?? ''),
-            'material_id'   => $nullableInt($input['material_id']  ?? ''),
-            'color_id'      => $nullableInt($input['color_id']     ?? ''),
-            'door_type_id'  => $nullableInt($input['door_type_id'] ?? ''),
-            'width_mm'      => $nullableInt($input['width_mm']     ?? ''),
-            'height_mm'     => $nullableInt($input['height_mm']    ?? ''),
-            'handle'        => $nullableStr($input['handle']       ?? ''),
-            'features_json' => !empty($featureIds) ? json_encode($featureIds) : null,
-            'final_price'   => ($price !== '' && $price !== null) ? (float)$price : null,
+            'product_id'           => $nullableInt($input['product_id'] ?? ''),
+            'collection_id'        => $collectionId,
+            'material_id'          => $nullableInt($input['material_id'] ?? ''),
+            'color_id'             => $colorId,
+            'door_type_id'         => $doorTypeId,
+            'construction_type_id' => $constructionId,
+            'width_mm'             => $widthMm,
+            'height_mm'            => $heightMm,
+            'handle'               => $nullableStr($input['handle'] ?? ''),
+            'features_json'        => $featuresJson,
+            'final_price'          => ($price !== '' && $price !== null) ? (float)$price : null,
         ];
     }
 }

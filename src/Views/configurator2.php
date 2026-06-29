@@ -29,6 +29,10 @@ $jsI18n = [
     'construction'  => t('cfg.construction'),
     'dimensions'    => t('cfg.dimensions'),
     'quantity'      => t('cfg.quantity'),
+    'cart_title'    => t('cfg.cart_title'),
+    'cart_total'    => t('cfg.cart_total'),
+    'this_door'     => t('cfg.this_door'),
+    'door_added'    => t('cfg.door_added'),
     'err_review'    => t('cfg.err_review'),
     'err_required'  => t('cfg.err_required'),
     'err_no_door'   => t('cfg.err_no_door'),
@@ -245,6 +249,14 @@ $cfgData = [
                       <button type="button" class="cfg-stepper-btn" id="cfgHeightPlus" aria-label="<?= $e(t('cfg.height_inc')) ?>">+</button>
                     </div>
                   </div>
+                  <div class="cfg-dim2-row">
+                    <label for="cfgQtyVisible"><?= $e(t('cfg.quantity')) ?></label>
+                    <div class="cfg-stepper">
+                      <input type="number" id="cfgQtyVisible" inputmode="numeric" min="1" max="999" step="1" value="1" />
+                      <button type="button" class="cfg-stepper-btn" id="cfgQtyMinus" aria-label="−">−</button>
+                      <button type="button" class="cfg-stepper-btn" id="cfgQtyPlus" aria-label="+">+</button>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="cfg-dim2-summary">
@@ -273,12 +285,12 @@ $cfgData = [
                   <span><?= $e(t('cfg.est_price')) ?></span>
                   <strong id="cfgReviewPrice">—</strong>
                 </div>
+                <div class="cfg-review-cart" id="cfgReviewCart" hidden></div>
                 <div class="cfg-review-actions">
                   <button type="button" class="btn btn--gold btn--block" id="cfgToDetails">
                     <?= $e(t('cfg.ask_quote')) ?>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" style="width:16px;height:16px;vertical-align:middle;margin-left:.4rem;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </button>
-                  <button type="button" class="btn btn--outline btn--block" id="cfgReviewSave"><?= $e(t('cfg.save_cfg')) ?></button>
                   <button type="button" class="btn btn--outline btn--block cfg-review-add" id="cfgAddAnother"><?= $e(t('cfg.add_door')) ?></button>
                 </div>
               </div>
@@ -297,10 +309,11 @@ $cfgData = [
                 <div class="cfg-quote2-recap">
                   <span class="cfg-quote2-recap-name" id="cfgQuoteName">—</span>
                   <dl class="cfg-quote2-recap-list" id="cfgQuoteReview"></dl>
-                  <div class="cfg-quote2-recap-price">
+                  <div class="cfg-quote2-recap-price" id="cfgQuotePriceBlock">
                     <span><?= $e(t('cfg.est_price')) ?></span>
                     <strong id="cfgQuotePrice">—</strong>
                   </div>
+                  <div class="cfg-review-cart" id="cfgQuoteCart" hidden></div>
                 </div>
               </div>
 
@@ -381,7 +394,6 @@ $cfgData = [
 
             <div class="cfg-summary-actions">
               <button class="btn btn--gold btn--block" id="cfgQuote" type="button"><?= $e(t('cfg.ask_quote')) ?></button>
-              <button class="btn btn--outline btn--block" id="cfgSave" type="button"><?= $e(t('cfg.save')) ?></button>
             </div>
           </div>
 

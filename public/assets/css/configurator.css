@@ -850,6 +850,9 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
 @media (min-width: 760px) {
   .cfg-review-layout { grid-template-columns: minmax(0, 42%) 1fr; gap: 2.75rem; }
 }
+/* Multi-door order: single full-width column (cards carry their own images). */
+.cfg-review-layout--list { grid-template-columns: 1fr !important; }
+.cfg-review-layout--list .cfg-review-details { max-width: 640px; }
 /* Door preview on the left — a calm showroom frame */
 .cfg-review-visual {
   position: sticky; top: calc(var(--cfg-hdr-h) + 1.5rem);
@@ -1025,6 +1028,67 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   font-size: 1.1rem; cursor: pointer; line-height: 1; padding: 0 .2rem;
 }
 .cfg-cart-remove:hover { color: #c46060; }
+
+/* Review-step cart: lists all doors (saved + current) before the quote. */
+.cfg-review-cart {
+  margin-top: 1.1rem; padding-top: 1rem;
+  border-top: 1px solid var(--cfg-border);
+}
+.cfg-review-cart .cfg-cart-list { margin-top: .4rem; }
+.cfg-review-cart .cfg-review-price { margin-top: .9rem; }
+.cfg-cart-item--current .cfg-cart-name::after {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  margin-left: .4rem; border-radius: 50%; background: var(--cfg-gold);
+  vertical-align: middle;
+}
+/* Door order cards (multi-door review/quote) */
+.cfg-order-cards { list-style: none; display: flex; flex-direction: column; gap: .8rem; margin: .4rem 0 0; }
+.cfg-order-card {
+  position: relative; display: flex; align-items: stretch; gap: .9rem;
+  background: var(--cfg-surface); border: 1px solid var(--cfg-border);
+  border-radius: var(--cfg-radius); padding: .7rem; overflow: hidden;
+}
+.cfg-order-card--current { border-color: var(--cfg-gold); box-shadow: 0 0 0 1px var(--cfg-gold-bg); }
+.cfg-order-card-num {
+  position: absolute; top: .55rem; left: .55rem; z-index: 2;
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--cfg-gold); color: #fff;
+  font-size: .62rem; font-weight: 600;
+}
+.cfg-order-card-img {
+  flex-shrink: 0; width: 70px; align-self: stretch; min-height: 88px;
+  border-radius: 8px; background: #efe9e0 center/cover no-repeat;
+  border: 1px solid var(--cfg-border);
+}
+.cfg-order-card-img--ph { background: var(--cfg-gold-bg); }
+.cfg-order-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .18rem; justify-content: center; }
+.cfg-order-card-name {
+  font-family: var(--serif, serif); font-size: 1.02rem; color: var(--cfg-text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cfg-order-card-meta { font-size: .68rem; color: var(--cfg-muted); }
+.cfg-order-card-price { margin-top: .25rem; font-size: .95rem; color: var(--cfg-gold); font-weight: 600; }
+.cfg-order-card-remove {
+  position: absolute; top: .5rem; right: .55rem; z-index: 2;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(0,0,0,.04); border: none; color: var(--cfg-muted);
+  font-size: 1.15rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.cfg-order-card-remove:hover { background: #f3dede; color: #c46060; }
+
+/* Confirmation toast (door added to request) */
+.cfg-toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px);
+  z-index: 1000; max-width: 90vw;
+  background: var(--cfg-text); color: #fff;
+  font-size: .85rem; line-height: 1.4;
+  padding: .8rem 1.3rem; border-radius: 999px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.22);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+.cfg-toast.is-show { opacity: 1; transform: translate(-50%, 0); }
 
 /* Empty hint */
 .cfg-empty-hint { color: var(--cfg-muted); font-size: .85rem; padding: 1rem 0; }

@@ -146,10 +146,10 @@ class ColorController
         $collId    = ($_POST['collection_id'] ?? '') !== '' ? (int)$_POST['collection_id'] : null;
 
         Database::conn()->prepare(
-            'INSERT INTO colors (collection_id, name, hex, description, image_filename, texture_filename, display_order, is_active)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO colors (collection_id, name, hex, price, description, image_filename, texture_filename, display_order, is_active)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         )->execute([
-            $collId, $d['name'], $d['hex'], $d['description'],
+            $collId, $d['name'], $d['hex'], $d['price'], $d['description'],
             $filename, $texture, $d['display_order'], $d['is_active'],
         ]);
 
@@ -208,10 +208,10 @@ class ColorController
 
         Database::conn()->prepare(
             'UPDATE colors
-             SET collection_id=?, name=?, hex=?, description=?, image_filename=?, texture_filename=?, display_order=?, is_active=?
+             SET collection_id=?, name=?, hex=?, price=?, description=?, image_filename=?, texture_filename=?, display_order=?, is_active=?
              WHERE id=?'
         )->execute([
-            $collId, $d['name'], $d['hex'], $d['description'],
+            $collId, $d['name'], $d['hex'], $d['price'], $d['description'],
             $filename, $texture, $d['display_order'], $d['is_active'], $id,
         ]);
 
@@ -392,6 +392,7 @@ class ColorController
         return [
             'name'          => $_POST['name']          ?? '',
             'hex'           => $_POST['hex']           ?? '',
+            'price'         => $_POST['price']         ?? '0',
             'description'   => $_POST['description']   ?? '',
             'collection_id' => $_POST['collection_id'] ?? '',
             'display_order' => $_POST['display_order'] ?? '0',

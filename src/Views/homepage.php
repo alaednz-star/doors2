@@ -7,7 +7,8 @@
 /** @var array $inspiration */
 $e   = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 $img = static fn ($f) => '/door-showroom/assets/images/' . $f;
-$wa  = 'https://wa.me/213512345678';
+$contact = contact_info();
+$wa  = $contact['whatsapp_url'];
 $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 $L   = \App\Core\I18n::lang();
 $DIR = \App\Core\I18n::dir();
@@ -321,8 +322,8 @@ $DIR = \App\Core\I18n::dir();
     <div class="footer-col">
       <h4><?= $e(t('footer.contact')) ?></h4>
       <ul>
-        <li><a href="tel:+213512345678">+213 5 12 34 56 78</a></li>
-        <li><a href="mailto:contact@portes.dz">contact@portes.dz</a></li>
+        <?php if ($contact['phone']): ?><li><a href="<?= $e($contact['tel_href']) ?>"><?= $e($contact['phone']) ?></a></li><?php endif; ?>
+        <li><a href="mailto:<?= $e($contact['email']) ?>"><?= $e($contact['email']) ?></a></li>
         <li><span><?= $e(t('footer.tagline')) ?></span></li>
         <li><a href="<?= $e($wa) ?>" target="_blank" rel="noopener">WhatsApp</a></li>
       </ul>
@@ -334,9 +335,11 @@ $DIR = \App\Core\I18n::dir();
   </div>
 </footer>
 
+<?php if ($wa): ?>
 <a href="<?= $e($wa) ?>" target="_blank" rel="noopener" class="wa-float" aria-label="<?= $e(t('wa.chat')) ?>">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5-.3.3c-.2.2-.3.4-.2.6.2.4.8 1.3 1.6 2 .9.8 1.7 1.1 2.1 1.3.2.1.5.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2z"/></svg>
 </a>
+<?php endif; ?>
 
 <script src="/door-showroom/assets/js/home.js?v=<?= $ver('/assets/js/home.js') ?>" defer></script>
 </body>

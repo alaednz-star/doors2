@@ -13,7 +13,7 @@ class HomepageController
             'name'  => 'Prestige',
             'line'  => 'Luxury without compromise.',
             'desc'  => 'The summit of the catalogue. Bespoke dimensions, rare veneers and finishes that cannot be ordered from a page.',
-            'file'  => 'interior-bedroom-black.png',
+            'file'  => 'prestige-home.png',
         ],
         [
             'num'   => '02',

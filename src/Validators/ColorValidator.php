@@ -42,10 +42,16 @@ class ColorValidator
             $this->errors['display_order'] = 'Display order must be a number between 0 and 9999.';
         }
 
+        $price = $input['price'] ?? '0';
+        if ($price !== '' && (!is_numeric($price) || (float)$price < 0)) {
+            $this->errors['price'] = 'Price must be a non-negative number.';
+        }
+
         if (empty($this->errors)) {
             $this->data = [
                 'name'          => $name,
                 'hex'           => $hex !== '' ? strtoupper($hex) : null,
+                'price'         => ($price !== '' && is_numeric($price)) ? (float)$price : 0.0,
                 'description'   => $description !== '' ? $description : null,
                 'display_order' => (int)$order,
                 'is_active'     => isset($input['is_active']) ? 1 : 0,

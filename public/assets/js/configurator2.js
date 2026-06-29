@@ -336,17 +336,113 @@
 
   function buildReview() {
     var dl = id('cfgReview'); if (!dl) return;
-    dl.innerHTML = summaryRowsHtml();
-    var rp = id('cfgReviewPrice'); if (rp) rp.textContent = lineLabel();
-    paintDoorImg(id('cfgReviewImg'));
+
+    // Whether the current screen holds a valid, priced door not yet in the cart.
+    var curUnit = unitPrice();
+    var hasCurrent = !!(state.collection_id && state.color_id &&
+                        state.usage_id && state.construction_id && curUnit > 0);
+    var multi = (cart.length + (hasCurrent ? 1 : 0)) > 1;
+
+    var single = document.querySelector('.cfg-review-visual');
+    var layout = document.querySelector('.cfg-review-layout');
+    var priceBlock = id('cfgReviewPrice') ? id('cfgReviewPrice').closest('.cfg-review-price') : null;
+    if (layout) layout.classList.toggle('cfg-review-layout--list', multi);
+
+    if (multi) {
+      // Multiple doors → each door is shown as its own card (with image) in the
+      // order list, so the single big preview + spec table + single price are
+      // hidden (they'd only show one door and be misleading).
+      if (single) single.style.display = 'none';
+      if (dl) dl.innerHTML = '';
+      if (priceBlock) priceBlock.style.display = 'none';
+    } else {
+      // Single door → keep the rich layout: big preview, spec table, single price.
+      if (single) single.style.display = '';
+      paintDoorImg(id('cfgReviewImg'));
+      if (priceBlock) priceBlock.style.display = '';
+      if (dl) dl.innerHTML = summaryRowsHtml();
+      var rp = id('cfgReviewPrice'); if (rp) rp.textContent = lineLabel();
+    }
+    renderReviewCart(hasCurrent, curUnit, multi);
+  }
+
+  // Build one professional door card for the order list.
+  function orderCardHtml(d, idx, isCurrent) {
+    var img = d.product_img || d.color_door || '';
+    var thumb = img
+      ? '<span class="cfg-order-card-img" style="background-image:url(\'' + img + '\')"></span>'
+      : '<span class="cfg-order-card-img cfg-order-card-img--ph"></span>';
+    var remove = !isCurrent
+      ? '<button type="button" class="cfg-order-card-remove" data-i="' + idx + '" aria-label="Remove">×</button>'
+      : '';
+    return '<li class="cfg-order-card' + (isCurrent ? ' cfg-order-card--current' : '') + '">' +
+      '<span class="cfg-order-card-num">' + (idx + 1) + '</span>' +
+      thumb +
+      '<span class="cfg-order-card-body">' +
+        '<span class="cfg-order-card-name">' + escapeHtml(d.label) + '</span>' +
+        '<span class="cfg-order-card-meta">' + escapeHtml(d.usage_name || '') + ' · ' + escapeHtml(d.construction_name || '') + '</span>' +
+        '<span class="cfg-order-card-meta">' + (d.width_mm/10) + ' × ' + (d.height_mm/10) + ' cm · ×' + d.quantity + '</span>' +
+        '<span class="cfg-order-card-price">' + money(d.line_total) + '</span>' +
+      '</span>' +
+      remove +
+      '</li>';
+  }
+
+  function renderReviewCart(hasCurrent, curUnit, multi) {
+    var box = id('cfgReviewCart'); if (!box) return;
+    if (!multi) { box.hidden = true; box.innerHTML = ''; return; }
+    renderOrderList(box, hasCurrent, curUnit, buildReview);
+  }
+
+  // Shared itemized order list (all cart doors + the current door). Used on both
+  // the Review and the final Quote step so the full order is always visible.
+  function renderOrderList(box, hasCurrent, curUnit, rebuild) {
+    if (!box) return;
+    box.hidden = false;
+
+    var n = 0;
+    var cards = cart.map(function (it) { return orderCardHtml(it, n++, false); }).join('');
+
+    var curCard = '';
+    if (hasCurrent) {
+      curCard = orderCardHtml(snapshotCurrent(), n, true);
+    }
+
+    var grand = cartTotal() + (hasCurrent ? curUnit * state.quantity : 0);
+    box.innerHTML =
+      '<h4 class="cfg-cart-title">' + T('cart_title') + '</h4>' +
+      '<ul class="cfg-order-cards">' + cards + curCard + '</ul>' +
+      '<div class="cfg-review-price"><span>' + T('cart_total') + '</span><strong>' + money(grand) + '</strong></div>';
+
+    // Allow removing saved doors from this list (not the current/pending one).
+    Array.prototype.forEach.call(box.querySelectorAll('.cfg-order-card-remove'), function (b) {
+      b.addEventListener('click', function () { cart.splice(+b.dataset.i, 1); if (rebuild) rebuild(); });
+    });
   }
 
   // Final quote (Devis) step: compact recap + price.
   function buildQuote() {
+    var curUnit = unitPrice();
+    var hasCurrent = currentIsValid();
+    var multi = (cart.length + (hasCurrent ? 1 : 0)) > 1;
+
     var nm = id('cfgQuoteName');
-    if (nm) nm.textContent = ((state.collection_name||'') + ' ' + (state.color_name||'')).trim() || '—';
-    var dl = id('cfgQuoteReview'); if (dl) dl.innerHTML = summaryRowsHtml();
-    var qp = id('cfgQuotePrice'); if (qp) qp.textContent = lineLabel();
+    var dl = id('cfgQuoteReview');
+    var priceBlock = id('cfgQuotePriceBlock');
+
+    if (multi) {
+      // Multiple doors → itemized order list, hide the single recap.
+      if (nm) nm.style.display = 'none';
+      if (dl) { dl.innerHTML = ''; dl.style.display = 'none'; }
+      if (priceBlock) priceBlock.style.display = 'none';
+      renderOrderList(id('cfgQuoteCart'), hasCurrent, curUnit, buildQuote);
+    } else {
+      if (nm) { nm.style.display = ''; nm.textContent = ((state.collection_name||'') + ' ' + (state.color_name||'')).trim() || '—'; }
+      if (dl) { dl.style.display = ''; dl.innerHTML = summaryRowsHtml(); }
+      if (priceBlock) priceBlock.style.display = '';
+      var qp = id('cfgQuotePrice'); if (qp) qp.textContent = lineLabel();
+      var box = id('cfgQuoteCart'); if (box) { box.hidden = true; box.innerHTML = ''; }
+    }
   }
 
   /* ── cart of doors ── */
@@ -358,13 +454,18 @@
       ? (priceLabel(lastPricing) + ' × ' + state.quantity + ' = ' + money(line))
       : priceLabel(lastPricing);
   }
-  function money(n) { return Number(n).toLocaleString(NUM_LOCALE).replace(/,/g,' ') + ' DZD'; }
+  function money(n) {
+    // Whole DZD only — no decimals. Group thousands with a thin space and never
+    // let a locale decimal separator leak through.
+    var v = Math.round(Number(n) || 0);
+    return v.toLocaleString('en-US', { maximumFractionDigits: 0 }).replace(/,/g, ' ') + ' DZD';
+  }
 
   function snapshotCurrent() {
     var unit = unitPrice();
     return {
       collection_id: state.collection_id, collection_name: state.collection_name,
-      color_id: state.color_id, color_name: state.color_name, color_img: state.color_img,
+      color_id: state.color_id, color_name: state.color_name, color_img: state.color_img, color_door: state.color_door,
       usage_id: state.usage_id, usage_name: state.usage_name,
       construction_id: state.construction_id, construction_name: state.construction_name,
       product_id: state.product_id, product_name: state.product_name, product_img: state.product_img,
@@ -433,6 +534,22 @@
   }
   function nudge(){ var a=$steps[step]; if(!a)return; a.classList.remove('cfg-nudge'); void a.offsetWidth; a.classList.add('cfg-nudge'); }
 
+  // Brief confirmation toast (e.g. after adding a door to the request).
+  var toastTimer;
+  function toast(msg) {
+    var el = id('cfgToast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'cfgToast';
+      el.className = 'cfg-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('is-show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('is-show'); }, 2600);
+  }
+
   if ($next) $next.addEventListener('click', function () {
     if (step === S_DETAILS) { submitQuote(); return; }
     if (!canAdvance()) { nudge(); return; }
@@ -444,19 +561,21 @@
   /* ── review actions: add another / continue ── */
   if (id('cfgAddAnother')) id('cfgAddAnother').addEventListener('click', function () {
     if (!addCurrentToCart()) return;
+    var added = cart.length;
     state = freshState();
     deactivate('#cfgCollections'); deactivate('#cfgColors'); deactivate('#cfgUsages'); deactivate('#cfgConstructions');
-    if ($qty) $qty.value = 1;
+    setQty(1);
     if ($w) $w.value = 900; if ($h) $h.value = 2100;
     syncVisibleSliders();
     buildColors(); refreshUsages(); refreshConstructions();
     lastPricing = null; paintPrice(T('price_hint'));
     setRender(); setSummary();
     showStep(S_COLLECTION);
+    toast(T('door_added', { n: added }));
   });
   if (id('cfgToDetails')) id('cfgToDetails').addEventListener('click', function () {
-    // Ensure the current door is part of the request if the cart is empty.
-    if (!cart.length && !addCurrentToCart()) return;
+    // Need at least one door: either something in the cart or a valid current door.
+    if (!cart.length && !currentIsValid()) { nudge(); return; }
     showStep(S_DETAILS);
   });
 
@@ -517,10 +636,20 @@
   if (id('cfgHeightMinus')) id('cfgHeightMinus').addEventListener('click', function(){ setHeightCm(curHcm() - 1); });
   if (id('cfgHeightPlus'))  id('cfgHeightPlus').addEventListener('click',  function(){ setHeightCm(curHcm() + 1); });
 
-  // Quantity is no longer surfaced on this step; keep state in sync with the
-  // (now hidden) input so the cart/quote logic is unaffected (defaults to 1).
+  // Quantity: a visible stepper (#cfgQtyVisible) plus the legacy hidden input
+  // (#cfgQty) kept in sync so all cart/quote logic continues to read it.
   var $qty = id('cfgQty');
-  function setQty(v) { v = Math.max(1, Math.min(999, parseInt(v,10) || 1)); state.quantity = v; if ($qty) $qty.value = v; setSummary(); }
+  var $qtyVis = id('cfgQtyVisible');
+  function setQty(v) {
+    v = Math.max(1, Math.min(999, parseInt(v, 10) || 1));
+    state.quantity = v;
+    if ($qty) $qty.value = v;
+    if ($qtyVis) $qtyVis.value = v;
+    setSummary();
+  }
+  if ($qtyVis) $qtyVis.addEventListener('input', function () { setQty($qtyVis.value); });
+  if (id('cfgQtyMinus')) id('cfgQtyMinus').addEventListener('click', function () { setQty(state.quantity - 1); });
+  if (id('cfgQtyPlus'))  id('cfgQtyPlus').addEventListener('click',  function () { setQty(state.quantity + 1); });
   function syncVisibleSliders() { if ($wcm) $wcm.value = curWcm(); if ($hcm) $hcm.value = curHcm(); paintDim(); }
 
   /* ── pricing ── */
@@ -578,19 +707,33 @@
   function showError(m){ var err=id('cfgFormError'); if(err){ err.hidden=false; err.textContent=m; } }
   function firstError(o){ for (var k in o){ if (o.hasOwnProperty(k)) return o[k]; } return T('err_review'); }
 
-  // Doors to submit: the cart, plus the current door if not yet added.
+  // Doors to submit: every door in the cart, PLUS the current door if it is a
+  // valid, priced configuration that hasn't been added to the cart yet.
   function itemsToSubmit() {
-    var items = cart.map(function (it) {
+    return allDoors().map(function (it) {
       return { quantity: it.quantity, config: {
         collection_id: it.collection_id, color_id: it.color_id,
         door_type_id: it.usage_id, construction_type_id: it.construction_id,
         product_id: it.product_id, width_mm: it.width_mm, height_mm: it.height_mm,
       }};
     });
-    if (!items.length && state.collection_id) {
-      items.push({ quantity: state.quantity, config: priceConfig() });
+  }
+
+  // Single source of truth for every door in the order: all cart doors plus the
+  // current door if it's a valid, priced configuration not yet added to the cart.
+  // Each entry is a full display snapshot (names, dimensions, prices).
+  function allDoors() {
+    var doors = cart.slice();
+    if (currentIsValid()) {
+      doors.push(snapshotCurrent());
     }
-    return items;
+    return doors;
+  }
+
+  // The current screen describes a complete, priced door.
+  function currentIsValid() {
+    return !!(state.collection_id && state.color_id &&
+              state.usage_id && state.construction_id && unitPrice() > 0);
   }
 
   function submitQuote() {
@@ -624,8 +767,8 @@
 
   /* ── printable confirmation ── */
   function showConfirmation(d, customer) {
-    // Build the line list from the cart (or the single current door).
-    var lines = cart.length ? cart : [snapshotCurrent()];
+    // Every door in the order (all cart doors + the current one).
+    var lines = allDoors();
     var ref = d.reference;
     if (id('cfgConfirmRef')) id('cfgConfirmRef').textContent = ref;
     if (id('cfgConfirmCustomer')) {

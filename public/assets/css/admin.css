@@ -33,6 +33,8 @@
   --rose-lt: rgba(225,29,72,0.10);
   --red:    #c0392b;
   --red-lt: #fdf3f3;
+  --teal:   #0d9488;
+  --teal-lt: rgba(13,148,136,0.10);
 }
 
 html, body {
@@ -2518,6 +2520,108 @@ html, body {
 .qr-badge--green  { background: var(--green-lt);              color: var(--green); }
 .qr-badge--ink    { background: rgba(12,12,12,0.07);          color: var(--ink); }
 .qr-badge--red    { background: rgba(192,57,43,0.10);         color: var(--red); }
+.qr-badge--teal   { background: var(--teal-lt);               color: var(--teal); }
+
+/* Multi-door order table on the quote detail page */
+.qr-doors-table-wrap { overflow-x: auto; }
+.qr-doors-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.qr-doors-table th {
+  text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em; color: var(--ink-4);
+  border-bottom: 1px solid var(--line, #ececec);
+}
+.qr-doors-table td { padding: 12px 14px; border-bottom: 1px solid var(--line, #f0f0f0); vertical-align: top; }
+.qr-doors-table tbody tr:last-child td { border-bottom: 1px solid var(--line, #ececec); }
+.qr-doors-table strong { display: block; color: var(--ink); }
+.qr-doors-color { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3); font-size: 12px; margin-top: 2px; }
+.qr-doors-color .qr-color-swatch { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
+.qr-doors-price { white-space: nowrap; font-weight: 600; color: var(--ink); }
+.qr-doors-total-label { text-align: right; font-weight: 600; color: var(--ink-3); }
+.qr-doors-total { white-space: nowrap; font-weight: 700; color: var(--gold); font-size: 15px; }
+
+/* ── Quote status stepper ───────────────────────────────────────── */
+.qr-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--line, #ececec);
+  border-radius: 14px;
+  padding: 20px 20px 16px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.qr-step {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+/* connector line between steps */
+.qr-step::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--line, #e4e4e4);
+  z-index: 0;
+}
+.qr-step:first-child::before { display: none; }
+.qr-step-dot {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: #f1f1f1;
+  color: var(--ink-4, #999);
+  border: 2px solid #e4e4e4;
+  transition: all .2s;
+}
+.qr-step-dot svg { width: 15px; height: 15px; }
+.qr-step-label {
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--ink-4, #999);
+  font-weight: 500;
+}
+/* completed steps */
+.qr-step--done .qr-step-dot {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+.qr-step--done::before { background: var(--gold); }
+.qr-step--done .qr-step-label { color: var(--ink-3, #555); }
+/* current step */
+.qr-step--current .qr-step-dot {
+  background: #fff;
+  border-color: var(--gold);
+  color: #8a6f3e;
+  box-shadow: 0 0 0 4px var(--gold-lt);
+}
+.qr-step--current .qr-step-label { color: var(--ink); font-weight: 700; }
+/* cancelled */
+.qr-stepper--cancelled .qr-step:not(.qr-step--cancelled) { opacity: .45; }
+.qr-step--cancelled .qr-step-dot {
+  background: var(--red-lt);
+  border-color: var(--red);
+  color: var(--red);
+}
+.qr-step--cancelled::before { background: var(--red); }
+.qr-step--cancelled .qr-step-label { color: var(--red); font-weight: 700; }
 
 /* ═══════════════════════════════════════
    QUOTE REQUESTS — list table
@@ -2717,6 +2821,7 @@ html, body {
 .qr-timeline-dot--green  { color: var(--green); }
 .qr-timeline-dot--ink    { color: var(--ink-3); }
 .qr-timeline-dot--red    { color: var(--red); }
+.qr-timeline-dot--teal   { color: var(--teal); }
 
 .qr-timeline-body { flex: 1; min-width: 0; }
 

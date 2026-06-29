@@ -221,6 +221,9 @@ return [
         'dimensions' => 'Dimensions',
         'quantity'   => 'Quantité',
         'cart_title' => 'Portes dans votre demande',
+        'cart_total' => 'Total de la demande',
+        'this_door'  => 'Cette porte',
+        'door_added' => 'Porte ajoutée à votre demande (:n au total). Configurez la suivante.',
         'total'      => 'Total',
         'save'       => 'Sauvegarder',
 

@@ -1,24 +1,47 @@
-Options -Indexes
-Options -MultiViews
+# InfinityFree's Apache rejects "Options" and "Header" in .htaccess (HTTP 500),
+# so they are omitted here. Security headers are set in PHP (SecurityHeaders).
 
-RewriteEngine On
+# Long-cache static assets for speed. Files are versioned with ?v=<mtime>, so a
+# new version gets a new URL and is fetched fresh; otherwise the browser reuses
+# its cached copy. Guarded by <IfModule> so it is simply skipped where the host
+# does not allow these directives (no 500).
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                "access plus 1 year"
+    ExpiresByType application/javascript  "access plus 1 year"
+    ExpiresByType text/javascript         "access plus 1 year"
+    ExpiresByType image/jpeg              "access plus 1 year"
+    ExpiresByType image/png               "access plus 1 year"
+    ExpiresByType image/webp              "access plus 1 year"
+    ExpiresByType image/svg+xml           "access plus 1 year"
+    ExpiresByType image/x-icon            "access plus 1 year"
+    ExpiresByType font/woff2              "access plus 1 year"
+</IfModule>
 
-# Block sensitive file access
-RewriteRule ^(\.env|\.git|composer\.(json|lock)) - [F,L]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Serve real files/dirs directly (CSS, JS, images)
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+    # Transparently serve a .webp twin to browsers that accept it, in place of a
+    # requested .png/.jpg — no <img> changes needed. The .webp file shares the
+    # base name (foo.png -> foo.webp). If no .webp exists, or the browser can't
+    # take WebP, the original is served unchanged.
+    RewriteCond %{HTTP_ACCEPT} image/webp
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_FILENAME} ^(.+)\.(?i:png|jpe?g)$
+    RewriteCond %1.webp -f
+    RewriteRule ^(.+)\.(?i:png|jpe?g)$ $1.webp [L,T=image/webp]
 
-# Route /admin/* through admin.php
-RewriteRule ^admin(/.*)?$ admin.php [QSA,L]
+    # Block sensitive file access
+    RewriteRule ^(\.env|\.git|composer\.(json|lock)) - [F,L]
 
-# Route everything else through index.php
-RewriteRule ^ index.php [QSA,L]
+    # Serve real files/dirs directly (CSS, JS, images)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-<IfModule mod_headers.c>
-    Header always set X-Frame-Options "DENY"
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # Route /admin/* through admin.php
+    RewriteRule ^admin(/.*)?$ admin.php [QSA,L]
+
+    # Route everything else through index.php
+    RewriteRule ^ index.php [QSA,L]
 </IfModule>

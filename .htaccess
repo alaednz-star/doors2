@@ -2,16 +2,20 @@
 # folder is uploaded as /door-showroom/ under the web root. The real front
 # controllers live in public/; route requests there while keeping the full
 # request URI intact (the app matches /door-showroom/... paths literally).
+#
+# NOTE: InfinityFree's Apache rejects "Options" and "Header" in .htaccess
+# (causes HTTP 500), so this file uses only RewriteRule directives.
 
-Options -Indexes -MultiViews
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Static assets and uploads are referenced as /door-showroom/assets/...
-# and /door-showroom/uploads/... but live inside public/ — map them in.
-RewriteRule ^(assets|uploads)/(.*)$ public/$1/$2 [L]
+    # Static assets and uploads are referenced as /door-showroom/assets/...
+    # and /door-showroom/uploads/... but live inside public/ — map them in.
+    RewriteRule ^(assets|uploads)/(.*)$ public/$1/$2 [L]
 
-# Admin panel front controller.
-RewriteRule ^admin(/.*)?$ public/admin.php [QSA,L]
+    # Admin panel front controller.
+    RewriteRule ^admin(/.*)?$ public/admin.php [QSA,L]
 
-# Everything else → public front controller.
-RewriteRule ^ public/index.php [QSA,L]
+    # Everything else → public front controller.
+    RewriteRule ^ public/index.php [QSA,L]
+</IfModule>

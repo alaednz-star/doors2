@@ -115,7 +115,8 @@ $slug   = trim((string)parse_url($base, PHP_URL_PATH));
   <?php endif; ?>
 </div>
 
-<div class="modal-backdrop" id="deleteModal" hidden>
+<div class="modal-backdrop" id="deleteModal" hidden
+     data-base="<?= $e($base) ?>" data-csrf="<?= $e($csrfToken ?? '') ?>">
   <div class="modal" role="dialog" aria-modal="true">
     <div class="modal-icon modal-icon--danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
     <h3>Delete <?= $e($sing) ?></h3>
@@ -127,42 +128,4 @@ $slug   = trim((string)parse_url($base, PHP_URL_PATH));
   </div>
 </div>
 
-<script>
-(function () {
-  var BASE = <?= json_encode($base) ?>;
-  var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  var modal = document.getElementById('deleteModal');
-  var itemName = document.getElementById('modalItemName');
-  var btn = document.getElementById('modalConfirm'), label = document.getElementById('modalBtnLabel');
-  var deleteId = null;
-
-  document.querySelectorAll('.action-btn--delete').forEach(function (b) {
-    b.addEventListener('click', function () { deleteId = b.dataset.id; itemName.textContent = b.dataset.name; modal.hidden = false; });
-  });
-  document.getElementById('modalCancel').addEventListener('click', function () { modal.hidden = true; deleteId = null; });
-  modal.addEventListener('click', function (e) { if (e.target === modal) { modal.hidden = true; deleteId = null; } });
-
-  btn.addEventListener('click', function () {
-    if (!deleteId) return;
-    label.textContent = 'Deleting…'; btn.disabled = true;
-    xhr('POST', BASE + '/' + deleteId + '/delete', function (data) {
-      if (data.success) { var row = document.getElementById('row-' + deleteId); if (row) { row.style.opacity='0'; row.style.transition='opacity .25s'; setTimeout(function(){row.remove();},260); } showFlash(data.message,'success'); }
-      else showFlash(data.message || 'Delete failed.', 'error');
-      modal.hidden = true; deleteId = null; label.textContent = 'Delete'; btn.disabled = false;
-    });
-  });
-  document.querySelectorAll('.toggle-status').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var id = b.dataset.id;
-      xhr('POST', BASE + '/' + id + '/toggle', function (data) {
-        if (data.success) { b.querySelector('.status-dot').className = 'status-dot status-dot--' + (data.is_active?'on':'off'); document.getElementById('status-label-'+id).textContent = data.label; }
-      });
-    });
-  });
-  var si = document.getElementById('searchInput'), t;
-  if (si) si.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(function(){document.getElementById('searchForm').submit();},420); });
-
-  function showFlash(msg, type){ var el=document.createElement('div'); el.className='flash flash--'+type; el.innerHTML='<span>'+msg+'</span><button class="flash-close" onclick="this.parentElement.remove()">×</button>'; document.querySelector('.admin-content').insertBefore(el, document.querySelector('.table-panel')); setTimeout(function(){if(el.parentElement)el.remove();},5000); }
-  function xhr(method,url,cb){ var x=new XMLHttpRequest(); x.open(method,url,true); x.setRequestHeader('Content-Type','application/json'); x.setRequestHeader('X-CSRF-Token',csrf); x.setRequestHeader('X-Requested-With','XMLHttpRequest'); x.onreadystatechange=function(){ if(x.readyState!==4)return; try{cb(JSON.parse(x.responseText));}catch(e){cb({success:false,message:'Unexpected error.'});} }; x.send(JSON.stringify({_csrf:csrf})); }
-}());
-</script>
+<script src="<?= asset('/assets/js/lookup.js') ?>"></script>

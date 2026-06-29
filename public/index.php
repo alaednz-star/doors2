@@ -22,6 +22,13 @@ $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $uri    = rtrim($uri, '/');
 $method = $_SERVER['REQUEST_METHOD'];
 
+// Dynamic HTML pages must not be cached, so catalogue changes (a deleted
+// construction type, a new colour price, etc.) appear on a normal refresh.
+// Static assets are unaffected — they cache hard and bust via ?v= versions.
+if ($method === 'GET') {
+    \App\Middleware\SecurityHeaders::noCacheHtml();
+}
+
 $routes = [
     'GET' => [
         '/door-showroom'             => [\App\Controllers\HomepageController::class,     'show'],

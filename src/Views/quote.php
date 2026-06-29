@@ -3,7 +3,8 @@ declare(strict_types=1);
 /** @var array $collections, $materials, $colors, $doorTypes, $features */
 /** @var string $token */
 $e   = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
-$wa  = 'https://wa.me/213512345678';
+$ci  = contact_info();
+$wa  = $ci['whatsapp_url'];
 
 // Lookup data so the JS can label the config and resolve the preview image.
 $collectionImages = [

@@ -22,3 +22,11 @@ vendor/
 node_modules/
 !public/uploads/*/.gitkeep
 storage/mail/
+
+# Deployment artifacts / build output (regenerated, not source)
+_UPLOAD_TO_INFINITYFREE/
+adk-upload/
+adk-upload.zip
+src-only/
+src-only.zip
+responsive-audit-report/

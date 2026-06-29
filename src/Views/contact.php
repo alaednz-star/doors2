@@ -6,11 +6,12 @@ $e   = static fn ($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 $img = static fn ($f) => '/door-showroom/assets/images/' . $f;
 $ver = static fn ($p) => @filemtime(APP_ROOT . '/public' . $p) ?: '1';
 
-$email   = $settings['contact_email'];
-$phone   = $settings['contact_phone'];
-$address = $settings['contact_address'];
-$wa      = 'https://wa.me/213512345678';
-$telHref = 'tel:' . preg_replace('/[^0-9+]/', '', $phone);
+$ci      = contact_info();
+$email   = $ci['email'];
+$phone   = $ci['phone'];
+$address = $ci['address'];
+$wa      = $ci['whatsapp_url'];
+$telHref = $ci['tel_href'];
 $L   = \App\Core\I18n::lang();
 $DIR = \App\Core\I18n::dir();
 
@@ -161,6 +162,7 @@ $faqs = \App\Core\I18n::group('contact.faqs');
 </section>
 
 <!-- ░ 5 · WHATSAPP CTA ░ -->
+<?php if ($wa): ?>
 <section class="ct-whatsapp">
   <div class="ct-whatsapp-inner reveal">
     <span class="ct-whatsapp-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5-.3.3c-.2.2-.3.4-.2.6.2.4.8 1.3 1.6 2 .9.8 1.7 1.1 2.1 1.3.2.1.5.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2z"/></svg></span>
@@ -171,6 +173,7 @@ $faqs = \App\Core\I18n::group('contact.faqs');
     <a href="<?= $e($wa) ?>" target="_blank" rel="noopener" class="btn btn--gold btn--lg"><?= $e(t('contact.wa_btn')) ?></a>
   </div>
 </section>
+<?php endif; ?>
 
 <!-- ░ 6 · GOOGLE MAPS AREA ░ -->
 <section class="ct-map" id="ct-map">
@@ -235,7 +238,7 @@ $faqs = \App\Core\I18n::group('contact.faqs');
       <div class="footer-social">
         <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-2 0-3.5 1.5-3.5 3.5V11H8v3h2.5v7h3v-7H16l.5-3h-3V9.5c0-.3.2-.5.5-.5z"/></svg></a>
         <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
-        <a href="<?= $e($wa) ?>" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5-.3.3c-.2.2-.3.4-.2.6.2.4.8 1.3 1.6 2 .9.8 1.7 1.1 2.1 1.3.2.1.5.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2z"/></svg></a>
+        <?php if ($wa): ?><a href="<?= $e($wa) ?>" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5-.3.3c-.2.2-.3.4-.2.6.2.4.8 1.3 1.6 2 .9.8 1.7 1.1 2.1 1.3.2.1.5.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2z"/></svg></a><?php endif; ?>
       </div>
     </div>
     <div class="footer-col"><h4><?= $e(t('footer.collections')) ?></h4><ul>
@@ -254,10 +257,10 @@ $faqs = \App\Core\I18n::group('contact.faqs');
       <li><a href="/door-showroom/collections"><?= $e(t('footer.projects')) ?></a></li>
     </ul></div>
     <div class="footer-col"><h4><?= $e(t('footer.contact')) ?></h4><ul>
-      <li><a href="<?= $e($telHref) ?>"><?= $e($phone) ?></a></li>
+      <?php if ($phone): ?><li><a href="<?= $e($telHref) ?>"><?= $e($phone) ?></a></li><?php endif; ?>
       <li><a href="mailto:<?= $e($email) ?>"><?= $e($email) ?></a></li>
       <li><span><?= $e(t('footer.tagline')) ?></span></li>
-      <li><a href="<?= $e($wa) ?>" target="_blank" rel="noopener">WhatsApp</a></li>
+      <?php if ($wa): ?><li><a href="<?= $e($wa) ?>" target="_blank" rel="noopener">WhatsApp</a></li><?php endif; ?>
     </ul></div>
   </div>
   <div class="footer-bottom">

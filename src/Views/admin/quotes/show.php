@@ -9,6 +9,7 @@ $statusMeta = [
     'quotation_sent' => ['label' => 'Quotation Sent', 'color' => 'purple'],
     'in_progress'    => ['label' => 'In Progress',    'color' => 'orange'],
     'confirmed'      => ['label' => 'Confirmed',      'color' => 'green'],
+    'delivered'      => ['label' => 'Delivered',      'color' => 'teal'],
     'completed'      => ['label' => 'Completed',      'color' => 'ink'],
     'cancelled'      => ['label' => 'Cancelled',      'color' => 'red'],
 ];
@@ -46,6 +47,41 @@ $sm = $statusMeta[$quote['status']] ?? ['label' => $quote['status'], 'color' => 
   </button>
 </div>
 <?php endif; ?>
+
+<?php
+// Visual status stepper. The main pipeline is linear; "cancelled" sits off it.
+$pipeline = ['new', 'contacted', 'quotation_sent', 'in_progress', 'confirmed', 'delivered', 'completed'];
+$curStatus = $quote['status'];
+$isCancelled = $curStatus === 'cancelled';
+$curIndex = array_search($curStatus, $pipeline, true);
+if ($curIndex === false) $curIndex = -1; // cancelled or unknown
+?>
+<div class="qr-stepper <?= $isCancelled ? 'qr-stepper--cancelled' : '' ?>">
+  <?php foreach ($pipeline as $i => $stage):
+      $meta  = $statusMeta[$stage] ?? ['label' => $stage];
+      $state = $i <  $curIndex ? 'done'
+             : ($i === $curIndex ? 'current' : 'todo');
+  ?>
+    <div class="qr-step qr-step--<?= $state ?>">
+      <span class="qr-step-dot">
+        <?php if ($state === 'done'): ?>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <?php else: ?>
+          <?= $i + 1 ?>
+        <?php endif; ?>
+      </span>
+      <span class="qr-step-label"><?= $esc($meta['label']) ?></span>
+    </div>
+  <?php endforeach; ?>
+  <?php if ($isCancelled): ?>
+    <div class="qr-step qr-step--cancelled">
+      <span class="qr-step-dot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </span>
+      <span class="qr-step-label">Cancelled</span>
+    </div>
+  <?php endif; ?>
+</div>
 
 <div class="qr-detail-grid">
 
@@ -119,6 +155,45 @@ $sm = $statusMeta[$quote['status']] ?? ['label' => $quote['status'], 'color' => 
       </div>
     </div>
 
+    <?php if (!empty($doorItems) && count($doorItems) > 1): ?>
+    <!-- Multi-door order: itemised list of every door the customer ordered. -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <h2>Doors Ordered (<?= count($doorItems) ?>)</h2>
+      </div>
+      <div class="qr-doors-table-wrap">
+        <table class="qr-doors-table">
+          <thead>
+            <tr><th>#</th><th>Collection · Colour</th><th>Usage · Construction</th><th>Dimensions</th><th>Qty</th><th>Line Total</th></tr>
+          </thead>
+          <tbody>
+            <?php foreach ($doorItems as $i => $d): ?>
+            <tr>
+              <td><?= $i + 1 ?></td>
+              <td>
+                <strong><?= $esc($d['collection']) ?></strong>
+                <span class="qr-doors-color">
+                  <?php if ($d['color_hex']): ?><span class="qr-color-swatch" style="background:<?= $esc($d['color_hex']) ?>"></span><?php endif; ?>
+                  <?= $esc($d['color']) ?>
+                </span>
+              </td>
+              <td><?= $esc($d['usage']) ?> · <?= $esc($d['construction']) ?></td>
+              <td><?= $d['width_mm'] ? $d['width_mm']/10 : '—' ?> × <?= $d['height_mm'] ? $d['height_mm']/10 : '—' ?> cm</td>
+              <td>×<?= (int)$d['quantity'] ?></td>
+              <td class="qr-doors-price"><?= number_format($d['line_total'], 2) ?> DZD</td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="qr-doors-total-label">Total</td>
+              <td class="qr-doors-total"><?= number_format((float)$quote['final_price'], 2) ?> <?= $esc($quote['currency']) ?></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <?php else: ?>
     <div class="form-card">
       <div class="form-card-header">
         <h2>Door Configuration</h2>
@@ -210,6 +285,7 @@ $sm = $statusMeta[$quote['status']] ?? ['label' => $quote['status'], 'color' => 
         <?php endif; ?>
       </div>
     </div>
+    <?php endif; ?>
 
     <div class="form-card">
       <div class="form-card-header">

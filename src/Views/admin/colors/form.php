@@ -72,6 +72,16 @@ $err = fn(string $k): string => $errors[$k] ?? '';
           </div>
         </div>
 
+        <div class="form-field form-field--sm <?= $err('price') ? 'has-error' : '' ?>">
+          <label for="price">Colour Price (DZD)</label>
+          <input type="number" id="price" name="price" value="<?= $e($val('price', '0')) ?>" min="0" max="9999999" step="0.01" style="max-width:160px" />
+          <?php if ($err('price')): ?>
+            <span class="form-error"><?= $e($err('price')) ?></span>
+          <?php else: ?>
+            <span class="form-hint">Surcharge added to the door price for this colour (before size scaling). 0 = no extra charge.</span>
+          <?php endif; ?>
+        </div>
+
         <div class="form-field <?= $err('description') ? 'has-error' : '' ?>">
           <label for="description">Description</label>
           <textarea id="description" name="description" rows="3" placeholder="Optional description…" maxlength="1000"><?= $e($val('description')) ?></textarea>

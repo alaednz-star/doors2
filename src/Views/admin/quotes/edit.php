@@ -11,13 +11,26 @@ $selOpts = function(array $list, mixed $selectedId, string $placeholder = '— N
     }
 };
 
+// Pull the customer's full selection out of features_json (configurator cart
+// shape). Construction type and feature IDs live only inside this JSON.
+$cfg = [];
+if ($isEdit && !empty($quote['features_json'])) {
+    $decoded = json_decode($quote['features_json'], true);
+    if (is_array($decoded)) {
+        $cfg = $decoded['items'][0]['config'] ?? [];
+    }
+}
+
 $selectedFeatures = [];
-if ($isEdit && $quote['features_json']) {
-    $selectedFeatures = json_decode($quote['features_json'], true) ?? [];
+if (!empty($cfg['feature_ids']) && is_array($cfg['feature_ids'])) {
+    $selectedFeatures = array_map('intval', $cfg['feature_ids']);
 }
 if (!empty($old['feature_ids'])) {
     $selectedFeatures = array_map('intval', (array)$old['feature_ids']);
 }
+
+// Current construction type: prefer re-submitted value, else from the cart JSON.
+$curConstruction = $old['construction_type_id'] ?? ($cfg['construction_type_id'] ?? '');
 ?>
 
 <div class="page-header">
@@ -106,15 +119,30 @@ if (!empty($old['feature_ids'])) {
 
           <div class="form-row-2">
             <div class="form-field">
-              <label for="product_id">Product</label>
-              <select id="product_id" name="product_id" class="form-select">
-                <?= $selOpts($selects['products'], $v('product_id')) ?>
+              <label for="collection_id">Collection</label>
+              <select id="collection_id" name="collection_id" class="form-select">
+                <?= $selOpts($selects['collections'], $v('collection_id')) ?>
               </select>
             </div>
             <div class="form-field">
-              <label for="door_type_id">Door Type</label>
+              <label for="door_type_id">Door Type (Usage)</label>
               <select id="door_type_id" name="door_type_id" class="form-select">
                 <?= $selOpts($selects['doorTypes'], $v('door_type_id')) ?>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-field">
+              <label for="construction_type_id">Construction Type</label>
+              <select id="construction_type_id" name="construction_type_id" class="form-select">
+                <?= $selOpts($selects['constructions'], $curConstruction) ?>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="product_id">Product (optional)</label>
+              <select id="product_id" name="product_id" class="form-select">
+                <?= $selOpts($selects['products'], $v('product_id')) ?>
               </select>
             </div>
           </div>

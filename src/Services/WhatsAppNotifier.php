@@ -26,10 +26,19 @@ class WhatsAppNotifier
         return $this->number() !== '';
     }
 
-    /** Destination number, digits only (empty when not configured). */
+    /**
+     * Destination number, digits only (empty when none configured).
+     *
+     * Prefers the dedicated `notification_whatsapp` (for businesses that want
+     * order alerts on a different line), but falls back to the public
+     * `contact_whatsapp` so a single configured number powers everything.
+     */
     public function number(): string
     {
         $raw = $this->setting(self::SETTING_KEY, '');
+        if (trim((string) $raw) === '') {
+            $raw = $this->setting('contact_whatsapp', '');
+        }
         return preg_replace('/\D+/', '', (string) $raw);
     }
 

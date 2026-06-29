@@ -248,6 +248,7 @@ return [
         'confirm_ref'   => 'Référence',
         'confirm_note'  => 'Votre demande a bien été reçue. Nous vous contacterons sous 24h avec un devis personnalisé.',
         'print'         => 'Imprimer / PDF',
+        'confirm_whatsapp' => 'Envoyer sur WhatsApp',
         'another'       => 'Configurer une autre porte',
         'home'          => 'Retour à l’accueil',
 

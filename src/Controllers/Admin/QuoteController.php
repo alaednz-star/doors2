@@ -477,14 +477,14 @@ class QuoteController
 
     private function generateReference(): string
     {
-        $prefix = 'QR-' . date('Ym') . '-';
+        $prefix = 'ADK-' . date('Y') . '-';
         $last   = $this->scalar(
             "SELECT reference FROM quote_requests WHERE reference LIKE ? ORDER BY id DESC LIMIT 1",
             [$prefix . '%']
         );
 
         $next = $last ? ((int)substr($last, strrpos($last, '-') + 1) + 1) : 1;
-        return $prefix . str_pad((string)$next, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad((string)$next, 5, '0', STR_PAD_LEFT);
     }
 
     private function findOrFail(int $id, bool $jsonError = false): array

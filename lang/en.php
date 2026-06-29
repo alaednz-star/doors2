@@ -243,6 +243,7 @@ return [
         'confirm_ref'   => 'Reference',
         'confirm_note'  => 'Your request has been received. We will contact you within 24h with a personalised quote.',
         'print'         => 'Print / PDF',
+        'confirm_whatsapp' => 'Send on WhatsApp',
         'another'       => 'Configure another door',
         'home'          => 'Back to home',
 

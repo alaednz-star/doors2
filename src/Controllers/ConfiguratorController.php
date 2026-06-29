@@ -7,6 +7,7 @@ use App\Core\Session;
 use App\Middleware\SecurityHeaders;
 use App\Services\PricingCalculator;
 use App\Services\Mailer;
+use App\Services\WhatsAppNotifier;
 use App\Services\ConfigValidator;
 use App\Core\Logger;
 use App\Auth\RateLimiter;
@@ -253,7 +254,7 @@ class ConfiguratorController
         // ── Spam: honeypot (bots fill hidden fields) ──
         if (!empty($body['company_website'])) {
             // Pretend success; store nothing.
-            echo json_encode(['success' => true, 'reference' => 'PORTES-' . date('Y') . '-000000']);
+            echo json_encode(['success' => true, 'reference' => 'ADK-' . date('Y') . '-00000']);
             return;
         }
 
@@ -413,13 +414,13 @@ class ConfiguratorController
                     "SELECT reference FROM quote_requests
                      WHERE reference LIKE ? ORDER BY id DESC LIMIT 1 FOR UPDATE"
                 );
-                $stmtSeq->execute(["PORTES-{$year}-%"]);
+                $stmtSeq->execute(["ADK-{$year}-%"]);
                 $lastRef = (string) ($stmtSeq->fetchColumn() ?: '');
                 $lastSeq = 0;
                 if ($lastRef !== '' && preg_match('/-(\d+)$/', $lastRef, $m)) {
                     $lastSeq = (int) $m[1];
                 }
-                $reference = sprintf('PORTES-%s-%06d', $year, $lastSeq + 1);
+                $reference = sprintf('ADK-%s-%05d', $year, $lastSeq + 1);
 
                 $hasHashCol = $cfgHash !== null;
                 // The full door list is stored in features_json (keeps schema stable);
@@ -427,9 +428,9 @@ class ConfiguratorController
                 $cols = 'reference, customer_name, customer_email, customer_company, customer_country,
                          customer_phone, customer_city, project_type, install_date, quantity, notes,
                          product_id, collection_id, material_id, color_id, door_type_id, room_type_id,
-                         width_mm, height_mm, features_json, final_price, currency, status, submitted_at'
+                         width_mm, height_mm, features_json, final_price, currency, status, source, submitted_at'
                       . ($hasHashCol ? ', config_hash' : '');
-                $vals = '?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW()' . ($hasHashCol ? ',?' : '');
+                $vals = '?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW()' . ($hasHashCol ? ',?' : '');
 
                 $params = [
                     $reference, $name, $email,
@@ -445,7 +446,7 @@ class ConfiguratorController
                     $intOrNull($cleanConfig['width_mm'] ?? null),
                     $intOrNull($cleanConfig['height_mm'] ?? null),
                     json_encode(['items' => $lineItems]),
-                    $pricing['total_price'], $pricing['currency'], 'new',
+                    $pricing['total_price'], $pricing['currency'], 'new', 'configurator',
                 ];
                 if ($hasHashCol) {
                     $params[] = $cfgHash;
@@ -502,7 +503,7 @@ class ConfiguratorController
             'submitted_at'     => date('Y-m-d H:i:s'),
         ];
 
-        // Notifications: hooks wired; live send is off until SMTP is configured.
+        // Notifications: hooks wired; live email send is off until SMTP is set.
         // Every new quote ALWAYS produces an admin alert (logged when not live).
         try {
             $mailer = new Mailer();
@@ -514,12 +515,25 @@ class ConfiguratorController
             ]);
         }
 
+        // WhatsApp lead notification: a ready-to-open wa.me link to the admin's
+        // configured number, pre-filled with the order. Null when no number is
+        // set in Settings → Notifications — the front-end simply skips it.
+        $whatsappUrl = null;
+        try {
+            $whatsappUrl = (new WhatsAppNotifier())->leadUrl($quoteRow, $summary);
+        } catch (\Throwable $e) {
+            Logger::warning('quote', 'WhatsApp notification build failed', [
+                'reference' => $reference, 'error' => $e->getMessage(),
+            ]);
+        }
+
         echo json_encode([
-            'success'   => true,
-            'reference' => $reference,
-            'quote_id'  => $quoteId,
-            'total_qty' => $totalQty,
-            'pricing'   => [
+            'success'      => true,
+            'reference'    => $reference,
+            'quote_id'     => $quoteId,
+            'total_qty'    => $totalQty,
+            'whatsapp_url' => $whatsappUrl,
+            'pricing'      => [
                 'total_price'     => $pricing['total_price'],
                 'total_price_fmt' => $pricing['total_price_fmt'] ?? null,
                 'currency'        => $pricing['currency'],

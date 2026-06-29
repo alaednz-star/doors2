@@ -24,12 +24,12 @@ CREATE TABLE `activity_log` (
   KEY `idx_user_date` (`admin_user_id`,`occurred_at`),
   KEY `idx_action` (`action`),
   KEY `idx_date` (`occurred_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `activity_log` WRITE;
 /*!40000 ALTER TABLE `activity_log` DISABLE KEYS */;
-INSERT INTO `activity_log` VALUES (1,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 13:27:10'),(2,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 17:16:40'),(3,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 19:56:49'),(4,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 20:54:24'),(5,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 22:54:39'),(6,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:11:51'),(7,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:11:56'),(8,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:12:06'),(9,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:13:29'),(10,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:14:45'),(11,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:14:50'),(12,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:15:27'),(13,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:15:30');
+INSERT INTO `activity_log` VALUES (1,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 13:27:10'),(2,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 17:16:40'),(3,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 19:56:49'),(4,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 20:54:24'),(5,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 22:54:39'),(6,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:11:51'),(7,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:11:56'),(8,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:12:06'),(9,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:13:29'),(10,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:14:45'),(11,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:14:50'),(12,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:15:27'),(13,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-27 23:15:30'),(14,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 19:29:06'),(15,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:05:06'),(16,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:05:09'),(17,NULL,'login.failed','::1','curl/8.19.0','{\"email\":\"admin@adk.site.je\"}','2026-06-28 20:08:02'),(18,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:09:08'),(19,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:09:10'),(20,2,'logout','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:11:09'),(21,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 20:11:48'),(22,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-28 22:45:04'),(23,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-29 09:00:20'),(24,2,'login.success','::1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',NULL,'2026-06-29 12:32:28');
 /*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `admin_users`;
@@ -56,7 +56,7 @@ CREATE TABLE `admin_users` (
 
 LOCK TABLES `admin_users` WRITE;
 /*!40000 ALTER TABLE `admin_users` DISABLE KEYS */;
-INSERT INTO `admin_users` VALUES (1,'Super Admin','admin@showroom.dz','$2y$12$dGF74vrgSq565d0DKy4XuuUYZz5KnOgIorWw.Hzy0GxjHdV1J6lcu','super_admin',1,0,NULL,NULL,NULL,'2026-06-27 13:22:26','2026-06-27 13:22:26'),(2,'Alaeddine','alaeddine@gmail.com','$2y$12$gGkEu7FUvqpTIBzeDzBy8OZg1nHWajnC1.mwCtjkR7NGizvc/Txk2','admin',1,0,NULL,'2026-06-27 23:15:30','::1','2026-06-27 13:26:46','2026-06-27 23:15:30'),(3,'ADK Admin','admin@adk.site.je','$2y$12$8kHvMcxleIQmTdUdCH7.cOVCE6AjYWROOFarBqweU50Fz/1XPqRxS','super_admin',1,0,NULL,NULL,NULL,'2026-06-28 00:00:00','2026-06-28 00:00:00');
+INSERT INTO `admin_users` VALUES (1,'Super Admin','admin@showroom.dz','$2y$12$dGF74vrgSq565d0DKy4XuuUYZz5KnOgIorWw.Hzy0GxjHdV1J6lcu','super_admin',1,0,NULL,NULL,NULL,'2026-06-27 13:22:26','2026-06-27 13:22:26'),(2,'Alaeddine','alaeddine@gmail.com','$2y$12$gGkEu7FUvqpTIBzeDzBy8OZg1nHWajnC1.mwCtjkR7NGizvc/Txk2','admin',1,0,NULL,'2026-06-29 12:32:28','::1','2026-06-27 13:26:46','2026-06-29 12:32:28');
 /*!40000 ALTER TABLE `admin_users` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `categories`;
@@ -122,7 +122,7 @@ CREATE TABLE `collections` (
 
 LOCK TABLES `collections` WRITE;
 /*!40000 ALTER TABLE `collections` DISABLE KEYS */;
-INSERT INTO `collections` VALUES (1,'Heritage','heritage','Timeless designs drawing from classical architectural traditions.','47eff6905cb0bbbd31e14db7ff2508fd.png',NULL,1,1,'2026-06-27 13:22:28','2026-06-27 20:03:55'),(2,'Moderne','moderne','Clean lines and minimalist forms for contemporary spaces.','09f6e53d14b172d571527550c186c722.png',NULL,2,1,'2026-06-27 13:22:28','2026-06-27 20:54:44'),(3,'Prestige','prestige','Ultra-premium bespoke doors for landmark projects.',NULL,NULL,3,1,'2026-06-27 13:22:28','2026-06-27 13:22:28');
+INSERT INTO `collections` VALUES (1,'Heritage','heritage','Timeless designs drawing from classical architectural traditions.','15dcfde9afa694e81a3926a77fb9b02d.png',NULL,1,1,'2026-06-27 13:22:28','2026-06-28 19:47:45'),(2,'Moderne','moderne','Clean lines and minimalist forms for contemporary spaces.','09f6e53d14b172d571527550c186c722.png',NULL,2,1,'2026-06-27 13:22:28','2026-06-27 20:54:44'),(3,'Prestige','prestige','Ultra-premium bespoke doors for landmark projects.','b22a9bf76e855aafb25ab5869a8ad2f7.png',NULL,3,1,'2026-06-27 13:22:28','2026-06-28 19:47:53');
 /*!40000 ALTER TABLE `collections` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `colors`;
@@ -133,6 +133,7 @@ CREATE TABLE `colors` (
   `collection_id` int(10) unsigned DEFAULT NULL,
   `name` varchar(80) NOT NULL,
   `hex` char(7) DEFAULT NULL COMMENT 'e.g. #2C2C2C',
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00,
   `description` text DEFAULT NULL,
   `image_filename` varchar(260) DEFAULT NULL,
   `texture_filename` varchar(260) DEFAULT NULL,
@@ -144,12 +145,12 @@ CREATE TABLE `colors` (
   UNIQUE KEY `uk_colors_collection_name` (`collection_id`,`name`),
   KEY `idx_colors_collection` (`collection_id`),
   CONSTRAINT `fk_colors_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `colors` WRITE;
 /*!40000 ALTER TABLE `colors` DISABLE KEYS */;
-INSERT INTO `colors` VALUES (1,3,'Marron Prestige','#5A3A24',NULL,NULL,'swatch-marron-prestige.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(2,3,'Gris Prestige','#6E6E6E',NULL,NULL,'swatch-gris-prestige.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(3,2,'Scuro','#2E2622',NULL,NULL,'swatch-scuro.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(4,2,'Simza','#9A9389',NULL,NULL,'swatch-simza.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(5,2,'Madera','#7A4E2D',NULL,NULL,'swatch-madera.jpg',3,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(6,2,'Wengue','#3B2314',NULL,NULL,'swatch-wengue.jpg',4,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(7,2,'Serya','#C9B79C',NULL,NULL,'swatch-serya.jpg',5,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(8,1,'Chêne','#B98E54',NULL,NULL,'swatch-chene.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:11:12'),(9,1,'Gris','#8A8A8A',NULL,NULL,'swatch-gris.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47');
+INSERT INTO `colors` VALUES (1,3,'Marron Prestige','#5A3A24',0.00,NULL,NULL,'swatch-marron-prestige.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(2,3,'Gris Prestige','#6E6E6E',0.00,NULL,NULL,'swatch-gris-prestige.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(3,2,'Scuro','#2E2622',0.00,NULL,NULL,'swatch-scuro.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(4,2,'Simza','#9A9389',0.00,NULL,NULL,'swatch-simza.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(5,2,'Madera','#7A4E2D',0.00,NULL,NULL,'swatch-madera.jpg',3,1,'2026-06-27 13:23:57','2026-06-28 20:30:44'),(6,2,'Wengue','#3B2314',0.00,NULL,NULL,'swatch-wengue.jpg',4,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(7,2,'Serya','#C9B79C',0.00,NULL,NULL,'swatch-serya.jpg',5,1,'2026-06-27 13:23:57','2026-06-27 20:09:47'),(8,1,'Chêne','#B98E54',0.00,NULL,NULL,'swatch-chene.jpg',1,1,'2026-06-27 13:23:57','2026-06-27 20:11:12'),(9,1,'Gris','#8A8A8A',0.00,NULL,NULL,'swatch-gris.jpg',2,1,'2026-06-27 13:23:57','2026-06-27 20:09:47');
 /*!40000 ALTER TABLE `colors` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `construction_types`;
@@ -168,12 +169,12 @@ CREATE TABLE `construction_types` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_ct_slug` (`slug`),
   KEY `idx_ct_active` (`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `construction_types` WRITE;
 /*!40000 ALTER TABLE `construction_types` DISABLE KEYS */;
-INSERT INTO `construction_types` VALUES (1,'Nédabaile','nedabaile',NULL,'20d9704ab320bca8d099d020743663c1.png',1,1,'2026-06-27 13:22:34','2026-06-27 17:18:25'),(2,'Tebelaire','tebelaire',NULL,NULL,2,1,'2026-06-27 13:22:34','2026-06-27 13:22:34');
+INSERT INTO `construction_types` VALUES (1,'Nédabaile','nedabaile',NULL,'c356f197d56a7bd31923468f42c91a94.png',1,1,'2026-06-27 13:22:34','2026-06-28 19:48:37'),(2,'Tebelaire','tebelaire',NULL,'2bf73436f6f69f00048fc3393bbd744c.png',2,1,'2026-06-27 13:22:34','2026-06-28 19:48:44');
 /*!40000 ALTER TABLE `construction_types` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `contact_messages`;
@@ -218,7 +219,7 @@ CREATE TABLE `door_types` (
 
 LOCK TABLES `door_types` WRITE;
 /*!40000 ALTER TABLE `door_types` DISABLE KEYS */;
-INSERT INTO `door_types` VALUES (1,'Chambre','chambre',NULL,'eaeb60be121f940897565f9282230b9b.png',1,1,'2026-06-27 13:23:57'),(2,'Sanitaire','sanitaire',NULL,NULL,2,1,'2026-06-27 13:23:57'),(3,'Salon','salon',NULL,NULL,3,1,'2026-06-27 13:23:57'),(4,'Porte d\'Entrée','porte-entree',NULL,NULL,4,1,'2026-06-27 13:23:57');
+INSERT INTO `door_types` VALUES (1,'Chambre','chambre',NULL,'eaeb60be121f940897565f9282230b9b.png',1,1,'2026-06-27 13:23:57'),(2,'Sanitaire','sanitaire',NULL,'4f18123b90dbbf8d72f4e858835f9e3f.png',2,1,'2026-06-27 13:23:57'),(3,'Salon','salon',NULL,'0d3b633978297772408df122a44c6c88.png',3,1,'2026-06-27 13:23:57'),(4,'Porte d\'Entrée','porte-d-entree',NULL,'b7d8a061a64ee6eb9dadc63fec45de8a.png',4,1,'2026-06-27 13:23:57');
 /*!40000 ALTER TABLE `door_types` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `materials`;
@@ -365,12 +366,12 @@ CREATE TABLE `price_rules` (
   CONSTRAINT `fk_pr_door_type` FOREIGN KEY (`door_type_id`) REFERENCES `door_types` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_pr_material` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_pr_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `price_rules` WRITE;
 /*!40000 ALTER TABLE `price_rules` DISABLE KEYS */;
-INSERT INTO `price_rules` VALUES (1,'Prestige · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,3,NULL,NULL,NULL,NULL,44000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(2,'Prestige · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,3,NULL,NULL,NULL,NULL,49000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(3,'Prestige · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,3,NULL,NULL,NULL,NULL,46000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(4,'Prestige · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,3,NULL,NULL,NULL,NULL,51000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(5,'Prestige · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,3,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(6,'Prestige · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,3,NULL,NULL,NULL,NULL,65000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(7,'Moderne · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,2,NULL,NULL,NULL,NULL,34000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(8,'Moderne · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,2,NULL,NULL,NULL,NULL,39000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(9,'Moderne · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,2,NULL,NULL,NULL,NULL,36000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(10,'Moderne · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,2,NULL,NULL,NULL,NULL,41000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(11,'Moderne · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,2,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(12,'Moderne · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,2,NULL,NULL,NULL,NULL,54000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(13,'Heritage · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,1,NULL,NULL,NULL,NULL,38000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(14,'Heritage · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,1,NULL,NULL,NULL,NULL,43000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(15,'Heritage · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,1,NULL,NULL,NULL,NULL,40000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(16,'Heritage · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,1,NULL,NULL,NULL,NULL,45000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(17,'Heritage · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,1,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(18,'Heritage · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,1,NULL,NULL,NULL,NULL,58000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57');
+INSERT INTO `price_rules` VALUES (1,'Prestige · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,3,NULL,NULL,NULL,NULL,44000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(2,'Prestige · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,3,NULL,NULL,NULL,NULL,49000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(3,'Prestige · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,3,NULL,NULL,NULL,NULL,46000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(4,'Prestige · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,3,NULL,NULL,NULL,NULL,51000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(5,'Prestige · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,3,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(6,'Prestige · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,3,NULL,NULL,NULL,NULL,65000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(7,'Moderne · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,2,NULL,NULL,NULL,NULL,34000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(8,'Moderne · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,2,NULL,NULL,NULL,NULL,39000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(9,'Moderne · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,2,NULL,NULL,NULL,NULL,36000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(10,'Moderne · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,2,NULL,NULL,NULL,NULL,41000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(11,'Moderne · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,2,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(12,'Moderne · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,2,NULL,NULL,NULL,NULL,54000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(13,'Heritage · Chambre · Nédabaile','reference_scaled',NULL,NULL,NULL,1,1,NULL,1,NULL,NULL,NULL,NULL,38000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(14,'Heritage · Chambre · Tebelaire','reference_scaled',NULL,NULL,NULL,1,2,NULL,1,NULL,NULL,NULL,NULL,43000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(15,'Heritage · Sanitaire · Nédabaile','reference_scaled',NULL,NULL,NULL,2,1,NULL,1,NULL,NULL,NULL,NULL,40000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(16,'Heritage · Sanitaire · Tebelaire','reference_scaled',NULL,NULL,NULL,2,2,NULL,1,NULL,NULL,NULL,NULL,45000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(17,'Heritage · Porte d\'Entrée · Nédabaile','reference_scaled',NULL,NULL,NULL,4,1,NULL,1,NULL,NULL,NULL,NULL,0.00,0.0000,1.0000,100,1,0,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(18,'Heritage · Porte d\'Entrée · Tebelaire','reference_scaled',NULL,NULL,NULL,4,2,NULL,1,NULL,NULL,NULL,NULL,58000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-27 13:23:57','2026-06-27 13:23:57'),(19,'Prestige · Salon · Nédabaile','reference_scaled',NULL,NULL,NULL,3,1,NULL,3,NULL,NULL,NULL,NULL,44000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14'),(20,'Prestige · Salon · Tebelaire','reference_scaled',NULL,NULL,NULL,3,2,NULL,3,NULL,NULL,NULL,NULL,49000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14'),(21,'Moderne · Salon · Nédabaile','reference_scaled',NULL,NULL,NULL,3,1,NULL,2,NULL,NULL,NULL,NULL,34000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14'),(22,'Moderne · Salon · Tebelaire','reference_scaled',NULL,NULL,NULL,3,2,NULL,2,NULL,NULL,NULL,NULL,39000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14'),(23,'Heritage · Salon · Nédabaile','reference_scaled',NULL,NULL,NULL,3,1,NULL,1,NULL,NULL,NULL,NULL,38000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14'),(24,'Heritage · Salon · Tebelaire','reference_scaled',NULL,NULL,NULL,3,2,NULL,1,NULL,NULL,NULL,NULL,43000.00,0.0000,1.0000,100,1,1,NULL,NULL,NULL,'2026-06-28 19:33:14','2026-06-28 19:33:14');
 /*!40000 ALTER TABLE `price_rules` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `product_colors`;
@@ -405,12 +406,12 @@ CREATE TABLE `product_images` (
   KEY `idx_pimages_product` (`product_id`),
   KEY `idx_pimages_cover` (`product_id`,`is_cover`),
   CONSTRAINT `fk_pimages_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (1,1,'909df000fe0e68a524611a23c1b08ca7.png',NULL,0,0,'2026-06-27 20:12:44');
+INSERT INTO `product_images` VALUES (1,1,'909df000fe0e68a524611a23c1b08ca7.png',NULL,0,0,'2026-06-27 20:12:44'),(2,1,'8e72daf3f47e21191d7b88dfc0728e75.png',NULL,0,1,'2026-06-28 19:50:55');
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `product_materials`;
@@ -471,7 +472,7 @@ CREATE TABLE `products` (
   CONSTRAINT `fk_products_construction` FOREIGN KEY (`construction_type_id`) REFERENCES `construction_types` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_products_created_by` FOREIGN KEY (`created_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_products_doortype` FOREIGN KEY (`door_type_id`) REFERENCES `door_types` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `products` WRITE;
@@ -508,7 +509,8 @@ CREATE TABLE `quote_requests` (
   `config_hash` char(40) DEFAULT NULL,
   `final_price` decimal(10,2) DEFAULT NULL,
   `currency` char(3) NOT NULL DEFAULT 'DZD',
-  `status` enum('new','contacted','quotation_sent','in_progress','confirmed','completed','cancelled') NOT NULL DEFAULT 'new',
+  `status` enum('new','contacted','quotation_sent','in_progress','confirmed','delivered','completed','cancelled') NOT NULL DEFAULT 'new',
+  `source` varchar(40) NOT NULL DEFAULT 'configurator',
   `status_notes` text DEFAULT NULL,
   `assigned_to` int(10) unsigned DEFAULT NULL,
   `submitted_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -533,11 +535,12 @@ CREATE TABLE `quote_requests` (
   CONSTRAINT `fk_qr_material` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_qr_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_qr_room` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `quote_requests` WRITE;
 /*!40000 ALTER TABLE `quote_requests` DISABLE KEYS */;
+INSERT INTO `quote_requests` VALUES (4,'PORTES-2026-000003','ALA','07850434565','alaeddine@gmail.com',NULL,'ALG','MOSTA',NULL,NULL,3,'TEST',NULL,2,NULL,7,3,NULL,900,2100,NULL,'{\"items\":[{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":2,\"color_id\":7,\"door_type_id\":3,\"construction_type_id\":2,\"feature_ids\":[]},\"quantity\":2,\"unit_price\":39000,\"line_total\":78000},{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":1,\"color_id\":9,\"door_type_id\":1,\"construction_type_id\":1,\"feature_ids\":[]},\"quantity\":1,\"unit_price\":38000,\"line_total\":38000}]}','991456f0eec267865c32d90c28c950fbac632cf9',116000.00,'DZD','completed','configurator',NULL,NULL,'2026-06-29 09:00:13','2026-06-29 09:24:22'),(6,'PORTES-2026-000005','ala ddine','0798604353','admin@adk.site.je',NULL,'ALG','OMSTAGANEM',NULL,NULL,17,'TEST 4 DORS',NULL,1,NULL,9,2,NULL,900,2100,NULL,'{\"items\":[{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":1,\"color_id\":9,\"door_type_id\":2,\"construction_type_id\":1,\"feature_ids\":[]},\"quantity\":1,\"unit_price\":40000,\"line_total\":40000},{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":2,\"color_id\":5,\"door_type_id\":3,\"construction_type_id\":2,\"feature_ids\":[]},\"quantity\":4,\"unit_price\":39000,\"line_total\":156000},{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":3,\"color_id\":1,\"door_type_id\":2,\"construction_type_id\":2,\"feature_ids\":[]},\"quantity\":6,\"unit_price\":51000,\"line_total\":306000},{\"config\":{\"width_mm\":900,\"height_mm\":2100,\"collection_id\":1,\"color_id\":9,\"door_type_id\":3,\"construction_type_id\":1,\"feature_ids\":[]},\"quantity\":6,\"unit_price\":38000,\"line_total\":228000}]}','8d9b3cf9e693344be141da0fa7ac9514b9192333',730000.00,'DZD','new','configurator',NULL,NULL,'2026-06-29 09:23:26','2026-06-29 09:23:26');
 /*!40000 ALTER TABLE `quote_requests` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `quote_status_log`;
@@ -557,11 +560,12 @@ CREATE TABLE `quote_status_log` (
   KEY `fk_qsl_changed_by` (`changed_by`),
   CONSTRAINT `fk_qsl_changed_by` FOREIGN KEY (`changed_by`) REFERENCES `admin_users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_qsl_quote` FOREIGN KEY (`quote_id`) REFERENCES `quote_requests` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `quote_status_log` WRITE;
 /*!40000 ALTER TABLE `quote_status_log` DISABLE KEYS */;
+INSERT INTO `quote_status_log` VALUES (12,4,'new','quotation_sent',NULL,2,'2026-06-29 09:24:13'),(13,4,'quotation_sent','confirmed',NULL,2,'2026-06-29 09:24:17'),(14,4,'confirmed','completed',NULL,2,'2026-06-29 09:24:22');
 /*!40000 ALTER TABLE `quote_status_log` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `rate_limits`;
@@ -576,7 +580,7 @@ CREATE TABLE `rate_limits` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_key` (`key`),
   KEY `idx_blocked_until` (`blocked_until`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `rate_limits` WRITE;
@@ -642,12 +646,12 @@ CREATE TABLE `saved_configurations` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_saved_configs_token` (`token`),
   KEY `idx_sc_expires` (`expires_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `saved_configurations` WRITE;
 /*!40000 ALTER TABLE `saved_configurations` DISABLE KEYS */;
-INSERT INTO `saved_configurations` VALUES (1,'8a3feb9157810f7006cd916948dd4a5be0068e6320c3834963df17354599e96a','Moderne Serya Door','{\"collection_id\":2,\"color_id\":7,\"door_type_id\":2,\"construction_type_id\":1,\"width_mm\":900,\"height_mm\":2070}',35485.71,'DZD','::1','2026-06-27 17:06:24','2026-07-27 17:06:24'),(2,'891841a1bcc63180153a076ac8d1ca85e66c92cb372ec6c1ca2ef2a5f0395ce1','Heritage Gris Door','{\"collection_id\":1,\"color_id\":9,\"door_type_id\":2,\"construction_type_id\":2,\"width_mm\":900,\"height_mm\":2100}',45000.00,'DZD','::1','2026-06-27 20:11:50','2026-07-27 20:11:50');
+INSERT INTO `saved_configurations` VALUES (1,'8a3feb9157810f7006cd916948dd4a5be0068e6320c3834963df17354599e96a','Moderne Serya Door','{\"collection_id\":2,\"color_id\":7,\"door_type_id\":2,\"construction_type_id\":1,\"width_mm\":900,\"height_mm\":2070}',35485.71,'DZD','::1','2026-06-27 17:06:24','2026-07-27 17:06:24'),(2,'891841a1bcc63180153a076ac8d1ca85e66c92cb372ec6c1ca2ef2a5f0395ce1','Heritage Gris Door','{\"collection_id\":1,\"color_id\":9,\"door_type_id\":2,\"construction_type_id\":2,\"width_mm\":900,\"height_mm\":2100}',45000.00,'DZD','::1','2026-06-27 20:11:50','2026-07-27 20:11:50'),(3,'113a8beb6f0d59e0a653c4a3d309d7fa03b0b79be87e45d35173a95f47be3da8','Heritage Gris Door','{\"collection_id\":1,\"color_id\":9,\"door_type_id\":3,\"construction_type_id\":2,\"width_mm\":900,\"height_mm\":2100}',43000.00,'DZD','::1','2026-06-28 22:37:19','2026-07-28 22:37:19'),(4,'998b95a714432974d2150e9037c7fa90b5a0dfab7c71c9acbae09803dc739a28','Moderne Serya Door','{\"collection_id\":2,\"color_id\":7,\"door_type_id\":3,\"construction_type_id\":1,\"width_mm\":500,\"height_mm\":1500}',13492.06,'DZD','::1','2026-06-28 23:10:39','2026-07-28 23:10:39');
 /*!40000 ALTER TABLE `saved_configurations` ENABLE KEYS */;
 UNLOCK TABLES;
 DROP TABLE IF EXISTS `settings`;
@@ -661,12 +665,12 @@ CREATE TABLE `settings` (
   `group_name` varchar(50) NOT NULL DEFAULT 'general',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_settings_key` (`setting_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` VALUES (1,'site_name','PORTES','Site Name','general'),(2,'contact_email','contact@portes.dz','Contact Email','general'),(3,'contact_phone','','Contact Phone','general'),(4,'contact_address','','Address','general'),(5,'notification_email','admin@portes.dz','Notification Email','notifications'),(6,'quote_email_notify','0','Email on New Quote','notifications'),(7,'pricing_ref_width_mm','900','Reference Width (mm)','pricing'),(8,'pricing_ref_height_mm','2100','Reference Height (mm)','pricing'),(9,'vat_percent','0','VAT Percent','advanced'),(10,'maintenance_mode','0','Maintenance Mode','advanced');
+INSERT INTO `settings` VALUES (1,'site_name','ADK','Site Name','general'),(2,'contact_email','ADK@adk.dz','Contact Email','general'),(3,'contact_phone','+213 66','Contact Phone','general'),(4,'contact_address','mosta','Address','general'),(5,'notification_email','admin@portes.dz','Notification Email','notifications'),(6,'quote_email_notify','0','Email on New Quote','notifications'),(7,'pricing_ref_width_mm','900','Reference Width (mm)','pricing'),(8,'pricing_ref_height_mm','2100','Reference Height (mm)','pricing'),(9,'vat_percent','','VAT Percent','advanced'),(10,'maintenance_mode','0','Maintenance Mode','advanced'),(12,'contact_whatsapp','2136','WhatsApp Number (digits only, e.g. 213661234567)','general'),(13,'notification_whatsapp','','WhatsApp Number for new-quote alerts (digits only, e.g. 213661234567)','notifications');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

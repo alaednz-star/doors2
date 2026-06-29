@@ -1164,6 +1164,14 @@ body.cfg-on-color .cfg-sidebar-render { border-radius: var(--cfg-radius); }
   margin: 1.3rem 0 1.7rem; text-align: center;
 }
 .cfg-confirm-actions { display: flex; flex-wrap: wrap; gap: .7rem; justify-content: center; }
+/* WhatsApp send button on the confirmation screen */
+.cfg-wa-btn {
+  display: inline-flex; align-items: center; gap: .55rem;
+  background: #25d366; color: #fff; border: 1px solid #25d366;
+}
+.cfg-wa-btn:hover { background: #1eb858; border-color: #1eb858; color: #fff; }
+.cfg-wa-btn svg { width: 18px; height: 18px; }
+.cfg-wa-btn[hidden] { display: none; }
 
 /* ─── RESPONSIVE ─── */
 @media (min-width: 600px) {

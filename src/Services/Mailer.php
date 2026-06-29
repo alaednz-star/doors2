@@ -19,7 +19,7 @@ class Mailer
     /** Customer confirmation. Returns true if handled (sent or logged). */
     public function customerConfirmation(array $quote, array $pricing, array $summary): bool
     {
-        $subject = 'Your PORTES Quote Request — ' . $quote['reference'];
+        $subject = 'Votre demande a bien été reçue — ' . $quote['reference'];
         $body    = $this->renderCustomer($quote, $pricing, $summary);
 
         return $this->dispatch($quote['customer_email'] ?? '', $subject, $body, 'customer');
@@ -39,7 +39,7 @@ class Mailer
     {
         if (self::SEND_LIVE && $to !== '' && filter_var($to, FILTER_VALIDATE_EMAIL)) {
             $headers = implode("\r\n", [
-                'From: PORTES <no-reply@portes.dz>',
+                'From: ADK <no-reply@adk.dz>',
                 'Content-Type: text/plain; charset=UTF-8',
                 'MIME-Version: 1.0',
             ]);
@@ -83,25 +83,25 @@ class Mailer
     private function renderCustomer(array $q, array $pricing, array $summary): string
     {
         $lines = [
-            'Dear ' . ($q['customer_name'] ?? 'Customer') . ',',
+            'Bonjour ' . ($q['customer_name'] ?? '') . ',',
             '',
-            'Thank you for your interest in PORTES. We have received your configuration and our specialists will contact you within 24–48 hours with a tailored quotation.',
+            'Merci de votre intérêt pour ADK. Nous avons bien reçu votre demande de devis ; notre équipe vous contactera sous 24 à 48 h avec un devis personnalisé.',
             '',
-            'YOUR REFERENCE: ' . $q['reference'],
+            'VOTRE RÉFÉRENCE : ' . $q['reference'],
             '',
-            'CONFIGURATION SUMMARY',
+            'RÉCAPITULATIF DE LA CONFIGURATION',
             str_repeat('-', 40),
         ];
         foreach ($summary as $label => $value) {
-            $lines[] = str_pad($label . ':', 18) . $value;
+            $lines[] = str_pad($label . ' :', 18) . $value;
         }
         $lines[] = str_repeat('-', 40);
-        $lines[] = 'Estimated price: ' . ($pricing['total_price_fmt'] ?? '');
+        $lines[] = 'Prix estimé : ' . ($pricing['total_price_fmt'] ?? '');
         $lines[] = '';
-        $lines[] = 'This estimate is indicative; your final quotation will be confirmed by our team.';
+        $lines[] = 'Ce montant est indicatif ; votre devis final sera confirmé par notre équipe.';
         $lines[] = '';
-        $lines[] = 'With our compliments,';
-        $lines[] = 'The PORTES Atelier — Algiers';
+        $lines[] = 'Bien cordialement,';
+        $lines[] = "L'équipe ADK — Algerian Doors & Kitchens";
 
         return implode("\n", $lines);
     }

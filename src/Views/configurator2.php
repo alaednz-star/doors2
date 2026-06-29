@@ -422,6 +422,10 @@ $cfgData = [
     <div class="cfg-confirm-total"><span><?= $e(t('cfg.total')) ?></span><strong id="cfgConfirmTotal">—</strong></div>
     <p class="cfg-confirm-note"><?= $e(t('cfg.confirm_note')) ?></p>
     <div class="cfg-confirm-actions">
+      <a href="#" target="_blank" rel="noopener" class="btn cfg-wa-btn" id="cfgWhatsApp" hidden>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1012 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.4.5-.3.3c-.2.2-.3.4-.2.6.2.4.8 1.3 1.6 2 .9.8 1.7 1.1 2.1 1.3.2.1.5.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.1.1.6-.1 1.2z"/></svg>
+        <?= $e(t('cfg.confirm_whatsapp')) ?>
+      </a>
       <button type="button" class="btn btn--gold" id="cfgPrint"><?= $e(t('cfg.print')) ?></button>
       <button type="button" class="btn btn--outline" id="cfgAnother"><?= $e(t('cfg.another')) ?></button>
       <a href="/door-showroom" class="btn btn--outline"><?= $e(t('cfg.home')) ?></a>

@@ -38,47 +38,85 @@ class WhatsAppNotifier
      * with the lead message pre-filled to the admin number. Returns null when
      * no number is configured.
      *
-     * @param array $quote   ['reference','customer_name','customer_phone', …]
-     * @param array $summary ['Collection','Colour','Usage','Construction','Dimensions']
+     * @param array $quote    ['reference','customer_name','customer_phone','submitted_at']
+     * @param array $doors    [ ['collection','color','usage','construction','dimensions','quantity'], … ]
+     * @param int   $totalQty total number of door units across all lines
      */
-    public function leadUrl(array $quote, array $summary): ?string
+    public function leadUrl(array $quote, array $doors, int $totalQty): ?string
     {
         $number = $this->number();
         if ($number === '') {
             return null;
         }
-        $text = $this->buildMessage($quote, $summary);
+        $text = $this->buildMessage($quote, $doors, $totalQty);
         return 'https://wa.me/' . $number . '?text=' . rawurlencode($text);
     }
 
     /**
-     * The lead message body. Kept separate (and provider-agnostic) so the same
-     * text can be reused by a future Business API sender or SMS gateway.
+     * The lead message body. Lists EVERY ordered door. Kept provider-agnostic so
+     * the same text can be reused by a future Business API sender or SMS gateway.
      */
-    public function buildMessage(array $quote, array $summary): string
+    public function buildMessage(array $quote, array $doors, int $totalQty): string
     {
-        $qty = (int) ($quote['quantity'] ?? 1);
-        $when = $quote['submitted_at'] ?? date('Y-m-d H:i:s');
-
+        $sep = str_repeat('─', 20);
         $lines = [
-            '🚪 NEW QUOTE REQUEST',
+            'ADK — Nouvelle Demande de Devis',
             '',
-            'Client: ' . ($quote['customer_name'] ?? '—'),
-            'Phone: ' . ($quote['customer_phone'] ?? '—'),
+            'CLIENT',
             '',
-            'Collection: ' . ($summary['Collection'] ?? '—'),
-            'Color: ' . ($summary['Colour'] ?? '—'),
-            'Usage: ' . ($summary['Usage'] ?? '—'),
-            'Construction: ' . ($summary['Construction'] ?? '—'),
+            'Nom : ' . ($quote['customer_name'] ?? '—'),
+            'Téléphone : ' . ($quote['customer_phone'] ?? '—'),
             '',
-            'Dimensions: ' . ($summary['Dimensions'] ?? '—'),
-            'Quantity: ' . $qty,
+            $sep,
             '',
-            'Reference: ' . ($quote['reference'] ?? '—'),
-            'Date: ' . $when,
+            'PROJET',
+            '',
+            'Nombre total de portes : ' . $totalQty,
         ];
 
+        $i = 0;
+        foreach ($doors as $d) {
+            $i++;
+            $lines[] = '';
+            $lines[] = $sep;
+            $lines[] = '';
+            $lines[] = 'PORTE #' . $i;
+            $lines[] = '';
+            $lines[] = 'Collection : ' . ($d['collection'] ?? '—');
+            $lines[] = 'Couleur : ' . ($d['color'] ?? '—');
+            $lines[] = 'Usage : ' . ($d['usage'] ?? '—');
+            $lines[] = 'Construction : ' . ($d['construction'] ?? '—');
+            $lines[] = 'Dimensions : ' . ($d['dimensions'] ?? '—');
+            $lines[] = 'Quantité : ' . (int) ($d['quantity'] ?? 1);
+        }
+
+        $lines[] = '';
+        $lines[] = $sep;
+        $lines[] = '';
+        $lines[] = 'RÉCAPITULATIF';
+        $lines[] = '';
+        $lines[] = 'Total modèles : ' . count($doors);
+        $lines[] = 'Total portes : ' . $totalQty;
+        $lines[] = '';
+        $lines[] = 'Référence : ' . ($quote['reference'] ?? '—');
+        $lines[] = 'Date : ' . $this->formatDate($quote['submitted_at'] ?? null);
+        $lines[] = '';
+        $lines[] = 'Merci de contacter le client dans les meilleurs délais.';
+
         return implode("\n", $lines);
+    }
+
+    /** Format a datetime as "29 Juin 2026 • 15:46" (French month names). */
+    private function formatDate(?string $dt): string
+    {
+        $ts = $dt ? strtotime($dt) : time();
+        if ($ts === false) {
+            $ts = time();
+        }
+        $months = [1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+        return date('j', $ts) . ' ' . $months[(int) date('n', $ts)] . ' ' . date('Y', $ts)
+             . ' • ' . date('H:i', $ts);
     }
 
     private function setting(string $key, string $default): string

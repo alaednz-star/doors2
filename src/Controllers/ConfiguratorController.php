@@ -515,12 +515,27 @@ class ConfiguratorController
             ]);
         }
 
+        // Resolve EVERY ordered door (not just the first) to human labels for
+        // the WhatsApp message — a multi-door order must list all of them.
+        $doors = [];
+        foreach ($lineItems as $li) {
+            $s = $this->resolveSummary($db, $li['config']);
+            $doors[] = [
+                'collection'   => $s['Collection'],
+                'color'        => $s['Colour'],
+                'usage'        => $s['Usage'],
+                'construction' => $s['Construction'],
+                'dimensions'   => $s['Dimensions'],
+                'quantity'     => (int) $li['quantity'],
+            ];
+        }
+
         // WhatsApp lead notification: a ready-to-open wa.me link to the admin's
-        // configured number, pre-filled with the order. Null when no number is
-        // set in Settings → Notifications — the front-end simply skips it.
+        // configured number, pre-filled with the FULL order. Null when no number
+        // is set in Settings → Notifications — the front-end simply skips it.
         $whatsappUrl = null;
         try {
-            $whatsappUrl = (new WhatsAppNotifier())->leadUrl($quoteRow, $summary);
+            $whatsappUrl = (new WhatsAppNotifier())->leadUrl($quoteRow, $doors, $totalQty);
         } catch (\Throwable $e) {
             Logger::warning('quote', 'WhatsApp notification build failed', [
                 'reference' => $reference, 'error' => $e->getMessage(),

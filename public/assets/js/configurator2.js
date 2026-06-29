@@ -792,16 +792,14 @@
     if (id('cfgConfirmTotal')) id('cfgConfirmTotal').textContent = total;
 
     // WhatsApp lead notification: when the admin has configured a number, the
-    // backend returns a ready wa.me URL pre-filled with the order. Show the
-    // button and auto-open it once so the order reaches the team's WhatsApp.
+    // backend returns a ready wa.me URL pre-filled with the order. We surface a
+    // prominent "Send on WhatsApp" button the customer taps — one tap delivers
+    // the order to the team's WhatsApp. Hidden entirely if no number is set.
     var wa = id('cfgWhatsApp');
     if (wa) {
       if (d.whatsapp_url) {
         wa.href = d.whatsapp_url;
         wa.hidden = false;
-        // Fire once, shortly after the success screen renders (a user-gesture
-        // context — the submit click — so most browsers allow the new tab).
-        try { window.open(d.whatsapp_url, '_blank'); } catch (e) {}
       } else {
         wa.hidden = true;
       }
